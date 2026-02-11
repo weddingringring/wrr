@@ -1,0 +1,24 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/purchase-upcoming-numbers",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-numbers",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-phones",
+      "schedule": "0 2 * * 0"
+    },
+    {
+      "path": "/api/cron/send-event-reminders",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/send-day-after-summary",
+      "schedule": "0 10 * * *"
+    }
+  ]
+}
