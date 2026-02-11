@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - WeddingRingRing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFF8F0',
+            sage: {
+              light: '#C8D3CC',
+              DEFAULT: '#8B9B8E',
+              dark: '#6B7B6E'
+            },
+            'deep-green': {
+              DEFAULT: '#3D5A4C',
+              dark: '#2D4A3C'
+            },
+            rose: {
+              light: '#F5E6E6',
+              DEFAULT: '#D4A5A5',
+              dark: '#B48585'
+            },
+            gold: {
+              light: '#F5EBDA',
+              DEFAULT: '#C9A961',
+              dark: '#B99951'
+            },
+            charcoal: '#2C2C2C'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-sans bg-cream">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-sage-light shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="font-serif text-3xl text-charcoal">Admin Dashboard</h1>
+          <p class="text-sm text-sage-dark mt-1">Welcome back, Admin User</p>
+        </div>
+        
+        <button class="px-4 py-2 text-sm text-sage-dark hover:text-charcoal transition">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </header>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Stat Card 1 -->
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <p class="text-sm text-sage-dark mb-1">Total Venues</p>
+            <p class="text-3xl font-bold text-charcoal mb-1">24</p>
+            <p class="text-xs text-sage-dark">18 active</p>
+          </div>
+          <div class="text-3xl bg-deep-green/10 text-deep-green">
+            🏛️
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stat Card 2 -->
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <p class="text-sm text-sage-dark mb-1">Total Events</p>
+            <p class="text-3xl font-bold text-charcoal mb-1">156</p>
+            <p class="text-xs text-sage-dark">32 upcoming</p>
+          </div>
+          <div class="text-3xl bg-sage/10 text-sage-dark">
+            📅
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stat Card 3 -->
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <p class="text-sm text-sage-dark mb-1">Messages Recorded</p>
+            <p class="text-3xl font-bold text-charcoal mb-1">4,829</p>
+            <p class="text-xs text-sage-dark">All time</p>
+          </div>
+          <div class="text-3xl bg-rose/10 text-rose-dark">
+            🎤
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stat Card 4 -->
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <p class="text-sm text-sage-dark mb-1">Phone Inventory</p>
+            <p class="text-3xl font-bold text-charcoal mb-1">12</p>
+            <p class="text-xs text-sage-dark">Total devices</p>
+          </div>
+          <div class="text-3xl bg-gold/10 text-gold">
+            📞
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+      <h2 class="font-serif text-2xl text-charcoal mb-4">Quick Actions</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <a href="#" class="bg-deep-green hover:bg-deep-green-dark text-white rounded-lg p-4 text-center transition flex flex-col items-center justify-center gap-2">
+          <span class="text-2xl">+</span>
+          <span class="font-medium">Add Venue</span>
+        </a>
+        
+        <a href="#" class="bg-sage hover:bg-sage-dark text-white rounded-lg p-4 text-center transition flex flex-col items-center justify-center gap-2">
+          <span class="text-2xl">📅</span>
+          <span class="font-medium">Create Event</span>
+        </a>
+        
+        <a href="#" class="bg-rose hover:bg-rose-dark text-white rounded-lg p-4 text-center transition flex flex-col items-center justify-center gap-2">
+          <span class="text-2xl">📞</span>
+          <span class="font-medium">Add Phone</span>
+        </a>
+        
+        <a href="#" class="bg-gold hover:bg-charcoal text-white rounded-lg p-4 text-center transition flex flex-col items-center justify-center gap-2">
+          <span class="text-2xl">👁️</span>
+          <span class="font-medium">View All Venues</span>
+        </a>
+      </div>
+    </div>
+    
+    <!-- Navigation Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <a href="admin-venues.html" class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition group">
+        <div class="text-4xl mb-4">🏛️</div>
+        <h3 class="font-serif text-xl text-charcoal mb-2 group-hover:text-deep-green transition">
+          Venues
+        </h3>
+        <p class="text-sm text-sage-dark">Manage venue accounts and settings</p>
+      </a>
+      
+      <a href="admin-events.html" class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition group">
+        <div class="text-4xl mb-4">📅</div>
+        <h3 class="font-serif text-xl text-charcoal mb-2 group-hover:text-deep-green transition">
+          Events
+        </h3>
+        <p class="text-sm text-sage-dark">View and manage all events</p>
+      </a>
+      
+      <a href="admin-phones.html" class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition group">
+        <div class="text-4xl mb-4">📞</div>
+        <h3 class="font-serif text-xl text-charcoal mb-2 group-hover:text-deep-green transition">
+          Phone Inventory
+        </h3>
+        <p class="text-sm text-sage-dark">Track physical phone devices</p>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

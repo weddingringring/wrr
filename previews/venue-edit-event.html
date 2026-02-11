@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Event - WeddingRingRing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFF8F0',
+            sage: {
+              light: '#C8D3CC',
+              DEFAULT: '#8B9B8E',
+              dark: '#6B7B6E'
+            },
+            'deep-green': {
+              DEFAULT: '#3D5A4C',
+              dark: '#2D4A3C'
+            },
+            rose: {
+              light: '#F5E6E6',
+              DEFAULT: '#D4A5A5',
+              dark: '#B48585'
+            },
+            charcoal: '#2C2C2C'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-sans bg-cream">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-sage-light shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <a href="#" class="text-sm text-sage-dark hover:text-charcoal mb-2 inline-block">
+        ← Back to Event Details
+      </a>
+      <h1 class="font-serif text-3xl text-charcoal">Edit Event</h1>
+    </div>
+  </header>
+  
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Note Banner -->
+    <div class="mb-6 p-4 bg-deep-green/10 border border-deep-green/30 rounded-lg">
+      <p class="text-sm text-deep-green">
+        <strong>Note:</strong> This event has received messages. The customer email cannot be changed as the account has already been created.
+      </p>
+    </div>
+    
+    <form class="space-y-6">
+      
+      <!-- Event Details -->
+      <div class="bg-white rounded-xl shadow-sm p-8 space-y-6">
+        <h2 class="font-serif text-2xl text-charcoal mb-4 pb-4 border-b border-sage-light">
+          Event Details
+        </h2>
+        
+        <div>
+          <label class="block text-sm font-medium text-charcoal mb-2">
+            Event Type *
+          </label>
+          <select class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent">
+            <option value="wedding" selected>Wedding</option>
+            <option value="birthday">Birthday</option>
+            <option value="anniversary">Anniversary</option>
+            <option value="christening">Christening</option>
+            <option value="corporate">Corporate Event</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Event Date *
+            </label>
+            <input
+              type="date"
+              value="2024-12-25"
+              class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Venue Location (Optional)
+            </label>
+            <input
+              type="text"
+              value="Garden Marquee"
+              class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+              placeholder="E.g., Garden Marquee, Ballroom"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Customer Info -->
+      <div class="bg-white rounded-xl shadow-sm p-8 space-y-6">
+        <h2 class="font-serif text-2xl text-charcoal mb-4 pb-4 border-b border-sage-light">
+          Customer Information
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Partner 1 First Name *
+            </label>
+            <input
+              type="text"
+              value="Sarah"
+              class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+              placeholder="E.g., Sarah"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Partner 1 Last Name *
+            </label>
+            <input
+              type="text"
+              value="Smith"
+              class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+              placeholder="E.g., Smith"
+            />
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Partner 2 First Name (Optional)
+            </label>
+            <input
+              type="text"
+              value="James"
+              class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+              placeholder="E.g., James"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Partner 2 Last Name (Optional)
+            </label>
+            <input
+              type="text"
+              value="Brown"
+              class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+              placeholder="E.g., Brown"
+            />
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Email Address *
+            </label>
+            <input
+              type="email"
+              value="sarah@example.com"
+              disabled
+              class="w-full px-4 py-3 border border-sage-light rounded-lg bg-sage-light/30 text-sage-dark cursor-not-allowed"
+            />
+            <p class="text-xs text-sage-dark mt-1">
+              Email cannot be changed (account already created). If you need to change it, please contact support.
+            </p>
+            <p class="text-xs text-sage-dark mt-1">
+              <strong>Customer changing email?</strong> They can log in and update it themselves in Settings.
+            </p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Phone Number (Optional)
+            </label>
+            <input
+              type="tel"
+              value="+44 7123 456789"
+              class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+              placeholder="+44 7XXX XXXXXX"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-charcoal mb-2">
+            Expected Guest Count (Optional)
+          </label>
+          <input
+            type="number"
+            value="100"
+            class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+            placeholder="E.g., 100"
+          />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-charcoal mb-2">
+            Special Requirements (Optional)
+          </label>
+          <textarea
+            class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent resize-none"
+            rows="3"
+            placeholder="Any special requests or requirements..."
+          >Vegetarian menu required</textarea>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-charcoal mb-2">
+            Internal Notes (Optional)
+          </label>
+          <textarea
+            class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent resize-none"
+            rows="3"
+            placeholder="Notes for venue staff only (not visible to customer)..."
+          >VIP package - champagne on arrival</textarea>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div class="space-y-4">
+        <div class="flex gap-4">
+          <button
+            type="submit"
+            class="flex-1 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+          >
+            Save Changes
+          </button>
+          <a
+            href="#"
+            class="flex-1 py-3 border-2 border-sage-light text-charcoal rounded-lg font-medium hover:bg-sage-light/30 transition text-center flex items-center justify-center"
+          >
+            Cancel
+          </a>
+        </div>
+        
+        <div class="pt-4 border-t border-sage-light">
+          <p class="text-sm text-sage-dark mb-3">
+            Need to change the email address? You can cancel this event and create a new one.
+          </p>
+          <button
+            type="button"
+            class="px-4 py-2 text-sm border-2 border-rose text-rose rounded-lg hover:bg-rose-light/30 transition"
+          >
+            Cancel Event
+          </button>
+        </div>
+      </div>
+      
+    </form>
+  </div>
+
+</body>
+</html>

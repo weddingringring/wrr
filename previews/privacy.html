@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy | WeddingRingRing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       DESIGN SYSTEM - SAME AS ALL OTHER PAGES
+       ============================================ */
+    :root {
+      --text-xs: 0.75rem;
+      --text-sm: 0.875rem;
+      --text-base: 1rem;
+      --text-lg: 1.125rem;
+      --text-xl: 1.25rem;
+      --text-2xl: 1.5rem;
+      --text-3xl: 2rem;
+      --text-4xl: 3rem;
+      --text-5xl: 3.5rem;
+      --text-6xl: 4.5rem;
+      
+      --space-1: 0.5rem;
+      --space-2: 1rem;
+      --space-3: 1.5rem;
+      --space-4: 2rem;
+      --space-6: 3rem;
+      --space-8: 4rem;
+      --space-12: 6rem;
+      
+      --color-primary: #1a1a1a;
+      --color-secondary: #C9A6A6;
+      --color-text-primary: #1a1a1a;
+      --color-text-secondary: #6a6a6a;
+      --color-surface-white: #ffffff;
+      --color-surface-cream: #FAF8F3;
+      --color-surface-blush: #F5E8E8;
+      --color-border: rgba(0, 0, 0, 0.08);
+      
+      --color-text-on-dark: #E8C9C9;
+      --color-heading-on-dark: #F5E8E8;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+      
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: var(--font-sans);
+      line-height: 1.7;
+      color: var(--color-text-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 0 var(--space-4); 
+    }
+    
+    h1 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-6xl);
+      line-height: 1.05; 
+      font-weight: 400;
+      letter-spacing: -0.03em;
+    }
+    
+    h2 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-3xl);
+      line-height: 1.2;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-3);
+    }
+    
+    h3 { 
+      font-family: var(--font-sans);
+      font-size: var(--text-xl);
+      line-height: 1.4;
+      font-weight: 600;
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+    
+    p { 
+      font-size: var(--text-base);
+      line-height: 1.7;
+      margin-bottom: var(--space-3);
+    }
+    
+    ul, ol {
+      margin-bottom: var(--space-3);
+      padding-left: var(--space-6);
+    }
+    
+    li {
+      margin-bottom: var(--space-2);
+    }
+    
+    /* ============================================
+       HEADER
+       ============================================ */
+    header { 
+      background: var(--color-surface-blush);
+      padding: var(--space-3) 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    header .container { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    
+    .nav-desktop { 
+      display: flex; 
+      gap: var(--space-6); 
+      align-items: center; 
+    }
+    
+    .nav-desktop a { 
+      color: var(--color-text-primary); 
+      text-decoration: none; 
+      font-weight: 500;
+      font-size: var(--text-sm);
+      transition: color 0.2s;
+    }
+    
+    .nav-desktop a:hover { 
+      color: var(--color-secondary);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--color-primary);
+      padding: 0.5rem;
+    }
+    
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn {
+      display: inline-block;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-sans);
+    }
+    
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--color-secondary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* ============================================
+       SECTIONS
+       ============================================ */
+    section { 
+      padding: var(--space-12) 0; 
+    }
+    
+    .section-white { 
+      background: var(--color-surface-white); 
+    }
+    
+    .section-blush { 
+      background: var(--color-surface-blush); 
+    }
+    
+    /* ============================================
+       CONTENT
+       ============================================ */
+    .content-narrow {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .text-large {
+      font-size: var(--text-xl);
+      color: var(--color-text-secondary);
+    }
+    
+    .last-updated {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      font-style: italic;
+      margin-top: var(--space-2);
+    }
+    
+    /* ============================================
+       MODAL
+       ============================================ */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2);
+      backdrop-filter: blur(4px);
+    }
+    
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-md);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+    
+    .modal-header {
+      padding: var(--space-6) var(--space-6) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .modal-header h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-1);
+      margin-top: 0;
+    }
+    
+    .modal-header p {
+      color: var(--color-text-secondary);
+      font-size: var(--text-base);
+      margin-bottom: 0;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: all 0.2s;
+      font-size: var(--text-2xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      line-height: 1;
+    }
+    
+    .modal-close:hover {
+      color: var(--color-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .modal-body {
+      padding: var(--space-6);
+    }
+    
+    form { 
+      display: grid;
+      gap: var(--space-4);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(201, 166, 166, 0.1);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .form-note {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* ============================================
+       FOOTER
+       ============================================ */
+    footer {
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+      padding: var(--space-8) 0 var(--space-4);
+    }
+    
+    .footer-grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    
+    footer h4 { 
+      margin-bottom: var(--space-3);
+      font-weight: 600;
+      font-size: var(--text-base);
+      color: var(--color-heading-on-dark);
+    }
+    
+    footer ul { 
+      list-style: none; 
+      padding-left: 0;
+    }
+    
+    footer li { 
+      margin-bottom: var(--space-2); 
+    }
+    
+    footer a { 
+      color: var(--color-text-on-dark);
+      text-decoration: none; 
+      transition: color 0.2s;
+      font-size: var(--text-sm);
+    }
+    
+    footer a:hover { 
+      color: white; 
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: var(--space-4);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: var(--text-sm);
+    }
+    
+    /* ============================================
+       COOKIE BANNER
+       ============================================ */
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+      padding: var(--space-3) 0;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: none;
+    }
+    
+    .cookie-banner.show {
+      display: block;
+    }
+    
+    .cookie-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+    
+    .cookie-text {
+      flex: 1;
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+    
+    .cookie-text a {
+      color: var(--color-secondary);
+      text-decoration: underline;
+    }
+    
+    .cookie-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+    
+    .cookie-btn {
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .cookie-accept {
+      background: var(--color-secondary);
+      color: var(--color-primary);
+    }
+    
+    .cookie-accept:hover {
+      background: var(--color-heading-on-dark);
+    }
+    
+    .cookie-decline {
+      background: transparent;
+      color: var(--color-text-on-dark);
+      border: 1px solid var(--color-text-on-dark);
+    }
+    
+    .cookie-decline:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) {
+      :root {
+        --text-6xl: 2.5rem;
+        --text-3xl: 1.5rem;
+      }
+      
+      section {
+        padding: var(--space-8) 0;
+      }
+      
+      .nav-desktop {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div>
+        <a href="/"><img src="../public/logo.svg" alt="WeddingRingRing" style="height: 45px;"></a>
+      </div>
+      <nav class="nav-desktop">
+        <a href="/">Home</a>
+        <a href="/how-it-works">How It Works</a>
+        <a href="/about">About</a>
+        <a href="/login">Log In</a>
+        <button class="btn btn-primary" onclick="openModal()">Get Started</button>
+      </nav>
+      <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="section-blush">
+    <div class="container content-narrow">
+      <h1>Privacy Policy.</h1>
+      <p class="last-updated">Last updated: February 9, 2026</p>
+    </div>
+  </section>
+
+  <!-- Privacy Policy Content -->
+  <section class="section-white">
+    <div class="container content-narrow">
+      
+      <p>
+        At WeddingRingRing, operated by RingRing Digital Ltd, we take your privacy seriously. This Privacy Policy explains how we collect, use, and protect your personal information when you use our audio guestbook service.
+      </p>
+
+      <h2>1. Information We Collect</h2>
+      
+      <h3>Venue Information</h3>
+      <p>When you register as a venue partner, we collect:</p>
+      <ul>
+        <li>Venue name and contact details</li>
+        <li>Primary contact person's name and email</li>
+        <li>Phone number and address</li>
+        <li>Billing and payment information</li>
+      </ul>
+
+      <h3>Couple Information</h3>
+      <p>When venues create events for couples, we collect:</p>
+      <ul>
+        <li>Couple's names</li>
+        <li>Email addresses for message delivery</li>
+        <li>Wedding date</li>
+      </ul>
+
+      <h3>Audio Messages</h3>
+      <p>We collect and store:</p>
+      <ul>
+        <li>Audio recordings left by wedding guests</li>
+        <li>Timestamps of when messages were recorded</li>
+        <li>Phone numbers of guests who dial in remotely (for technical purposes only)</li>
+      </ul>
+
+      <h2>2. How We Use Your Information</h2>
+      
+      <p>We use the information we collect to:</p>
+      <ul>
+        <li>Provide and maintain our audio guestbook service</li>
+        <li>Process and deliver audio messages to couples</li>
+        <li>Send service-related communications and updates</li>
+        <li>Process payments and manage venue accounts</li>
+        <li>Improve our service and develop new features</li>
+        <li>Comply with legal obligations</li>
+      </ul>
+
+      <h2>3. Data Security</h2>
+      
+      <p>We implement industry-standard security measures to protect your data:</p>
+      <ul>
+        <li>All audio messages are encrypted during transmission and storage</li>
+        <li>We use secure servers with bank-level encryption</li>
+        <li>Access to personal data is restricted to authorized personnel only</li>
+        <li>Regular security audits and updates</li>
+      </ul>
+
+      <h2>4. Data Sharing and Disclosure</h2>
+      
+      <p>We do not sell your personal information. We only share data in the following circumstances:</p>
+      <ul>
+        <li><strong>With Couples:</strong> Venues share couple information to set up events, and couples receive their audio messages</li>
+        <li><strong>Service Providers:</strong> We use trusted third-party services for telephony, cloud storage, and payment processing</li>
+        <li><strong>Legal Requirements:</strong> We may disclose information if required by law or to protect our legal rights</li>
+      </ul>
+
+      <h2>5. Data Retention</h2>
+      
+      <p><strong>Audio Messages:</strong> Messages are stored indefinitely for couples to access. Couples can delete their messages at any time from their account.</p>
+      
+      <p><strong>Account Data:</strong> We retain venue and couple account information for as long as accounts remain active, plus a reasonable period afterward for legal and business purposes.</p>
+      
+      <p><strong>Deletion Requests:</strong> You can request deletion of your data by contacting us. Some information may be retained for legal compliance.</p>
+
+      <h2>6. Your Rights</h2>
+      
+      <p>You have the right to:</p>
+      <ul>
+        <li>Access your personal data</li>
+        <li>Correct inaccurate information</li>
+        <li>Request deletion of your data</li>
+        <li>Object to processing of your data</li>
+        <li>Export your data in a portable format</li>
+        <li>Withdraw consent at any time</li>
+      </ul>
+
+      <h2>7. Cookies and Tracking</h2>
+      
+      <p>We use cookies and similar technologies to:</p>
+      <ul>
+        <li>Keep you logged into your account</li>
+        <li>Remember your preferences</li>
+        <li>Analyze how our service is used</li>
+        <li>Improve user experience</li>
+      </ul>
+      
+      <p>You can control cookies through your browser settings.</p>
+
+      <h2>8. International Data Transfers</h2>
+      
+      <p>We operate internationally and may transfer data across borders to provide our service. We ensure appropriate safeguards are in place to protect your data regardless of where it's processed.</p>
+
+      <h2>9. Children's Privacy</h2>
+      
+      <p>Our service is not directed at children under 13. We do not knowingly collect information from children. Audio messages may contain children's voices as wedding guests, but we do not collect personal information about them.</p>
+
+      <h2>10. Changes to This Policy</h2>
+      
+      <p>We may update this Privacy Policy from time to time. We will notify you of significant changes by email or through our service. Continued use of our service after changes constitutes acceptance of the updated policy.</p>
+
+      <h2>11. Contact Us</h2>
+      
+      <p>If you have questions about this Privacy Policy or want to exercise your rights, please contact us:</p>
+      
+      <p>
+        <strong>RingRing Digital Ltd</strong><br>
+        Companies House Number: 15324505<br>
+        Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d5d5f445b4c4e546d5a48494944434a5f44434a5f44434a034e4240">[email&#160;protected]</a><br>
+        Address: 3rd Floor, 86-90 Paul Street, London, England, EC2A 4NE, United Kingdom
+      </p>
+
+      <h2>12. GDPR Compliance</h2>
+      
+      <p>For users in the European Economic Area (EEA), we comply with the General Data Protection Regulation (GDPR). Your lawful basis for processing includes:</p>
+      <ul>
+        <li><strong>Contract:</strong> Processing necessary to provide our service</li>
+        <li><strong>Legitimate Interest:</strong> Improving our service and preventing fraud</li>
+        <li><strong>Consent:</strong> For marketing communications (which you can opt out of)</li>
+      </ul>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/docs">Documentation</a></li>
+            <li><a href="/faqs">FAQs</a></li>
+            <li><a href="/help">Help Center</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>RingRing Digital Ltd</h4>
+          <p style="color: rgba(255, 255, 255, 0.5); font-size: var(--text-sm); line-height: 1.6;">The audio guestbook for venues.</p>
+        </div>
+      </div>
+      <div class="footer-bo            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>RingRing Digital Ltd</h4>
+          <p style="color: rgba(255, 255, 255, 0.5); font-size: var(--text-sm); line-height: 1.6;">The audio guestbook for venues.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 RingRing Digital Ltd. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cookie Consent Banner -->
+  <div class="cookie-banner" id="cookieBanner">
+    <div class="container">
+      <div class="cookie-content">
+        <div class="cookie-text">
+          We use cookies to keep you logged in and improve your experience. <a href="/privacy">Learn more</a>
+        </div>
+        <div class="cookie-actions">
+          <button class="cookie-btn cookie-decline" onclick="declineCookies()">Decline</button>
+          <button class="cookie-btn cookie-accept" onclick="acceptCookies()">Accept</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    function acceptCookies() {
+      localStorage.setItem("cookieConsent", "accepted");
+      document.getElementById("cookieBanner").classList.remove("show");
+    }
+    
+    function declineCookies() {
+      localStorage.setItem("cookieConsent", "declined");
+      document.getElementById("cookieBanner").classList.remove("show");
+    }
+    
+    window
+  <!-- Contact Form Modal -->
+  <div id="contactModal" class="modal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Get In Touch</h2>
+        <p>Tell us about your venue and we'll be in touch within 24 hours</p>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div>
+              <label for="name">Your Name *</label>
+              <input type="text" id="name" name="name" placeholder="John Smith" required>
+            </div>
+            <div>
+              <label for="venueName">Venue Name *</label>
+              <input type="text" id="venueName" name="venueName" placeholder="The Grand Ballroom" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" placeholder="john@venue.com" required>
+            </div>
+            <div>
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+44 20 1234 5678">
+            </div>
+          </div>
+
+          <div>
+            <label for="interest">I'm interested as a... *</label>
+            <select id="interest" name="interest" required>
+              <option value="venue">Venue Owner/Manager</option>
+              <option value="couple">Engaged Couple</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="message">Tell us about your venue (optional)</label>
+            <textarea id="message" name="message" placeholder="Tell us more about your venue..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Send Message</button>
+          
+          <p class="form-note">We'll respond within 24 hours</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('contactModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('contactModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOnBackdrop(event) {
+      if (event.target.id === 'contactModal') {
+        closeModal();
+      }
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      alert('Thank you! We\'ll be in touch within 24 hours.');
+      closeModal();
+      document.getElementById('contactForm').reset();
+    }
+  </script>

@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeddingRingRing - The Audio Guestbook for Venues</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       DESIGN SYSTEM
+       ============================================ */
+    :root {
+      /* Typography Scale */
+      --text-xs: 0.75rem;      /* 12px */
+      --text-sm: 0.875rem;     /* 14px */
+      --text-base: 1rem;       /* 16px */
+      --text-lg: 1.125rem;     /* 18px */
+      --text-xl: 1.25rem;      /* 20px */
+      --text-2xl: 1.5rem;      /* 24px */
+      --text-3xl: 2rem;        /* 32px */
+      --text-4xl: 3rem;        /* 48px */
+      --text-5xl: 3.5rem;      /* 56px - section headings */
+      --text-6xl: 4.5rem;      /* 72px - HERO only */
+      
+      /* Spacing Scale (8pt grid) */
+      --space-1: 0.5rem;   /* 8px */
+      --space-2: 1rem;     /* 16px */
+      --space-3: 1.5rem;   /* 24px */
+      --space-4: 2rem;     /* 32px */
+      --space-6: 3rem;     /* 48px */
+      --space-8: 4rem;     /* 64px */
+      --space-12: 6rem;    /* 96px */
+      
+      /* Colors */
+      --color-primary: #1a1a1a;
+      --color-secondary: #C9A6A6;
+      --color-text-primary: #1a1a1a;
+      --color-text-secondary: #6a6a6a;
+      --color-surface-white: #ffffff;
+      --color-surface-cream: #FAF8F3;
+      --color-surface-blush: #F5E8E8;
+      --color-border: rgba(0, 0, 0, 0.08);
+      
+      /* Pink text for dark backgrounds */
+      --color-text-on-dark: #E8C9C9;
+      --color-heading-on-dark: #F5E8E8;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+      
+      /* Radius */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      
+      /* Fonts */
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* ============================================
+       BASE STYLES
+       ============================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: var(--font-sans);
+      line-height: 1.7;
+      color: var(--color-text-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .serif { font-family: var(--font-serif); }
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 0 var(--space-4); 
+    }
+    
+    /* ============================================
+       TYPOGRAPHY
+       ============================================ */
+    h1 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-6xl); /* BIGGER - 4.5rem */
+      line-height: 1.05; 
+      font-weight: 400;
+      letter-spacing: -0.03em;
+    }
+    
+    h2 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-5xl); /* All other section headings - 3.5rem */
+      line-height: 1.1;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+    
+    h3 { 
+      font-family: var(--font-sans);
+      font-size: var(--text-xl);
+      line-height: 1.4;
+      font-weight: 600;
+    }
+    
+    p { 
+      font-size: var(--text-base);
+      line-height: 1.7;
+    }
+    
+    .text-secondary {
+      color: var(--color-text-secondary);
+    }
+    
+    /* ============================================
+       HEADER - Pink background with proper mobile
+       ============================================ */
+    header { 
+      background: var(--color-surface-blush);
+      padding: var(--space-3) 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    header .container { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    
+    .nav-desktop { 
+      display: flex; 
+      gap: var(--space-6); 
+      align-items: center; 
+    }
+    
+    .nav-desktop a { 
+      color: var(--color-text-primary); 
+      text-decoration: none; 
+      font-weight: 500;
+      font-size: var(--text-sm);
+      transition: color 0.2s;
+    }
+    
+    .nav-desktop a:hover { 
+      color: var(--color-secondary); 
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    
+    .user-name {
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-secondary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: var(--text-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .user-avatar:hover {
+      background: var(--color-primary);
+    }
+    
+    /* Mobile menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--color-primary);
+      padding: 0.5rem;
+    }
+    
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--color-surface-blush);
+      z-index: 999;
+      padding: var(--space-6);
+      flex-direction: column;
+      gap: var(--space-4);
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .mobile-nav.active {
+      display: flex;
+    }
+    
+    .mobile-nav a {
+      font-size: var(--text-xl);
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .mobile-close {
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-4);
+      font-size: 2rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-primary);
+    }
+    
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn {
+      display: inline-block;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-sans);
+    }
+    
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--color-secondary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-secondary {
+      background: var(--color-surface-white);
+      color: var(--color-primary);
+      border: 2px solid var(--color-primary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    /* ============================================
+       SECTIONS
+       ============================================ */
+    section { 
+      padding: var(--space-12) 0; 
+    }
+    
+    .section-white { 
+      background: var(--color-surface-white); 
+    }
+    
+    .section-cream { 
+      background: var(--color-surface-cream); 
+    }
+    
+    .section-blush { 
+      background: var(--color-surface-blush); 
+    }
+    
+    .section-dark { 
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+    
+    .section-header h2 {
+      margin-bottom: var(--space-3);
+    }
+    
+    .section-header p {
+      font-size: var(--text-xl);
+      color: var(--color-text-secondary);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .section-dark .section-header h2 {
+      color: var(--color-heading-on-dark);
+    }
+    
+    .section-dark .section-header p {
+      color: var(--color-text-on-dark);
+    }
+    
+    /* ============================================
+       HERO
+       ============================================ */
+    .hero { 
+      position: relative;
+      background: var(--color-surface-blush);
+      padding: var(--space-12) 0 var(--space-8);
+      overflow: hidden;
+    }
+    
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 45%;
+      background-image: url('../public/hero-illustration.svg');
+      background-size: contain;
+      background-position: center right;
+      background-repeat: no-repeat;
+      opacity: 0.25;
+      z-index: 0;
+    }
+    
+    .hero .container { 
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero-content {
+      max-width: 700px;
+    }
+    
+    .hero h1 { 
+      margin-bottom: var(--space-4);
+    }
+    
+    .hero-subtitle {
+      font-size: var(--text-xl);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+    }
+    
+    .hero-ctas { 
+      display: flex; 
+      gap: var(--space-2); 
+      margin-bottom: var(--space-6);
+    }
+    
+    /* ============================================
+       GRID SYSTEM
+       ============================================ */
+    .grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+    
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    
+    /* ============================================
+       CARDS
+       ============================================ */
+    .card {
+      background: var(--color-surface-white);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--color-surface-blush);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-3);
+      color: var(--color-secondary);
+    }
+    
+    .card h3 {
+      margin-bottom: var(--space-2);
+      color: var(--color-text-primary);
+    }
+    
+    .card p {
+      font-size: var(--text-base);
+      color: var(--color-text-secondary);
+      line-height: 1.7;
+    }
+    
+    /* ============================================
+       TIMELINE DESIGN - Large pink numbers, no circles
+       ============================================ */
+    .timeline {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: var(--space-8) 0;
+    }
+    
+    /* Line removed completely */
+    .timeline-line {
+      display: none;
+    }
+    
+    .timeline-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+      position: relative;
+    }
+    
+    .timeline-step {
+      text-align: center;
+      position: relative;
+    }
+    
+    .timeline-number {
+      font-family: var(--font-serif);
+      font-size: 6rem; /* Much larger - 96px */
+      font-weight: 300;
+      color: var(--color-secondary);
+      margin-bottom: var(--space-3);
+      line-height: 1;
+    }
+    
+    .timeline-step:hover .timeline-number {
+      color: var(--color-heading-on-dark);
+    }
+    
+    .timeline-step h3 {
+      font-family: var(--font-serif);
+      font-size: var(--text-xl);
+      font-weight: 500;
+      color: var(--color-heading-on-dark);
+      margin-bottom: var(--space-2);
+      line-height: 1.3;
+    }
+    
+    .timeline-step p {
+      font-size: var(--text-base);
+      line-height: 1.6;
+      color: var(--color-text-on-dark);
+    }
+    
+    /* ============================================
+       TWO-COLUMN CONTENT
+       ============================================ */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+      max-width: 900px;
+    }
+    
+    .content-grid h2 {
+      margin-bottom: var(--space-4);
+      color: var(--color-heading-on-dark);
+    }
+    
+    .content-grid p {
+      margin-bottom: var(--space-3);
+      line-height: 1.8;
+      color: var(--color-text-on-dark);
+      font-size: var(--text-lg);
+    }
+    
+    .content-grid p:last-of-type {
+      margin-bottom: var(--space-6);
+    }
+    
+    /* ============================================
+       CTA SECTION - No box, just content on pink
+       ============================================ */
+    .cta-section {
+      text-align: center;
+      padding: var(--space-8) 0;
+      margin-top: var(--space-8);
+    }
+    
+    .cta-section h3 {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-3);
+      font-family: var(--font-serif);
+      font-weight: 500;
+      color: var(--color-primary);
+    }
+    
+    .cta-section p {
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+      font-size: var(--text-xl);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* ============================================
+       MODAL
+       ============================================ */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2);
+      backdrop-filter: blur(4px);
+    }
+    
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-md);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+    
+    .modal-header {
+      padding: var(--space-6) var(--space-6) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .modal-header h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-1);
+    }
+    
+    .modal-header p {
+      color: var(--color-text-secondary);
+      font-size: var(--text-base);
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: all 0.2s;
+      font-size: var(--text-2xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      line-height: 1;
+    }
+    
+    .modal-close:hover {
+      color: var(--color-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .modal-body {
+      padding: var(--space-6);
+    }
+    
+    /* ============================================
+       FORMS
+       ============================================ */
+    form { 
+      display: grid;
+      gap: var(--space-4);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: var(--text-sm);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(201, 166, 166, 0.1);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .form-note {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+    
+    /* ============================================
+       FOOTER
+       ============================================ */
+    footer {
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+      padding: var(--space-8) 0 var(--space-4);
+    }
+    
+    .footer-grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    
+    footer h4 { 
+      margin-bottom: var(--space-3);
+      font-weight: 600;
+      font-size: var(--text-base);
+      color: var(--color-heading-on-dark);
+    }
+    
+    footer ul { 
+      list-style: none; 
+    }
+    
+    footer li { 
+      margin-bottom: var(--space-2); 
+    }
+    
+    footer a { 
+      color: var(--color-text-on-dark);
+      text-decoration: none; 
+      transition: color 0.2s;
+      font-size: var(--text-sm);
+    }
+    
+    footer a:hover { 
+      color: white; 
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: var(--space-4);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: var(--text-sm);
+    }
+    
+    /* ============================================
+       ANIMATIONS
+       ============================================ */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* ============================================
+       ACCESSIBILITY
+       ============================================ */
+    .btn:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--color-secondary);
+      outline-offset: 2px;
+    }
+    
+    /* ============================================
+    /* ============================================
+       COOKIE BANNER
+       ============================================ */
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+      padding: var(--space-3) 0;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: none;
+    }
+    
+    .cookie-banner.show {
+      display: block;
+    }
+    
+    .cookie-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+    
+    .cookie-text {
+      flex: 1;
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+    
+    .cookie-text a {
+      color: var(--color-secondary);
+      text-decoration: underline;
+    }
+    
+    .cookie-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+    
+    .cookie-btn {
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .cookie-accept {
+      background: var(--color-secondary);
+      color: var(--color-primary);
+    }
+    
+    .cookie-accept:hover {
+      background: var(--color-heading-on-dark);
+    }
+    
+    .cookie-decline {
+      background: transparent;
+      color: var(--color-text-on-dark);
+      border: 1px solid var(--color-text-on-dark);
+    }
+    
+    .cookie-decline:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) {
+      :root {
+        --text-6xl: 2.5rem;
+        --text-5xl: 2rem;
+        --text-4xl: 1.75rem;
+        --text-3xl: 1.5rem;
+      }
+      
+      section {
+        padding: var(--space-8) 0;
+      }
+      
+      .hero {
+        padding: var(--space-8) 0 var(--space-6);
+      }
+      
+      .hero-bg { 
+        display: none; 
+      }
+      
+      /* Header mobile */
+      .nav-desktop {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      /* Grid mobile */
+      .grid-2, 
+      .grid-3, 
+      .grid-4, 
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      /* Footer mobile - centered */
+      .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .hero-ctas {
+        flex-direction: column;
+      }
+      
+      .modal-content {
+        margin: var(--space-2);
+        max-height: calc(100vh - var(--space-4));
+      }
+      
+      .modal-header,
+      .modal-body {
+        padding: var(--space-4);
+      }
+      
+      /* Timeline mobile - NO LINE, centered */
+      .timeline-line {
+        display: none;
+      }
+      
+      .timeline-steps {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+      }
+      
+      .timeline-step {
+        text-align: center;
+        display: block;
+      }
+      
+      .timeline-number {
+        margin: 0 auto var(--space-3);
+      }
+      
+      .timeline-step h3,
+      .timeline-step p {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header with login/account -->
+  <header>
+    <div class="container">
+      <div>
+        <a href="/"><img src="../public/logo.svg" alt="WeddingRingRing" style="height: 45px;"></a>
+      </div>
+      
+      <!-- Desktop Navigation -->
+      <nav class="nav-desktop">
+        <a href="/how-it-works">How It Works</a>
+        <a href="/about">About</a>
+        <a href="/login">Log In</a>
+        <button class="btn btn-primary" onclick="openModal()">Get Started</button>
+      </nav>
+      
+      <!-- Mobile menu button -->
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-close" onclick="closeMobileMenu()" aria-label="Close">×</button>
+    <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
+    <a href="/login" onclick="closeMobileMenu()">Log In</a>
+    <button class="btn btn-primary" onclick="openModal(); closeMobileMenu();">Get Started</button>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-content">
+        <h1>The Audio Guestbook For Venues.</h1>
+        <p class="hero-subtitle">Memories to listen back to for a lifetime</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary" onclick="openModal()">Find Out More</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Do -->
+  <section class="section-dark">
+    <div class="container">
+      <div class="content-grid">
+        <div>
+          <h2>What We Do.</h2>
+          <p>
+            We are the audio guestbook where timeless elegance meets modern convenience. Our vintage-style phones, combined with our modern software, creates an unforgettable audio guestbook experience.
+          </p>
+          <p>
+            With a swift 30-second setup on our user-friendly online system, venues can effortlessly enhance their offerings and attract couples seeking that extra touch of charm.
+          </p>
+          <p>
+            Elevate your venue, captivate your clients, and ensure every celebration is a resounding success with WeddingRingRing.
+          </p>
+          <a href="#how-it-works" class="btn btn-secondary">Find Out How It Works</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why You Need An Audio Guestbook -->
+  <section class="section-blush">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why You Need An Audio Guestbook.</h2>
+        <p>What does it add to your business?</p>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3>Boost Income & Profitability</h3>
+          <p>WeddingRingRing opens up new revenue streams for your venue with premium package options.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+            </svg>
+          </div>
+          <h3>Create Lasting Memories</h3>
+          <p>Happy couples return for celebrations and recommend your venue to friends and family.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+          </div>
+          <h3>Attract More Bookings</h3>
+          <p>Stand out in a competitive market with this unique and attractive venue feature.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+            </svg>
+          </div>
+          <h3>Word-Of-Mouth Marketing</h3>
+          <p>Delighted customers become your best marketing tool, sharing unforgettable moments.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+          </div>
+          <h3>Low-Effort, High-Impact</h3>
+          <p>Quick online setup and durable vintage phones built to last with minimal effort.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+            </svg>
+          </div>
+          <h3>Great Fun For Guests!</h3>
+          <p>Adds an element of fun, allowing guests to contribute heartfelt messages and laughter.</p>
+        </div>
+      </div>
+
+      <!-- CTA Section - No box -->
+      <div class="cta-section">
+        <h3>Want to know more?</h3>
+        <p>Get in touch to find out how we can help you host your own audio guestbook</p>
+        <button onclick="openModal()" class="btn btn-primary">Get In Touch</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works - Timeline Design -->
+  <section id="how-it-works" class="section-dark">
+    <div class="container">
+      <div class="section-header">
+        <h2>The No-Fuss Audio Guestbook</h2>
+        <p>It only takes a minute!</p>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-steps">
+          <div class="timeline-step">
+            <div class="timeline-number">1</div>
+            <h3>Before the event</h3>
+            <p>Log in and provide the couple's details - we'll handle the rest!</p>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-number">2</div>
+            <h3>Day of the event</h3>
+            <p>Punch in the code we provide and the phone is ready to go!</p>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-number">3</div>
+            <h3>During the event</h3>
+            <p>Guests pick up, listen to the greeting, leave a message, and hang up.</p>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-number">4</div>
+            <h3>After the event</h3>
+            <p>Couples access all messages instantly from their secure online account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/docs">Documentation</a></li>
+            <li><a href="/faqs">FAQs</a></li>
+            <li><a href="/help">Help Center</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>RingRing Digital Ltd</h4>
+          <p style="color: rgba(255, 255, 255, 0.5); font-size: var(--text-sm); line-height: 1.6;">The audio guestbook for venues.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 RingRing Digital Ltd. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Contact Form Modal -->
+  <div id="contactModal" class="modal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Get In Touch</h2>
+        <p>Tell us about your venue and we'll be in touch within 24 hours</p>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div>
+              <label for="name">Your Name *</label>
+              <input type="text" id="name" name="name" placeholder="John Smith" required>
+            </div>
+            <div>
+              <label for="venueName">Venue Name *</label>
+              <input type="text" id="venueName" name="venueName" placeholder="The Grand Ballroom" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" placeholder="john@venue.com" required>
+            </div>
+            <div>
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+44 20 1234 5678">
+            </div>
+          </div>
+
+          <div>
+            <label for="interest">I'm interested as a... *</label>
+            <select id="interest" name="interest" required>
+              <option value="venue">Venue Owner/Manager</option>
+              <option value="couple">Engaged Couple</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="message">Tell us about your venue (optional)</label>
+            <textarea id="message" name="message" placeholder="Tell us more about your venue..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Send Message</button>
+          
+          <p class="form-note">We'll respond within 24 hours</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mobile menu functions
+    function toggleMobileMenu() {
+      document.getElementById('mobileNav').classList.toggle('active');
+      document.body.style.overflow = document.getElementById('mobileNav').classList.contains('active') ? 'hidden' : '';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileNav').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    
+    // Modal functions
+    function openModal() {
+      document.getElementById('contactModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('contactModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOnBackdrop(event) {
+      if (event.target.id === 'contactModal') {
+        closeModal();
+      }
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+        closeMobileMenu();
+      }
+    });
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      alert('Thank you! We\'ll be in touch within 24 hours.');
+      closeModal();
+      document.getElementById('contactForm').reset();
+    }
+  </script>
+
+  <!-- Cookie Consent Banner -->
+  <div class="cookie-banner" id="cookieBanner">
+    <div class="container">
+      <div class="cookie-content">
+        <div class="cookie-text">
+          We use cookies to keep you logged in and improve your experience. <a href="/privacy">Learn more</a>
+        </div>
+        <div class="cookie-actions">
+          <button class="cookie-btn cookie-decline" onclick="declineCookies()">Decline</button>
+          <button class="cookie-btn cookie-accept" onclick="acceptCookies()">Accept</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function acceptCookies() {
+      localStorage.setItem("cookieConsent", "accepted");
+      document.getElementById("cookieBanner").classList.remove("show");
+    }
+    
+    function declineCookies() {
+      localStorage.setItem("cookieConsent", "declined");
+      document.getElementById("cookieBanner").classList.remove("show");
+    }
+    
+    window.addEventListener("load", function() {
+      const consent = localStorage.getItem("cookieConsent");
+      if (!consent) {
+        document.getElementById("cookieBanner").classList.add("show");
+      }
+    });
+  </script>
+
+</body>
+</html>

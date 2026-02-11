@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages - Filters - WeddingRingRing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFF8F0',
+            sage: {
+              light: '#C8D3CC',
+              DEFAULT: '#8B9B8E',
+              dark: '#6B7B6E'
+            },
+            'deep-green': {
+              DEFAULT: '#3D5A4C',
+              dark: '#2D4A3C'
+            },
+            rose: {
+              light: '#F5E6E6',
+              DEFAULT: '#D4A5A5',
+              dark: '#B48585'
+            },
+            charcoal: '#2C2C2C'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-sans bg-cream">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-sage-light shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <img 
+            src="https://images.unsplash.com/photo-1519167758481-83f29da8a38d?w=200&h=100&fit=crop" 
+            alt="Thornbury Manor" 
+            class="h-12 w-auto object-contain"
+          />
+          <div class="flex items-center gap-2 text-xs text-sage-dark border-l border-sage-light pl-3">
+            <span>Powered by</span>
+            <div class="text-base font-serif text-rose">[WRR Logo]</div>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-sm text-sage-dark hover:text-charcoal transition">
+            Settings
+          </a>
+          <button class="text-sm text-sage-dark hover:text-charcoal transition">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Personalized Header -->
+    <div class="mb-8 text-center">
+      <h1 class="font-serif text-5xl text-charcoal mb-2">Sarah & James's Wedding</h1>
+      <p class="text-lg text-sage-dark mb-1">Saturday, 25 December 2024</p>
+      <p class="text-sm text-sage">47 messages from your special day</p>
+    </div>
+    
+    <!-- Search & Filters -->
+    <div class="mb-6 space-y-4">
+      <!-- Search Bar -->
+      <div class="flex gap-3">
+        <div class="flex-1 relative">
+          <input
+            type="text"
+            placeholder="Search by guest name or notes..."
+            class="w-full px-4 py-3 pl-11 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+            value="family"
+          />
+          <svg class="w-5 h-5 text-sage-dark absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        
+        <button class="px-4 py-3 bg-deep-green text-white rounded-lg hover:bg-deep-green-dark transition flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          <span>Filters</span>
+        </button>
+      </div>
+      
+      <!-- Advanced Filters Panel (OPEN) -->
+      <div class="bg-white border border-sage-light rounded-xl p-6 shadow-sm">
+        <div class="flex items-start justify-between mb-4">
+          <h3 class="font-medium text-charcoal">Filter Messages</h3>
+          <button class="text-sm text-sage-dark hover:text-charcoal transition">
+            Clear all filters
+          </button>
+        </div>
+        
+        <!-- Filter by Tags -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-charcoal mb-3">
+            Filter by Tags
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <button class="px-3 py-1 rounded-full text-sm transition bg-deep-green text-white">
+              Family
+            </button>
+            <button class="px-3 py-1 rounded-full text-sm transition bg-deep-green text-white">
+              Emotional
+            </button>
+            <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+              Friends
+            </button>
+            <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+              Funny
+            </button>
+            <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+              Heartfelt
+            </button>
+            <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+              Work
+            </button>
+            <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+              Surprise
+            </button>
+          </div>
+          <p class="text-xs text-sage-dark mt-2">
+            Messages matching <strong>any</strong> selected tag will be shown
+          </p>
+        </div>
+        
+        <!-- Filter by Duration -->
+        <div>
+          <label class="block text-sm font-medium text-charcoal mb-3">
+            Filter by Duration
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button class="px-4 py-2 border border-sage-light rounded-lg text-sm hover:bg-sage-light/30 transition">
+              Under 1 min
+            </button>
+            <button class="px-4 py-2 border border-sage-light rounded-lg text-sm hover:bg-sage-light/30 transition">
+              1-2 mins
+            </button>
+            <button class="px-4 py-2 border border-sage-light rounded-lg text-sm hover:bg-sage-light/30 transition">
+              2-4 mins
+            </button>
+            <button class="px-4 py-2 border border-sage-light rounded-lg text-sm hover:bg-sage-light/30 transition">
+              Over 4 mins
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Active Filters & Controls -->
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- All/Favorites -->
+        <div class="flex gap-2">
+          <button class="px-4 py-2 rounded-lg transition bg-white text-charcoal hover:bg-sage-light/30 border border-sage-light">
+            All (47)
+          </button>
+          <button class="px-4 py-2 rounded-lg transition bg-white text-charcoal hover:bg-sage-light/30 border border-sage-light">
+            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            Favorites (12)
+          </button>
+        </div>
+        
+        <!-- Sort -->
+        <select class="px-4 py-2 border border-sage-light rounded-lg bg-white text-charcoal hover:bg-sage-light/30 transition">
+          <option>Newest first</option>
+          <option>Oldest first</option>
+          <option>Longest first</option>
+          <option>Shortest first</option>
+        </select>
+        
+        <!-- Active Filter Pills -->
+        <div class="flex items-center gap-2 px-3 py-1 bg-deep-green/10 text-deep-green rounded-lg text-sm">
+          <span>Search: "family"</span>
+          <button class="hover:text-deep-green-dark">×</button>
+        </div>
+        
+        <div class="flex items-center gap-2 px-3 py-1 bg-deep-green/10 text-deep-green rounded-lg text-sm">
+          <span>Tag: Family</span>
+          <button class="hover:text-deep-green-dark">×</button>
+        </div>
+        
+        <div class="flex items-center gap-2 px-3 py-1 bg-deep-green/10 text-deep-green rounded-lg text-sm">
+          <span>Tag: Emotional</span>
+          <button class="hover:text-deep-green-dark">×</button>
+        </div>
+        
+        <!-- Spacer -->
+        <div class="flex-1"></div>
+        
+        <!-- Results Count -->
+        <span class="text-sm text-sage-dark">
+          Showing <strong>8</strong> of 47 messages
+        </span>
+        
+        <!-- Download All -->
+        <button class="px-6 py-2 bg-rose text-white rounded-lg font-medium hover:bg-rose-dark transition flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download All
+        </button>
+      </div>
+    </div>
+    
+    <!-- Message Count Banner -->
+    <div class="mb-6 p-4 bg-deep-green/5 border border-deep-green/20 rounded-lg">
+      <p class="text-sm text-deep-green">
+        <strong>8 messages</strong> match your search for "family" with tags <strong>Family</strong> and <strong>Emotional</strong>
+      </p>
+    </div>
+    
+    <!-- Messages Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <p class="col-span-full text-center text-sage-dark py-12">
+        [Filtered message tiles would appear here]
+      </p>
+    </div>
+  </div>
+
+</body>
+</html>

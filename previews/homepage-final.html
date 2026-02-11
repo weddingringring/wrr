@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeddingRingRing - The Audio Guestbook for Venues</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       DESIGN SYSTEM - All values defined here
+       ============================================ */
+    :root {
+      /* Typography Scale */
+      --text-xs: 0.75rem;      /* 12px */
+      --text-sm: 0.875rem;     /* 14px */
+      --text-base: 1rem;       /* 16px */
+      --text-lg: 1.125rem;     /* 18px */
+      --text-xl: 1.25rem;      /* 20px */
+      --text-2xl: 1.5rem;      /* 24px */
+      --text-3xl: 2rem;        /* 32px */
+      --text-4xl: 3rem;        /* 48px */
+      
+      /* Spacing Scale (8pt grid) */
+      --space-1: 0.5rem;   /* 8px */
+      --space-2: 1rem;     /* 16px */
+      --space-3: 1.5rem;   /* 24px */
+      --space-4: 2rem;     /* 32px */
+      --space-6: 3rem;     /* 48px */
+      --space-8: 4rem;     /* 64px */
+      --space-12: 6rem;    /* 96px */
+      
+      /* Colors */
+      --color-primary: #1a1a1a;
+      --color-secondary: #C9A6A6;
+      --color-text-primary: #1a1a1a;
+      --color-text-secondary: #6a6a6a;
+      --color-surface-white: #ffffff;
+      --color-surface-cream: #FAF8F3;
+      --color-surface-blush: #F5E8E8;
+      --color-border: rgba(0, 0, 0, 0.08);
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+      
+      /* Radius */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      
+      /* Fonts */
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* ============================================
+       BASE STYLES
+       ============================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: var(--font-sans);
+      line-height: 1.7;
+      color: var(--color-text-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .serif { font-family: var(--font-serif); }
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 0 var(--space-4); 
+    }
+    
+    /* ============================================
+       TYPOGRAPHY
+       ============================================ */
+    h1 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-4xl); 
+      line-height: 1.1; 
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+    
+    h2 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-3xl); 
+      line-height: 1.2;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    
+    h3 { 
+      font-family: var(--font-sans);
+      font-size: var(--text-xl);
+      line-height: 1.4;
+      font-weight: 600;
+    }
+    
+    p { 
+      font-size: var(--text-base);
+      line-height: 1.7;
+    }
+    
+    .text-secondary {
+      color: var(--color-text-secondary);
+    }
+    
+    /* ============================================
+       HEADER
+       ============================================ */
+    header { 
+      background: var(--color-surface-white); 
+      padding: var(--space-3) 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    header .container { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    
+    nav { 
+      display: flex; 
+      gap: var(--space-6); 
+      align-items: center; 
+    }
+    
+    nav a { 
+      color: var(--color-text-primary); 
+      text-decoration: none; 
+      font-weight: 500;
+      font-size: var(--text-sm);
+      transition: color 0.2s;
+    }
+    
+    nav a:hover { 
+      color: var(--color-secondary); 
+    }
+    
+    /* ============================================
+       BUTTONS - Single consistent system
+       ============================================ */
+    .btn {
+      display: inline-block;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-sans);
+    }
+    
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--color-secondary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-secondary {
+      background: var(--color-surface-white);
+      color: var(--color-primary);
+      border: 2px solid var(--color-primary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    /* ============================================
+       SECTIONS - Consistent spacing
+       ============================================ */
+    section { 
+      padding: var(--space-12) 0; 
+    }
+    
+    .section-white { 
+      background: var(--color-surface-white); 
+    }
+    
+    .section-cream { 
+      background: var(--color-surface-cream); 
+    }
+    
+    .section-blush { 
+      background: var(--color-surface-blush); 
+    }
+    
+    .section-dark { 
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+    
+    .section-header h2 {
+      margin-bottom: var(--space-2);
+    }
+    
+    .section-header p {
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .section-dark .section-header p {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    /* ============================================
+       HERO
+       ============================================ */
+    .hero { 
+      position: relative;
+      background: var(--color-surface-blush);
+      padding: var(--space-12) 0 var(--space-8);
+      overflow: hidden;
+    }
+    
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 45%;
+      background-image: url('../public/hero-illustration.svg');
+      background-size: contain;
+      background-position: center right;
+      background-repeat: no-repeat;
+      opacity: 0.25;
+      z-index: 0;
+    }
+    
+    .hero .container { 
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero-content {
+      max-width: 600px;
+    }
+    
+    .hero h1 { 
+      margin-bottom: var(--space-4);
+    }
+    
+    .hero-subtitle {
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+    }
+    
+    .hero-ctas { 
+      display: flex; 
+      gap: var(--space-2); 
+      margin-bottom: var(--space-6);
+    }
+    
+    /* ============================================
+       GRID SYSTEM - Consistent gaps
+       ============================================ */
+    .grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+    
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    
+    .grid-align-center {
+      align-items: center;
+    }
+    
+    /* ============================================
+       CARDS - Unified system
+       ============================================ */
+    .card {
+      background: var(--color-surface-white);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Icon treatment - consistent everywhere */
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--color-surface-blush);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-3);
+      color: var(--color-secondary);
+    }
+    
+    .card h3 {
+      margin-bottom: var(--space-2);
+      color: var(--color-text-primary);
+    }
+    
+    .card p {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    /* Featured card variant */
+    .card-featured {
+      background: linear-gradient(135deg, var(--color-surface-blush) 0%, var(--color-surface-cream) 100%);
+      border: 2px solid var(--color-secondary);
+      position: relative;
+    }
+    
+    .card-featured::before {
+      content: 'Most Popular';
+      position: absolute;
+      top: var(--space-2);
+      right: var(--space-2);
+      background: var(--color-secondary);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: var(--text-xs);
+      font-weight: 600;
+    }
+    
+    /* ============================================
+       STEP CARDS
+       ============================================ */
+    .step-card {
+      text-align: center;
+      background: var(--color-surface-white);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    
+    .step-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .step-number {
+      width: 48px;
+      height: 48px;
+      background: var(--color-surface-blush);
+      color: var(--color-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-2xl);
+      font-weight: 400;
+      font-family: var(--font-serif);
+      margin: 0 auto var(--space-3);
+    }
+    
+    .step-card h3 {
+      margin-bottom: var(--space-2);
+    }
+    
+    .step-card p {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    /* ============================================
+       TWO-COLUMN CONTENT
+       ============================================ */
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-8);
+      align-items: center;
+    }
+    
+    .content-grid h2 {
+      margin-bottom: var(--space-4);
+    }
+    
+    .content-grid p {
+      margin-bottom: var(--space-3);
+      line-height: 1.8;
+    }
+    
+    .content-grid p:last-of-type {
+      margin-bottom: var(--space-6);
+    }
+    
+    /* Visual element in content grid */
+    .content-visual {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      text-align: center;
+    }
+    
+    .section-dark .content-visual {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    /* ============================================
+       CTA BOX
+       ============================================ */
+    .cta-box {
+      background: var(--color-surface-white);
+      border-radius: var(--radius-md);
+      padding: var(--space-8);
+      text-align: center;
+      margin-top: var(--space-8);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .cta-box h3 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-2);
+      font-family: var(--font-serif);
+      font-weight: 500;
+    }
+    
+    .cta-box p {
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+      font-size: var(--text-lg);
+    }
+    
+    /* ============================================
+       MODAL
+       ============================================ */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2);
+      backdrop-filter: blur(4px);
+    }
+    
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-md);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+    
+    .modal-header {
+      padding: var(--space-6) var(--space-6) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .modal-header h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-1);
+    }
+    
+    .modal-header p {
+      color: var(--color-text-secondary);
+      font-size: var(--text-base);
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: color 0.2s;
+      font-size: var(--text-2xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+    }
+    
+    .modal-close:hover {
+      color: var(--color-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .modal-body {
+      padding: var(--space-6);
+    }
+    
+    /* ============================================
+       FORMS
+       ============================================ */
+    form { 
+      display: grid;
+      gap: var(--space-4);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: var(--text-sm);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(201, 166, 166, 0.1);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .form-note {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+    
+    /* ============================================
+       FOOTER
+       ============================================ */
+    footer {
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-8) 0 var(--space-4);
+    }
+    
+    .footer-grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    
+    footer h4 { 
+      margin-bottom: var(--space-3);
+      font-weight: 600;
+      font-size: var(--text-sm);
+    }
+    
+    footer ul { 
+      list-style: none; 
+    }
+    
+    footer li { 
+      margin-bottom: var(--space-2); 
+    }
+    
+    footer a { 
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none; 
+      transition: color 0.2s;
+      font-size: var(--text-sm);
+    }
+    
+    footer a:hover { 
+      color: white; 
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: var(--space-4);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: var(--text-sm);
+    }
+    
+    /* ============================================
+       ANIMATIONS
+       ============================================ */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* ============================================
+       ACCESSIBILITY
+       ============================================ */
+    .btn:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--color-secondary);
+      outline-offset: 2px;
+    }
+    
+    /* ============================================
+       RESPONSIVE - Mobile consistency
+       ============================================ */
+    @media (max-width: 768px) {
+      :root {
+        --text-4xl: 2.25rem;
+        --text-3xl: 1.75rem;
+      }
+      
+      section {
+        padding: var(--space-8) 0;
+      }
+      
+      .hero {
+        padding: var(--space-8) 0 var(--space-6);
+      }
+      
+      .hero-bg { 
+        display: none; 
+      }
+      
+      .grid-2, 
+      .grid-3, 
+      .grid-4, 
+      .form-row, 
+      .footer-grid,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .hero-ctas {
+        flex-direction: column;
+      }
+      
+      .modal-content {
+        margin: var(--space-2);
+        max-height: calc(100vh - var(--space-4));
+      }
+      
+      .modal-header,
+      .modal-body {
+        padding: var(--space-4);
+      }
+      
+      .cta-box {
+        padding: var(--space-6);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div>
+        <img src="../public/logo.svg" alt="WeddingRingRing" style="height: 45px;">
+      </div>
+      <nav>
+        <a href="#how-it-works">How It Works</a>
+        <button class="btn btn-primary" onclick="openModal()">Get Started</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-content">
+        <h1>The Audio Guestbook For Venues.</h1>
+        <p class="hero-subtitle">Memories to listen back to for a lifetime</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary" onclick="openModal()">Find Out More</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Do -->
+  <section class="section-dark">
+    <div class="container">
+      <div class="content-grid">
+        <div>
+          <h2>What We Do.</h2>
+          <p style="color: rgba(255, 255, 255, 0.85);">
+            We are the audio guestbook where timeless elegance meets modern convenience. Our vintage-style phones, combined with our modern software, creates an unforgettable audio guestbook experience.
+          </p>
+          <p style="color: rgba(255, 255, 255, 0.85);">
+            With a swift 30-second setup on our user-friendly online system, venues can effortlessly enhance their offerings and attract couples seeking that extra touch of charm.
+          </p>
+          <p style="color: rgba(255, 255, 255, 0.85);">
+            Elevate your venue, captivate your clients, and ensure every celebration is a resounding success with WeddingRingRing.
+          </p>
+          <a href="#how-it-works" class="btn btn-secondary" style="background: white; color: var(--color-primary); border: none;">Find Out How It Works</a>
+        </div>
+        <div class="content-visual">
+          <svg width="200" height="200" fill="none" stroke="#C9A6A6" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why You Need An Audio Guestbook -->
+  <section class="section-blush">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why You Need An Audio Guestbook.</h2>
+        <p>What does it add to your business?</p>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3>Boost Income & Profitability</h3>
+          <p>WeddingRingRing opens up new revenue streams for your venue with premium package options.</p>
+        </div>
+
+        <div class="card card-featured">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+            </svg>
+          </div>
+          <h3>Create Lasting Memories</h3>
+          <p>Happy couples return for celebrations and recommend your venue to friends and family.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+          </div>
+          <h3>Attract More Bookings</h3>
+          <p>Stand out in a competitive market with this unique and attractive venue feature.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+            </svg>
+          </div>
+          <h3>Word-Of-Mouth Marketing</h3>
+          <p>Delighted customers become your best marketing tool, sharing unforgettable moments.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+          </div>
+          <h3>Low-Effort, High-Impact</h3>
+          <p>Quick online setup and durable vintage phones built to last with minimal effort.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+            </svg>
+          </div>
+          <h3>Great Fun For Guests!</h3>
+          <p>Adds an element of fun, allowing guests to contribute heartfelt messages and laughter.</p>
+        </div>
+      </div>
+
+      <div class="cta-box">
+        <h3>Want to know more?</h3>
+        <p>Get in touch to find out how we can help you host your own audio guestbook</p>
+        <button onclick="openModal()" class="btn btn-primary">Get In Touch</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="section-dark">
+    <div class="container">
+      <div class="section-header">
+        <h2>The No-Fuss Audio Guestbook</h2>
+        <p>It only takes a minute!</p>
+      </div>
+
+      <div class="grid grid-4">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Before the event</h3>
+          <p>Log in and provide the couple's details - we'll handle the rest!</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Day of the event</h3>
+          <p>Punch in the code we provide and the phone is ready to go!</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>During the event</h3>
+          <p>Guests pick up, listen to the greeting, leave a message, and hang up.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <h3>After the event</h3>
+          <p>Couples access all messages instantly from their secure online account.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/docs">Documentation</a></li>
+            <li><a href="/faqs">FAQs</a></li>
+            <li><a href="/help">Help Center</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Wedding RingRing Ltd</h4>
+          <p style="color: rgba(255, 255, 255, 0.5); font-size: var(--text-sm); line-height: 1.6;">The audio guestbook for venues.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Wedding RingRing Ltd. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Contact Form Modal -->
+  <div id="contactModal" class="modal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Get In Touch</h2>
+        <p>Tell us about your venue and we'll be in touch within 24 hours</p>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div>
+              <label for="name">Your Name *</label>
+              <input type="text" id="name" name="name" placeholder="John Smith" required>
+            </div>
+            <div>
+              <label for="venueName">Venue Name *</label>
+              <input type="text" id="venueName" name="venueName" placeholder="The Grand Ballroom" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" placeholder="john@venue.com" required>
+            </div>
+            <div>
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+44 20 1234 5678">
+            </div>
+          </div>
+
+          <div>
+            <label for="interest">I'm interested as a... *</label>
+            <select id="interest" name="interest" required>
+              <option value="venue">Venue Owner/Manager</option>
+              <option value="couple">Engaged Couple</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="message">Tell us about your venue (optional)</label>
+            <textarea id="message" name="message" placeholder="Tell us more about your venue..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Send Message</button>
+          
+          <p class="form-note">We'll respond within 24 hours</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('contactModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('contactModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOnBackdrop(event) {
+      if (event.target.id === 'contactModal') {
+        closeModal();
+      }
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      alert('Thank you! We\'ll be in touch within 24 hours.');
+      closeModal();
+      document.getElementById('contactForm').reset();
+    }
+  </script>
+
+</body>
+</html>

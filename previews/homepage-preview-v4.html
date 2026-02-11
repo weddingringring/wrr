@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeddingRingRing - The Audio Guestbook for Venues</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #FAF8F3;
+    }
+    .serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    
+    /* Header */
+    header { 
+      background: white; 
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    header .container { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    nav { display: flex; gap: 2.5rem; align-items: center; }
+    nav a { 
+      color: #1a1a1a; 
+      text-decoration: none; 
+      font-weight: 500;
+      font-size: 0.9375rem;
+      transition: color 0.2s;
+      letter-spacing: 0.3px;
+    }
+    nav a:hover { color: #D4A5A5; }
+    .btn-primary { 
+      background: #1a1a1a; 
+      color: white; 
+      padding: 0.625rem 1.75rem; 
+      border-radius: 0.375rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary:hover { 
+      background: #D4A5A5;
+      color: white;
+    }
+    
+    /* Hero */
+    .hero { 
+      position: relative;
+      background: #F5E8E8;
+      padding: 8rem 0 6rem;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 50%;
+      background-image: url('../public/hero-illustration.svg');
+      background-size: contain;
+      background-position: center right;
+      background-repeat: no-repeat;
+      opacity: 0.4;
+      z-index: 0;
+    }
+    .hero .container { 
+      position: relative;
+      z-index: 1;
+    }
+    .hero-content {
+      max-width: 600px;
+    }
+    .hero h1 { 
+      font-size: 4.5rem; 
+      line-height: 1.1; 
+      color: #1a1a1a; 
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+      letter-spacing: -1px;
+    }
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: #4a4a4a;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+    .hero-ctas { 
+      display: flex; 
+      gap: 1rem; 
+      margin-bottom: 3rem;
+    }
+    .hero-ctas a, .hero-ctas button {
+      padding: 1rem 2.25rem;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .cta-dark {
+      background: #1a1a1a;
+      color: white;
+    }
+    .cta-dark:hover { 
+      background: #D4A5A5;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    /* Sections */
+    section { padding: 6rem 0; }
+    .section-white { background: white; }
+    .section-cream { background: #FAF8F3; }
+    .section-blush { background: #F5E8E8; }
+    .section-dark { 
+      background: #1a1a1a;
+      color: white;
+    }
+    
+    h2 { 
+      font-size: 3rem; 
+      color: #1a1a1a; 
+      margin-bottom: 1rem;
+      text-align: center;
+      font-weight: 400;
+      letter-spacing: -0.5px;
+    }
+    .section-dark h2 { color: white; }
+    
+    .section-subtitle {
+      text-align: center;
+      font-size: 1.125rem;
+      color: #6a6a6a;
+      margin-bottom: 4rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .section-dark .section-subtitle { color: #C5D5B8; }
+    
+    /* Grid */
+    .grid-3 { 
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 2rem; 
+    }
+    .grid-2 { 
+      display: grid; 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 4rem;
+      align-items: center;
+    }
+    .grid-4 { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 2rem; 
+    }
+    
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2.5rem 2rem;
+      transition: all 0.3s;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+    
+    .icon-box {
+      width: 2.75rem;
+      height: 2.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      color: #D4A5A5;
+    }
+    
+    .card h3 {
+      font-size: 1.25rem;
+      color: #1a1a1a;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .card p {
+      color: #6a6a6a;
+      line-height: 1.7;
+      font-size: 0.9375rem;
+    }
+    
+    /* Step Cards */
+    .step-card {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      background: white;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(0,0,0,0.06);
+      transition: all 0.3s;
+    }
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+    .step-number {
+      width: 3rem;
+      height: 3rem;
+      background: #F5E8E8;
+      color: #1a1a1a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 300;
+      margin: 0 auto 1.5rem;
+    }
+    
+    /* CTA Box */
+    .cta-box {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 3rem;
+      text-align: center;
+      margin-top: 4rem;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .cta-box h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+    .cta-box p {
+      color: #6a6a6a;
+      margin-bottom: 2rem;
+      font-size: 1.0625rem;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(4px);
+    }
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 0.75rem;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+    .modal-header {
+      padding: 2.5rem 2.5rem 1.5rem;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .modal-header h2 {
+      text-align: left;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .modal-header p {
+      color: #6a6a6a;
+      font-size: 1rem;
+    }
+    .modal-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 2rem;
+      height: 2rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #6a6a6a;
+      transition: color 0.2s;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover {
+      color: #1a1a1a;
+    }
+    .modal-body {
+      padding: 2.5rem;
+    }
+    
+    /* Form */
+    form { 
+      display: grid;
+      gap: 1.5rem;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #1a1a1a;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.3px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.875rem 1.125rem;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      background: white;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #D4A5A5;
+      box-shadow: 0 0 0 3px rgba(212, 165, 165, 0.1);
+    }
+    button[type="submit"] {
+      width: 100%;
+      background: #1a1a1a;
+      color: white;
+      padding: 1.125rem 2rem;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    button[type="submit"]:hover { 
+      background: #D4A5A5;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(212, 165, 165, 0.3);
+    }
+    .form-note {
+      font-size: 0.875rem;
+      color: #6a6a6a;
+      text-align: center;
+    }
+    
+    /* Footer */
+    footer {
+      background: #1a1a1a;
+      color: white;
+      padding: 4rem 0 2rem;
+    }
+    .footer-grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    footer h4 { 
+      margin-bottom: 1.25rem;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      letter-spacing: 0.5px;
+    }
+    footer ul { list-style: none; }
+    footer li { margin-bottom: 0.75rem; }
+    footer a { 
+      color: #C5D5B8; 
+      text-decoration: none; 
+      transition: color 0.2s;
+      font-size: 0.9375rem;
+    }
+    footer a:hover { color: white; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 2rem;
+      text-align: center;
+      color: #8a8a8a;
+      font-size: 0.875rem;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.75rem; }
+      h2 { font-size: 2rem; }
+      .grid-2, .grid-3, .grid-4, .form-row, .footer-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-bg { display: none; }
+      .hero { padding: 4rem 0 3rem; }
+      section { padding: 4rem 0; }
+      .modal-content {
+        margin: 1rem;
+        max-height: calc(100vh - 2rem);
+      }
+      .modal-header,
+      .modal-body {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div>
+        <img src="../public/logo.svg" alt="WeddingRingRing" style="height: 45px;">
+      </div>
+      <nav>
+        <a href="#how-it-works">How It Works</a>
+        <button class="btn-primary" onclick="openModal()">Get Started</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="serif">The Audio Guestbook For Venues.</h1>
+        <p class="hero-subtitle">Memories to listen back to for a lifetime</p>
+        <div class="hero-ctas">
+          <button class="cta-dark" onclick="openModal()">Find Out More</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Do -->
+  <section class="section-dark">
+    <div class="container">
+      <div class="grid-2">
+        <div>
+          <h2 class="serif" style="text-align: left;">What We Do.</h2>
+          <p style="color: #C5D5B8; line-height: 1.8; margin-bottom: 1.5rem;">
+            We are the audio guestbook where timeless elegance meets modern convenience. Our vintage-style phones, combined with our modern software, creates an unforgettable audio guestbook experience.
+          </p>
+          <p style="color: #C5D5B8; line-height: 1.8; margin-bottom: 1.5rem;">
+            With a swift 30-second setup on our user-friendly online system, venues can effortlessly enhance their offerings and attract couples seeking that extra touch of charm.
+          </p>
+          <p style="color: #C5D5B8; line-height: 1.8; margin-bottom: 2rem;">
+            Elevate your venue, captivate your clients, and ensure every celebration is a resounding success with WeddingRingRing – where love, laughter, and memories intertwine.
+          </p>
+          <a href="#how-it-works" style="display: inline-block; background: white; color: #1a1a1a; padding: 0.875rem 2rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; transition: all 0.2s;">Find Out How It Works</a>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: center;">
+          <div style="background: rgba(255,255,255,0.05); border-radius: 0.5rem; padding: 2rem; text-align: center;">
+            <svg width="200" height="200" fill="none" stroke="#D4A5A5" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why You Need An Audio Guestbook -->
+  <section class="section-blush">
+    <div class="container">
+      <h2 class="serif">Why You Need An Audio Guestbook.</h2>
+      <p class="section-subtitle">What does it add to your business?</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="icon-box">
+            <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3>Boost Income & Increase Profitability</h3>
+          <p>WeddingRingRing opens up new revenue streams for your venue. Offer premium package options that include the enchanting audio guestbook experience.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon-box">
+            <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+            </svg>
+          </div>
+          <h3>Create Lasting Memories For Your Couples</h3>
+          <p>Happy couples are more likely to return for future celebrations or recommend your venue to friends and family.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon-box">
+            <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+          </div>
+          <h3>Attract More Bookings</h3>
+          <p>Stand out in a competitive market by showcasing WeddingRingRing as a unique and attractive feature of your venue.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon-box">
+            <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+            </svg>
+          </div>
+          <h3>Word-Of-Mouth Marketing</h3>
+          <p>Delight your customers, and they'll become your best marketing tool. The unforgettable moments captured will be shared far and wide.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon-box">
+            <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+            </svg>
+          </div>
+          <h3>Low-Effort, High-Impact</h3>
+          <p>WeddingRingRing requires minimal effort on your part. The online setup is quick, and the vintage phones are built to last.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon-box">
+            <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+            </svg>
+          </div>
+          <h3>Great Fun For Your Guests!</h3>
+          <p>Our service adds an element of fun for guests, allowing them to contribute heartfelt messages and laughter, making each celebration truly special.</p>
+        </div>
+      </div>
+
+      <div class="cta-box">
+        <h3 class="serif">Want to know more?</h3>
+        <p>Get in touch with us to find out how we can help you host your own audio guestbook</p>
+        <button onclick="openModal()" style="display: inline-block; background: #1a1a1a; color: white; padding: 1rem 2.5rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 1rem;">Get In Touch</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="section-dark">
+    <div class="container">
+      <h2 class="serif">The No-Fuss Audio Guestbook</h2>
+      <p class="section-subtitle">It only takes a minute!</p>
+
+      <div class="grid-4">
+        <div class="step-card">
+          <div class="step-number serif">1</div>
+          <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Before the event</h3>
+          <p style="color: #6a6a6a; line-height: 1.7; font-size: 0.9375rem;">Just log in and give us the name of your couple, their email, and the date of the event - we'll do the rest!</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number serif">2</div>
+          <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">The day of the event</h3>
+          <p style="color: #6a6a6a; line-height: 1.7; font-size: 0.9375rem;">When you sign up with us, we provide a phone that you keep at your venue. All you need to do is punch in a code we provide and the phone is set up!</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number serif">3</div>
+          <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">During the event</h3>
+          <p style="color: #6a6a6a; line-height: 1.7; font-size: 0.9375rem;">All guests need to do is pick up the phone, listen to a message from the couple, leave a message and hang up when they're done.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number serif">4</div>
+          <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">After the event</h3>
+          <p style="color: #6a6a6a; line-height: 1.7; font-size: 0.9375rem;">Your couple will be able to access all of their messages instantly from their secure account on our website</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/docs">Documentation</a></li>
+            <li><a href="/faqs">FAQs</a></li>
+            <li><a href="/help">Help Center</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Wedding RingRing Ltd</h4>
+          <p style="color: #8a8a8a; font-size: 0.875rem; line-height: 1.6;">The audio guestbook for venues.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Wedding RingRing Ltd. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Contact Form Modal -->
+  <div id="contactModal" class="modal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="serif">Get In Touch</h2>
+        <p>Tell us about your venue and we'll be in touch within 24 hours</p>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div>
+              <label for="name">Your Name *</label>
+              <input type="text" id="name" name="name" placeholder="John Smith" required>
+            </div>
+            <div>
+              <label for="venueName">Venue Name *</label>
+              <input type="text" id="venueName" name="venueName" placeholder="The Grand Ballroom" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" placeholder="john@venue.com" required>
+            </div>
+            <div>
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+44 20 1234 5678">
+            </div>
+          </div>
+
+          <div>
+            <label for="interest">I'm interested as a... *</label>
+            <select id="interest" name="interest" required>
+              <option value="venue">Venue Owner/Manager</option>
+              <option value="couple">Engaged Couple</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="message">Tell us about your venue (optional)</label>
+            <textarea id="message" name="message" rows="4" placeholder="Tell us more about your venue..."></textarea>
+          </div>
+
+          <button type="submit">Send Message</button>
+          
+          <p class="form-note">We'll respond within 24 hours</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('contactModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('contactModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOnBackdrop(event) {
+      if (event.target.id === 'contactModal') {
+        closeModal();
+      }
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      // Here you would typically send the form data to your API
+      alert('Thank you! We\'ll be in touch within 24 hours.');
+      closeModal();
+      document.getElementById('contactForm').reset();
+    }
+  </script>
+
+</body>
+</html>

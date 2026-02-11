@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service | WeddingRingRing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       DESIGN SYSTEM - SAME AS ALL OTHER PAGES
+       ============================================ */
+    :root {
+      --text-xs: 0.75rem;
+      --text-sm: 0.875rem;
+      --text-base: 1rem;
+      --text-lg: 1.125rem;
+      --text-xl: 1.25rem;
+      --text-2xl: 1.5rem;
+      --text-3xl: 2rem;
+      --text-4xl: 3rem;
+      --text-5xl: 3.5rem;
+      --text-6xl: 4.5rem;
+      
+      --space-1: 0.5rem;
+      --space-2: 1rem;
+      --space-3: 1.5rem;
+      --space-4: 2rem;
+      --space-6: 3rem;
+      --space-8: 4rem;
+      --space-12: 6rem;
+      
+      --color-primary: #1a1a1a;
+      --color-secondary: #C9A6A6;
+      --color-text-primary: #1a1a1a;
+      --color-text-secondary: #6a6a6a;
+      --color-surface-white: #ffffff;
+      --color-surface-cream: #FAF8F3;
+      --color-surface-blush: #F5E8E8;
+      --color-border: rgba(0, 0, 0, 0.08);
+      
+      --color-text-on-dark: #E8C9C9;
+      --color-heading-on-dark: #F5E8E8;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+      
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: var(--font-sans);
+      line-height: 1.7;
+      color: var(--color-text-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 0 var(--space-4); 
+    }
+    
+    h1 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-6xl);
+      line-height: 1.05; 
+      font-weight: 400;
+      letter-spacing: -0.03em;
+    }
+    
+    h2 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-3xl);
+      line-height: 1.2;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-3);
+    }
+    
+    h3 { 
+      font-family: var(--font-sans);
+      font-size: var(--text-xl);
+      line-height: 1.4;
+      font-weight: 600;
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+    
+    p { 
+      font-size: var(--text-base);
+      line-height: 1.7;
+      margin-bottom: var(--space-3);
+    }
+    
+    ul, ol {
+      margin-bottom: var(--space-3);
+      padding-left: var(--space-6);
+    }
+    
+    li {
+      margin-bottom: var(--space-2);
+    }
+    
+    strong {
+      font-weight: 600;
+    }
+    
+    /* ============================================
+       HEADER
+       ============================================ */
+    header { 
+      background: var(--color-surface-blush);
+      padding: var(--space-3) 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    header .container { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    
+    .nav-desktop { 
+      display: flex; 
+      gap: var(--space-6); 
+      align-items: center; 
+    }
+    
+    .nav-desktop a { 
+      color: var(--color-text-primary); 
+      text-decoration: none; 
+      font-weight: 500;
+      font-size: var(--text-sm);
+      transition: color 0.2s;
+    }
+    
+    .nav-desktop a:hover { 
+      color: var(--color-secondary);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--color-primary);
+      padding: 0.5rem;
+    }
+    
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn {
+      display: inline-block;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-sans);
+    }
+    
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--color-secondary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* ============================================
+       SECTIONS
+       ============================================ */
+    section { 
+      padding: var(--space-12) 0; 
+    }
+    
+    .section-white { 
+      background: var(--color-surface-white); 
+    }
+    
+    .section-blush { 
+      background: var(--color-surface-blush); 
+    }
+    
+    /* ============================================
+       CONTENT
+       ============================================ */
+    .content-narrow {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .last-updated {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      font-style: italic;
+      margin-top: var(--space-2);
+    }
+    
+    /* ============================================
+       COOKIE BANNER
+       ============================================ */
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+      padding: var(--space-3) 0;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: none;
+    }
+    
+    .cookie-banner.show {
+      display: block;
+    }
+    
+    .cookie-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+    
+    .cookie-text {
+      flex: 1;
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+    
+    .cookie-text a {
+      color: var(--color-secondary);
+      text-decoration: underline;
+    }
+    
+    .cookie-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+    
+    .cookie-btn {
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .cookie-accept {
+      background: var(--color-secondary);
+      color: var(--color-primary);
+    }
+    
+    .cookie-accept:hover {
+      background: var(--color-heading-on-dark);
+    }
+    
+    .cookie-decline {
+      background: transparent;
+      color: var(--color-text-on-dark);
+      border: 1px solid var(--color-text-on-dark);
+    }
+    
+    .cookie-decline:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* ============================================
+       MODAL
+       ============================================ */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2);
+      backdrop-filter: blur(4px);
+    }
+    
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-md);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+    
+    .modal-header {
+      padding: var(--space-6) var(--space-6) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .modal-header h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-1);
+      margin-top: 0;
+    }
+    
+    .modal-header p {
+      color: var(--color-text-secondary);
+      font-size: var(--text-base);
+      margin-bottom: 0;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: all 0.2s;
+      font-size: var(--text-2xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      line-height: 1;
+    }
+    
+    .modal-close:hover {
+      color: var(--color-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .modal-body {
+      padding: var(--space-6);
+    }
+    
+    form { 
+      display: grid;
+      gap: var(--space-4);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(201, 166, 166, 0.1);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .form-note {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* ============================================
+       FOOTER
+       ============================================ */
+    footer {
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+      padding: var(--space-8) 0 var(--space-4);
+    }
+    
+    .footer-grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    
+    footer h4 { 
+      margin-bottom: var(--space-3);
+      font-weight: 600;
+      font-size: var(--text-base);
+      color: var(--color-heading-on-dark);
+    }
+    
+    footer ul { 
+      list-style: none; 
+      padding-left: 0;
+    }
+    
+    footer li { 
+      margin-bottom: var(--space-2); 
+    }
+    
+    footer a { 
+      color: var(--color-text-on-dark);
+      text-decoration: none; 
+      transition: color 0.2s;
+      font-size: var(--text-sm);
+    }
+    
+    footer a:hover { 
+      color: white; 
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: var(--space-4);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: var(--text-sm);
+    }
+    
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) {
+      :root {
+        --text-6xl: 2.5rem;
+        --text-3xl: 1.5rem;
+      }
+      
+      section {
+        padding: var(--space-8) 0;
+      }
+      
+      .nav-desktop {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div>
+        <a href="/"><img src="../public/logo.svg" alt="WeddingRingRing" style="height: 45px;"></a>
+      </div>
+      <nav class="nav-desktop">
+        <a href="/">Home</a>
+        <a href="/how-it-works">How It Works</a>
+        <a href="/about">About</a>
+        <a href="/login">Log In</a>
+        <button class="btn btn-primary" onclick="openModal()">Get Started</button>
+      </nav>
+      <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="section-blush">
+    <div class="container content-narrow">
+      <h1>Terms of Service.</h1>
+      <p class="last-updated">Last updated: February 9, 2026</p>
+    </div>
+  </section>
+
+  <!-- Terms Content -->
+  <section class="section-white">
+    <div class="container content-narrow">
+      
+      <p>
+        These Terms of Service ("Terms") govern your use of the WeddingRingRing audio guestbook service operated by RingRing Digital Ltd ("we", "us", or "our"). By using our service, you agree to these Terms.
+      </p>
+
+      <h2>1. Service Description</h2>
+      
+      <p>WeddingRingRing provides:</p>
+      <ul>
+        <li>Vintage rotary phones for venues to use as audio guestbooks</li>
+        <li>SIM cards and calling credit for phone operation</li>
+        <li>Online platform for managing events and delivering audio messages</li>
+        <li>Cloud storage for audio recordings</li>
+        <li>Technical support and maintenance</li>
+      </ul>
+
+      <h2>2. Account Registration</h2>
+      
+      <h3>Venue Accounts</h3>
+      <p>To use our service as a venue, you must:</p>
+      <ul>
+        <li>Provide accurate and complete registration information</li>
+        <li>Maintain the security of your account credentials</li>
+        <li>Notify us immediately of any unauthorized access</li>
+        <li>Be responsible for all activities under your account</li>
+        <li>Be legally able to enter into binding contracts</li>
+      </ul>
+
+      <h3>Couple Accounts</h3>
+      <p>Couples receive accounts through their venue. By using your account, you agree to:</p>
+      <ul>
+        <li>Keep your login credentials secure</li>
+        <li>Use the service only for its intended purpose</li>
+        <li>Not share account access with unauthorized parties</li>
+      </ul>
+
+      <h2>3. Equipment</h2>
+      
+      <h3>Equipment Provision</h3>
+      <p>As a paying venue customer, we provide you with:</p>
+      <ul>
+        <li>One or more vintage rotary phones and associated equipment</li>
+        <li>SIM cards for phone operation</li>
+        <li>Calling credit for WeddingRingRing service use</li>
+        <li>Equipment is provided for the duration of your active subscription</li>
+        <li>All equipment, SIM cards, and associated services remain our property at all times</li>
+      </ul>
+
+      <h3>Venue Equipment Usage</h3>
+      <p>When we provide you with equipment:</p>
+      <ul>
+        <li>All equipment remains our property</li>
+        <li><strong>Equipment must only be used at your registered venue premises for events hosted at your venue</strong></li>
+        <li><strong>You may not resell, rent, or loan the equipment to other venues or third parties, except for use by your customers (couples and their guests) at events held at your facility</strong></li>
+        <li>You are responsible for the equipment's care and security</li>
+        <li>You must report damage, loss, or theft immediately</li>
+      </ul>
+
+      <h3>Equipment Return</h3>
+      <p>If your contract is terminated (by either party):</p>
+      <ul>
+        <li><strong>You must return all equipment, including phones and SIM cards, within 30 days of termination</strong></li>
+        <li>We will provide return shipping instructions</li>
+        <li><strong>Failure to return equipment within 30 days will result in a £300 charge per unreturned device</strong></li>
+        <li>Equipment must be returned in working condition with all original components</li>
+        <li>SIM cards must be returned intact and not damaged or destroyed</li>
+      </ul>
+
+      <h3>Damage Policy</h3>
+      <p>We understand that normal wear and tear occurs with regular use. However:</p>
+      <ul>
+        <li><strong>Normal wear and tear is expected and will not incur charges</strong></li>
+        <li><strong>If damage appears to be intentional, negligent, or beyond normal use, we reserve the right to charge a £300 replacement fee per device</strong></li>
+        <li>Examples of chargeable damage include: water damage, physical breakage from mishandling, tampering with internal components, or significant cosmetic damage</li>
+        <li>We will provide photographic evidence and explanation for any damage charges</li>
+      </ul>
+
+      <h3>Permitted Phone Usage</h3>
+      <p>The phone equipment and provided calling credit may only be used for WeddingRingRing service purposes:</p>
+      <ul>
+        <li><strong>Provided calling credit is exclusively for WeddingRingRing service calls</strong></li>
+        <li><strong>The device may only be used to call numbers associated with the WeddingRingRing service</strong></li>
+        <li><strong>Emergency service calls (999, 112) are permitted</strong></li>
+        <li><strong>All other outgoing calls are strictly prohibited</strong></li>
+        <li>We reserve the right to monitor call log history to ensure compliance</li>
+        <li><strong>Any costs incurred by us due to unauthorized phone usage will be charged back to you with a 25% administration fee</strong></li>
+      </ul>
+
+      <h3>Warranty</h3>
+      <p>We warrant that equipment will function as described under normal use. We will repair or replace defective equipment at no cost to you, provided the defect is not caused by misuse, unauthorized modifications, or damage.</p>
+
+      <h2>4. Monitoring and Compliance</h2>
+      
+      <h3>Location Monitoring</h3>
+      <p>To ensure compliance with these Terms and prevent unauthorized use:</p>
+      <ul>
+        <li>We reserve the right to monitor equipment location using cell-site triangulation and other tracking services</li>
+        <li>Use of equipment outside your registered venue premises without prior authorization constitutes a material breach of these Terms</li>
+        <li>We may immediately suspend service if unauthorized location use is detected</li>
+        <li>Repeated or intentional violations may result in termination and equipment charges</li>
+      </ul>
+
+      <h3>Call Log Monitoring</h3>
+      <p>We reserve the right to monitor call log history from all devices to ensure proper usage and prevent misuse.</p>
+
+      <h2>5. Payments and Fees</h2>
+      
+      <p>Venue partners agree to:</p>
+      <ul>
+        <li>Pay all fees as outlined in your service agreement</li>
+        <li>Provide valid payment information</li>
+        <li>Authorize automatic billing for recurring fees</li>
+        <li>Pay any applicable taxes</li>
+      </ul>
+
+      <p><strong>Refunds:</strong> Fees are non-refundable except as required by law or as specified in your service agreement.</p>
+
+      <p><strong>Price Changes:</strong> We may change our fees with 30 days' notice. Continued use after the notice period constitutes acceptance of new fees.</p>
+
+      <h2>6. Content and Data</h2>
+      
+      <h3>Your Content</h3>
+      <p>You retain all rights to audio messages and data you upload. By using our service, you grant us:</p>
+      <ul>
+        <li>Permission to store and process your content</li>
+        <li>Rights to transmit content to deliver the service</li>
+        <li>Permission to make backups for security purposes</li>
+      </ul>
+
+      <h3>Our Rights</h3>
+      <p>We reserve the right to:</p>
+      <ul>
+        <li>Remove content that violates these Terms</li>
+        <li>Suspend accounts that misuse the service</li>
+        <li>Terminate service for violations of these Terms</li>
+      </ul>
+
+      <h3>Prohibited Content</h3>
+      <p>You may not use our service to store or transmit:</p>
+      <ul>
+        <li>Illegal content</li>
+        <li>Content that infringes intellectual property rights</li>
+        <li>Malicious code or viruses</li>
+        <li>Spam or unsolicited communications</li>
+        <li>Content that violates others' privacy</li>
+      </ul>
+
+      <h2>7. Acceptable Use</h2>
+      
+      <p>You agree not to:</p>
+      <ul>
+        <li>Use equipment outside your registered venue premises without authorization</li>
+        <li>Resell, rent, loan, or sublicense the service or equipment to other venues or third parties (except for normal use by your customers at events hosted at your venue)</li>
+        <li>Make unauthorized phone calls (see Section 3 for permitted usage)</li>
+        <li>Attempt to gain unauthorized access to our systems</li>
+        <li>Interfere with or disrupt the service</li>
+        <li>Use the service for any unlawful purpose</li>
+        <li>Reverse engineer or attempt to extract source code</li>
+        <li>Use automated systems to access the service without authorization</li>
+        <li>Tamper with or disable location tracking or monitoring features</li>
+      </ul>
+
+      <h2>8. Service Availability</h2>
+      
+      <p>We strive to maintain high availability but:</p>
+      <ul>
+        <li>We do not guarantee uninterrupted service</li>
+        <li>We may perform scheduled maintenance with notice</li>
+        <li>We are not liable for service interruptions beyond our control</li>
+        <li>We may modify or discontinue features with reasonable notice</li>
+      </ul>
+
+      <h2>9. Data Retention and Deletion</h2>
+      
+      <p><strong>Audio Messages:</strong> Messages are stored indefinitely unless the couple deletes them.</p>
+      
+      <p><strong>Account Deletion:</strong> You may request account deletion at any time. We will delete your data within 30 days, except where retention is required by law.</p>
+
+      <p><strong>Backups:</strong> Deleted data may remain in backups for up to 90 days.</p>
+
+      <h2>10. Intellectual Property</h2>
+      
+      <p>The WeddingRingRing service, including software, design, branding, and documentation, is our property and protected by intellectual property laws.</p>
+
+      <p>You may not:</p>
+      <ul>
+        <li>Copy, modify, or create derivative works</li>
+        <li>Use our trademarks without permission</li>
+        <li>Remove copyright or proprietary notices</li>
+      </ul>
+
+      <h2>11. Liability and Warranties</h2>
+      
+      <h3>Disclaimer</h3>
+      <p>Our service is provided "as is" without warranties of any kind, express or implied, including but not limited to merchantability or fitness for a particular purpose.</p>
+
+      <h3>Limitation of Liability</h3>
+      <p>To the maximum extent permitted by law:</p>
+      <ul>
+        <li>We are not liable for indirect, incidental, or consequential damages</li>
+        <li>Our total liability is limited to the fees you paid in the 12 months prior to the claim</li>
+        <li>We are not liable for loss of data, business interruption, or lost profits</li>
+      </ul>
+
+      <h3>Indemnification</h3>
+      <p>You agree to indemnify us against claims arising from your use of the service, violation of these Terms, or infringement of third-party rights.</p>
+
+      <h2>12. Termination</h2>
+      
+      <h3>By You</h3>
+      <p>You may terminate your account at any time by contacting us. You remain responsible for fees incurred before termination.</p>
+
+      <h3>By Us</h3>
+      <p>We may terminate or suspend your account if you:</p>
+      <ul>
+        <li>Violate these Terms</li>
+        <li>Fail to pay fees</li>
+        <li>Engage in fraudulent activity</li>
+        <li>Create legal or security risks</li>
+      </ul>
+
+      <p>We will provide reasonable notice unless immediate termination is necessary.</p>
+
+      <h2>13. Changes to Terms</h2>
+      
+      <p>We may update these Terms from time to time. We will notify you of material changes by:</p>
+      <ul>
+        <li>Email to your registered address</li>
+        <li>Notice in your account dashboard</li>
+        <li>Posting on our website</li>
+      </ul>
+
+      <p>Continued use after changes constitutes acceptance of updated Terms.</p>
+
+      <h2>14. Governing Law</h2>
+      
+      <p>These Terms are governed by the laws of England and Wales. Disputes will be resolved in the courts of England and Wales.</p>
+
+      <h2>15. Dispute Resolution</h2>
+      
+      <p>Before initiating legal proceedings, we encourage you to contact us to resolve disputes informally.</p>
+
+      <p>For business users in the EU, you have the right to access the EU Online Dispute Resolution platform.</p>
+
+      <h2>16. Severability</h2>
+      
+      <p>If any provision of these Terms is found to be unenforceable, the remaining provisions will continue in full effect.</p>
+
+      <h2>17. Contact Information</h2>
+      
+      <p>For questions about these Terms, please contact us:</p>
+      
+      <p>
+        <strong>RingRing Digital Ltd</strong><br>
+        Companies House Number: 15324505<br>
+        Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a0ccc5c7c1cce0d7c5c4c4c9cec7d2c9cec7d2c9cec78ec3cfcd">[email&#160;protected]</a><br>
+        Address: 3rd Floor, 86-90 Paul Street, London, England, EC2A 4NE, United Kingdom
+      </p>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/docs">Documentation</a></li>
+            <li><a href="/faqs">FAQs</a></li>
+            <li><a href="/help">Help Center</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>RingRing Digital Ltd</h4>
+          <p style="color: rgba(255, 255, 255, 0.5); font-size: var(--text-sm); line-height: 1.6;">The audio guestbook for venues.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 RingRing Digital Ltd. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cookie Consent Banner -->
+  <div class="cookie-banner" id="cookieBanner">
+    <div class="container">
+      <div class="cookie-content">
+        <div class="cookie-text">
+          We use cookies to keep you logged in and improve your experience. <a href="/privacy">Learn more</a>
+        </div>
+        <div class="cookie-actions">
+          <button class="cookie-btn cookie-decline" onclick="declineCookies()">Decline</button>
+          <button class="cookie-btn cookie-accept" onclick="acceptCookies()">Accept</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    function acceptCookies() {
+      localStorage.setItem("cookieConsent", "accepted");
+      document.getElementById("cookieBanner").classList.remove("show");
+    }
+    
+    function declineCookies() {
+      localStorage.setItem("cookieConsent", "declined");
+      document.getElementById("cookieBanner").classList.remove("show");
+    }
+    
+    window.a
+  <!-- Contact Form Modal -->
+  <div id="contactModal" class="modal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Get In Touch</h2>
+        <p>Tell us about your venue and we'll be in touch within 24 hours</p>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div>
+              <label for="name">Your Name *</label>
+              <input type="text" id="name" name="name" placeholder="John Smith" required>
+            </div>
+            <div>
+              <label for="venueName">Venue Name *</label>
+              <input type="text" id="venueName" name="venueName" placeholder="The Grand Ballroom" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" placeholder="john@venue.com" required>
+            </div>
+            <div>
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+44 20 1234 5678">
+            </div>
+          </div>
+
+          <div>
+            <label for="interest">I'm interested as a... *</label>
+            <select id="interest" name="interest" required>
+              <option value="venue">Venue Owner/Manager</option>
+              <option value="couple">Engaged Couple</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="message">Tell us about your venue (optional)</label>
+            <textarea id="message" name="message" placeholder="Tell us more about your venue..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Send Message</button>
+          
+          <p class="form-note">We'll respond within 24 hours</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('contactModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('contactModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOnBackdrop(event) {
+      if (event.target.id === 'contactModal') {
+        closeModal();
+      }
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      alert('Thank you! We\'ll be in touch within 24 hours.');
+      closeModal();
+      document.getElementById('contactForm').reset();
+    }
+  </script>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Messages - WeddingRingRing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFF8F0',
+            sage: {
+              light: '#C8D3CC',
+              DEFAULT: '#8B9B8E',
+              dark: '#6B7B6E'
+            },
+            'deep-green': {
+              DEFAULT: '#3D5A4C',
+              dark: '#2D4A3C'
+            },
+            rose: {
+              light: '#F5E6E6',
+              DEFAULT: '#D4A5A5',
+              dark: '#B48585'
+            },
+            charcoal: '#2C2C2C'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Feather Icons (lightweight line icons) -->
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body class="font-sans bg-cream" onload="feather.replace()">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-sage-light shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center">
+        <!-- Venue Logo + Powered By -->
+        <div class="flex items-center gap-3">
+          <img 
+            src="https://images.unsplash.com/photo-1519167758481-83f29da8a38d?w=200&h=100&fit=crop" 
+            alt="Thornbury Manor" 
+            class="h-12 w-auto object-contain"
+          />
+          <div class="flex items-center gap-2 text-xs text-sage-dark border-l border-sage-light pl-3">
+            <span>Powered by</span>
+            <div class="text-base font-serif text-rose">[WRR Logo]</div>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-sm text-sage-dark hover:text-charcoal transition">
+            Settings
+          </a>
+          <button class="text-sm text-sage-dark hover:text-charcoal transition">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Personalized Header -->
+    <div class="mb-8 text-center">
+      <h1 class="font-serif text-5xl text-charcoal mb-2">Sarah & James's Wedding</h1>
+      <p class="text-lg text-sage-dark mb-1">
+        Saturday, 25 December 2024
+      </p>
+      <p class="text-sm text-sage">
+        47 messages from your special day
+      </p>
+    </div>
+
+    <!-- Greeting Card - Prominent (No Audio) -->
+    <div class="bg-gradient-to-br from-deep-green to-deep-green/80 rounded-xl shadow-lg text-white mb-8" id="greetingCardProminent">
+      <!-- Collapsed State -->
+      <div id="greetingCollapsed">
+        <div class="p-6 flex items-center justify-between cursor-pointer" onclick="expandGreeting()">
+          <div class="flex items-center gap-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <i data-feather="upload-cloud" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-serif font-semibold mb-1">Upload a Custom Audio Greeting</h3>
+              <p class="text-white/80 text-sm">Replace the automated voice with your own voice</p>
+            </div>
+          </div>
+          <button class="p-2 hover:bg-white/10 rounded-lg transition">
+            <i data-feather="chevron-down" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Expanded State -->
+      <div id="greetingExpanded" class="p-8 relative" style="display: none;">
+        <button onclick="collapseGreeting()" class="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-lg transition">
+          <i data-feather="chevron-up" class="w-6 h-6"></i>
+        </button>
+        
+        <div class="max-w-3xl">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <i data-feather="upload-cloud" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1">
+              <h2 class="text-2xl font-serif mb-2">Upload a Custom Audio Greeting</h2>
+              <p class="text-white/90 text-lg mb-4">
+                Replace the automated voice greeting with your own voice. Record a personal message and upload it here.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-white/10 rounded-lg p-4 mb-6">
+              <p class="text-sm mb-2 text-white/90">
+                <strong>Current greeting (automated voice):</strong>
+              </p>
+              <p class="text-white italic">"Welcome to Sarah & James's wedding. Please leave a message after the beep!"</p>
+            </div>
+
+            <!-- Success Message (shown after upload) -->
+            <!-- <div class="mb-4 p-4 bg-white/90 text-deep-green rounded-lg flex items-center gap-3">
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p class="font-semibold">Greeting uploaded successfully!</p>
+                <p class="text-sm text-deep-green/80">Your custom greeting is now active.</p>
+              </div>
+            </div> -->
+
+            <!-- Error Message (shown on error) -->
+            <!-- <div class="mb-4 p-4 bg-rose-light/90 text-rose-dark rounded-lg flex items-center gap-3">
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p class="font-semibold">File too large</p>
+                <p class="text-sm">Maximum file size is 10MB. Please try a smaller file.</p>
+              </div>
+            </div> -->
+
+            <!-- Upload Button -->
+            <div class="mb-6">
+              <button 
+                onclick="document.getElementById('fileInput').click()"
+                class="w-full sm:w-auto px-8 py-4 bg-white text-deep-green font-semibold rounded-lg hover:bg-white/90 transition flex items-center justify-center gap-2"
+              >
+                <i data-feather="upload-cloud" class="w-5 h-5"></i>
+                Upload Audio File (MP3 or WAV)
+              </button>
+              <input type="file" id="fileInput" accept="audio/mp3,audio/mpeg,audio/wav,audio/x-wav" class="hidden">
+            </div>
+
+            <!-- How to Record Section (Collapsible) -->
+            <div class="mb-6">
+              <button 
+                onclick="toggleRecordingHelp()"
+                class="w-full flex items-center justify-between p-4 bg-white/10 hover:bg-white/15 rounded-lg transition text-left"
+              >
+                <div class="flex items-center gap-2">
+                  <i data-feather="info" class="w-5 h-5 flex-shrink-0"></i>
+                  <span class="font-semibold">How to Record Your Greeting</span>
+                </div>
+                <i data-feather="chevron-down" class="w-5 h-5 transition-transform" id="recordingHelpChevron"></i>
+              </button>
+              
+              <div id="recordingHelpContent" class="hidden mt-3 bg-white/10 rounded-lg p-5">
+                <div class="space-y-3 text-sm text-white/90">
+                <!-- iPhone -->
+                <div>
+                  <p class="font-medium mb-1">📱 iPhone:</p>
+                  <p class="text-white/80">Use the built-in <strong>Voice Memos</strong> app to record. For best compatibility, convert to MP3 using a free app like <strong>Audio Converter</strong> or <strong>Media Converter</strong> from the App Store before uploading.</p>
+                </div>
+
+                <!-- Android -->
+                <div>
+                  <p class="font-medium mb-1">🤖 Android:</p>
+                  <p class="text-white/80">Use <strong>Google Recorder</strong> (Pixel) or <strong>Samsung Voice Recorder</strong>. Export as MP3. If not available, download <strong>Easy Voice Recorder</strong> from the Play Store and save as MP3.</p>
+                </div>
+
+                <!-- Mac -->
+                <div>
+                  <p class="font-medium mb-1">💻 Mac:</p>
+                  <p class="text-white/80">Use <strong>QuickTime Player</strong> (File → New Audio Recording), then convert to MP3 using the built-in <strong>Music</strong> app or export as WAV directly from QuickTime.</p>
+                </div>
+
+                <!-- Windows -->
+                <div>
+                  <p class="font-medium mb-1">🪟 Windows:</p>
+                  <p class="text-white/80">Download <strong>Audacity</strong> (free) for recording with full control. Export as MP3 or WAV. The built-in Voice Recorder saves as M4A which may not be compatible.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-6 border-t border-white/20">
+              <p class="text-sm text-white/80 mb-2"><strong>Tips for recording your greeting:</strong></p>
+              <ul class="text-sm text-white/70 space-y-1">
+                <li>• Keep it under 30 seconds</li>
+                <li>• Record in a quiet room with no background noise</li>
+                <li>• Speak clearly and at a moderate pace</li>
+                <li>• Include your names and the occasion</li>
+                <li>• End with "Please leave a message after the beep"</li>
+                <li>• Accepted formats: MP3, WAV (max 10MB)</li>
+              </ul>
+            </div>
+
+            <!-- Change mode buttons (shown when editing existing greeting) -->
+            <div class="mt-6 flex gap-3" id="changeModeButtons" style="display: none;">
+              <button 
+                onclick="cancelChange()"
+                class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition text-sm"
+              >
+                Cancel
+              </button>
+              <button 
+                onclick="removeGreeting()"
+                class="px-4 py-2 bg-rose-light/20 hover:bg-rose-light/30 rounded-lg transition text-sm"
+              >
+                Use Automated Voice
+              </button>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Greeting Card - Compact (Has Audio) -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-deep-green mb-8" id="greetingCardCompact" style="display: none;">
+      <div class="flex items-start justify-between gap-4 flex-wrap">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-2">
+            <i data-feather="check-circle" class="w-5 h-5 text-deep-green flex-shrink-0"></i>
+            <h3 class="font-semibold text-charcoal">Custom Audio Greeting Active</h3>
+          </div>
+          <p class="text-sm text-sage-dark">
+            Guests will hear your voice greeting when they call in.
+          </p>
+        </div>
+        
+        <div class="flex gap-2 flex-shrink-0">
+          <button
+            onclick="playGreeting()"
+            class="p-2 text-deep-green hover:bg-deep-green/5 rounded-lg transition"
+            title="Play greeting"
+          >
+            <i data-feather="play-circle" class="w-5 h-5"></i>
+          </button>
+          <button
+            onclick="showChangeGreeting()"
+            class="px-4 py-2 text-sm text-sage-dark hover:text-charcoal border border-sage-light hover:border-sage rounded-lg transition whitespace-nowrap"
+          >
+            Change Greeting
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Filters & Actions -->
+    <div class="mb-6 space-y-4">
+      <!-- Search Bar -->
+      <div class="flex gap-3">
+        <div class="flex-1 relative">
+          <input
+            type="text"
+            placeholder="Search by guest name or notes..."
+            class="w-full px-4 py-3 pl-11 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+          />
+          <svg class="w-5 h-5 text-sage-dark absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        
+        <button class="px-4 py-3 bg-white border border-sage-light text-charcoal rounded-lg hover:bg-sage-light/30 transition flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          <span>Filters</span>
+        </button>
+      </div>
+      
+      <!-- Filter Pills Row -->
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- All/Favorites -->
+        <div class="flex gap-2">
+          <button class="px-4 py-2 rounded-lg transition bg-deep-green text-white">
+            All (47)
+          </button>
+          <button class="px-4 py-2 rounded-lg transition bg-white text-charcoal hover:bg-sage-light/30 border border-sage-light">
+            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            Favorites (12)
+          </button>
+        </div>
+        
+        <!-- Sort -->
+        <select class="px-4 py-2 border border-sage-light rounded-lg bg-white text-charcoal hover:bg-sage-light/30 transition">
+          <option>Newest first</option>
+          <option>Oldest first</option>
+          <option>Longest first</option>
+          <option>Shortest first</option>
+        </select>
+        
+        <!-- Spacer -->
+        <div class="flex-1"></div>
+        
+        <!-- Download All -->
+        <button class="px-6 py-2 bg-rose text-white rounded-lg font-medium hover:bg-rose-dark transition flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download All
+        </button>
+      </div>
+    </div>
+    
+    <!-- Messages Grid (Tile Layout) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Message Tile 1 - With Photo -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
+        <!-- Photo Section (Clickable for Upload) -->
+        <button class="relative w-full h-48 bg-gradient-to-br from-sage-light to-sage overflow-hidden group/photo">
+          <img 
+            src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=300&fit=crop" 
+            alt="Guest" 
+            class="w-full h-full object-cover object-center"
+          />
+          <!-- Edit Photo Overlay (on hover) -->
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition flex items-center justify-center">
+            <div class="text-white text-center">
+              <i data-feather="camera" class="w-6 h-6 mx-auto mb-1"></i>
+              <p class="text-xs">Change photo</p>
+            </div>
+          </div>
+        </button>
+        
+        <!-- Content Section -->
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <!-- Play Button -->
+            <button class="w-10 h-10 rounded-full bg-deep-green text-white flex items-center justify-center hover:bg-deep-green-dark transition flex-shrink-0">
+              <i data-feather="play" class="w-4 h-4 ml-0.5"></i>
+            </button>
+            
+            <!-- Name & Time -->
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-charcoal truncate">Grandma Rose</p>
+              <p class="text-xs text-sage-dark">25 Dec, 14:32 • 2:15</p>
+            </div>
+            
+            <!-- Action Icons -->
+            <div class="flex gap-1 flex-shrink-0">
+              <button class="p-2 rounded-lg transition hover:bg-rose-light text-rose" title="Favorited">
+                <i data-feather="heart" class="w-4 h-4 fill-current"></i>
+              </button>
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Download">
+                <i data-feather="download" class="w-4 h-4"></i>
+              </button>
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Share">
+                <i data-feather="share-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Notes -->
+          <p class="text-sm text-charcoal bg-sage-light/20 rounded p-2 line-clamp-2">
+            Such a beautiful ceremony! Wishing you both a lifetime of love and happiness.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Message Tile 2 - No Photo (Clickable to Upload) -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
+        <!-- Placeholder Photo Section (Clickable to Upload) -->
+        <button class="relative w-full h-48 bg-gradient-to-br from-sage-light to-sage flex items-center justify-center group/photo hover:from-sage hover:to-sage-dark transition">
+          <div class="text-center">
+            <i data-feather="user" class="w-16 h-16 text-white/60 mx-auto mb-2"></i>
+            <div class="flex items-center gap-1 text-xs text-white/80 group-hover/photo:text-white transition">
+              <i data-feather="camera" class="w-3 h-3"></i>
+              <span>Add photo</span>
+            </div>
+          </div>
+        </button>
+        
+        <!-- Content Section -->
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <!-- Play Button -->
+            <button class="w-10 h-10 rounded-full bg-deep-green text-white flex items-center justify-center hover:bg-deep-green-dark transition flex-shrink-0">
+              <i data-feather="play" class="w-4 h-4 ml-0.5"></i>
+            </button>
+            
+            <!-- Name & Time -->
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-charcoal truncate">Uncle Bob</p>
+              <p class="text-xs text-sage-dark">25 Dec, 15:01 • 1:48</p>
+            </div>
+            
+            <!-- Action Icons -->
+            <div class="flex gap-1 flex-shrink-0">
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Add to favorites">
+                <i data-feather="heart" class="w-4 h-4"></i>
+              </button>
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Download">
+                <i data-feather="download" class="w-4 h-4"></i>
+              </button>
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Share">
+                <i data-feather="share-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Message Tile 3 - With Photo -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
+        <!-- Photo Section -->
+        <button class="relative w-full h-48 bg-gradient-to-br from-sage-light to-sage overflow-hidden group/photo">
+          <img 
+            src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=300&fit=crop" 
+            alt="Guest" 
+            class="w-full h-full object-cover object-center"
+          />
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition flex items-center justify-center">
+            <div class="text-white text-center">
+              <i data-feather="camera" class="w-6 h-6 mx-auto mb-1"></i>
+              <p class="text-xs">Change photo</p>
+            </div>
+          </div>
+        </button>
+        
+        <!-- Content Section -->
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <button class="w-10 h-10 rounded-full bg-deep-green text-white flex items-center justify-center hover:bg-deep-green-dark transition flex-shrink-0">
+              <i data-feather="play" class="w-4 h-4 ml-0.5"></i>
+            </button>
+            
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-charcoal truncate">College Friends</p>
+              <p class="text-xs text-sage-dark">25 Dec, 15:22 • 3:12</p>
+            </div>
+            
+            <div class="flex gap-1 flex-shrink-0">
+              <button class="p-2 rounded-lg transition hover:bg-rose-light text-rose" title="Favorited">
+                <i data-feather="heart" class="w-4 h-4 fill-current"></i>
+              </button>
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Download">
+                <i data-feather="download" class="w-4 h-4"></i>
+              </button>
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Share">
+                <i data-feather="share-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          
+          <p class="text-sm text-charcoal bg-sage-light/20 rounded p-2 line-clamp-2">
+            We can't believe you actually got married! Congrats!
+          </p>
+        </div>
+      </div>
+      
+      <!-- Message Tile 4 - With Photo -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
+        <button class="relative w-full h-48 bg-gradient-to-br from-sage-light to-sage overflow-hidden group/photo">
+          <img 
+            src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=400&h=300&fit=crop" 
+            alt="Guest" 
+            class="w-full h-full object-cover object-center"
+          />
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition flex items-center justify-center">
+            <div class="text-white text-center">
+              <i data-feather="camera" class="w-6 h-6 mx-auto mb-1"></i>
+              <p class="text-xs">Change photo</p>
+            </div>
+          </div>
+        </button>
+        
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <button class="w-10 h-10 rounded-full bg-deep-green text-white flex items-center justify-center hover:bg-deep-green-dark transition flex-shrink-0">
+              <i data-feather="play" class="w-4 h-4 ml-0.5"></i>
+            </button>
+            
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-charcoal truncate">The Smith Family</p>
+              <p class="text-xs text-sage-dark">25 Dec, 16:45 • 4:05</p>
+            </div>
+            
+            <div class="flex gap-1 flex-shrink-0">
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Add to favorites">
+                <i data-feather="heart" class="w-4 h-4"></i>
+              </button>
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Download">
+                <i data-feather="download" class="w-4 h-4"></i>
+              </button>
+              <button class="p-2 rounded-lg transition hover:bg-sage-light text-sage-dark" title="Share">
+                <i data-feather="share-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- Footer with Venue Branding -->
+  <footer class="bg-white border-t border-sage-light mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col items-center gap-4 text-center">
+        <img 
+          src="https://images.unsplash.com/photo-1519167758481-83f29da8a38d?w=300&h=150&fit=crop" 
+          alt="Thornbury Manor" 
+          class="h-16 w-auto object-contain"
+        />
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-sage-dark">Powered by</span>
+          <div class="text-xl font-serif text-rose">[WeddingRingRing Logo]</div>
+        </div>
+        <p class="text-xs text-sage-dark">
+          © 2024 Thornbury Manor. Messages hosted securely by WeddingRingRing.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function collapseGreeting() {
+      document.getElementById('greetingExpanded').style.display = 'none';
+      document.getElementById('greetingCollapsed').style.display = 'block';
+    }
+
+    function expandGreeting() {
+      document.getElementById('greetingCollapsed').style.display = 'none';
+      document.getElementById('greetingExpanded').style.display = 'block';
+    }
+
+    function toggleRecordingHelp() {
+      const content = document.getElementById('recordingHelpContent');
+      const chevron = document.getElementById('recordingHelpChevron');
+      
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+      } else {
+        content.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    function playGreeting() {
+      alert('Playing custom greeting...');
+    }
+
+    function showChangeGreeting() {
+      // Hide compact card, show prominent
+      document.getElementById('greetingCardCompact').style.display = 'none';
+      document.getElementById('greetingCardProminent').style.display = 'block';
+      document.getElementById('changeModeButtons').style.display = 'flex';
+      
+      // Scroll to the card
+      document.getElementById('greetingCardProminent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function cancelChange() {
+      // Show compact card, hide prominent
+      document.getElementById('greetingCardCompact').style.display = 'block';
+      document.getElementById('greetingCardProminent').style.display = 'none';
+      document.getElementById('changeModeButtons').style.display = 'none';
+      
+      // Scroll back to compact card
+      document.getElementById('greetingCardCompact').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function removeGreeting() {
+      if (confirm('Are you sure you want to remove your custom audio greeting? Your greeting will revert to the automated voice.')) {
+        alert('Custom greeting would be removed. API call to DELETE /api/events/{id}/greeting');
+        // After successful removal, would show prominent card again
+      }
+    }
+
+    // Demo: Toggle between states (remove this in production)
+    function toggleGreetingState() {
+      const prominent = document.getElementById('greetingCardProminent');
+      const compact = document.getElementById('greetingCardCompact');
+      
+      if (prominent.style.display === 'none') {
+        prominent.style.display = 'block';
+        compact.style.display = 'none';
+      } else {
+        prominent.style.display = 'none';
+        compact.style.display = 'block';
+      }
+    }
+  </script>
+
+</body>
+</html>

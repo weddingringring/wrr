@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - WeddingRingRing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFF8F0',
+            sage: {
+              light: '#C8D3CC',
+              DEFAULT: '#8B9B8E',
+              dark: '#6B7B6E'
+            },
+            'deep-green': {
+              DEFAULT: '#3D5A4C',
+              dark: '#2D4A3C'
+            },
+            rose: {
+              light: '#F5E6E6',
+              DEFAULT: '#D4A5A5',
+              dark: '#B48585'
+            },
+            charcoal: '#2C2C2C'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-sans bg-cream">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-sage-light shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <img 
+            src="https://images.unsplash.com/photo-1519167758481-83f29da8a38d?w=200&h=100&fit=crop" 
+            alt="Thornbury Manor" 
+            class="h-12 w-auto object-contain"
+          />
+          <div class="flex items-center gap-2 text-xs text-sage-dark border-l border-sage-light pl-3">
+            <span>Powered by</span>
+            <div class="text-base font-serif text-rose">[WRR]</div>
+          </div>
+        </div>
+        
+        <a href="#" class="text-sm text-sage-dark hover:text-charcoal transition">
+          ← Back to Messages
+        </a>
+      </div>
+    </div>
+  </header>
+  
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="font-serif text-4xl text-charcoal mb-2">Settings</h1>
+    <p class="text-sage-dark mb-8">Sarah & James's Wedding</p>
+    
+    <div class="space-y-6">
+      
+      <!-- Account Info -->
+      <section class="bg-white rounded-xl shadow-sm p-6">
+        <h2 class="font-serif text-2xl text-charcoal mb-4 pb-4 border-b border-sage-light">
+          Account Information
+        </h2>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-sage-dark mb-1">
+              Email Address
+            </label>
+            <p class="text-charcoal"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a190b180b022a0f120b071a060f44090507">[email&#160;protected]</a></p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-sage-dark mb-1">
+              Event
+            </label>
+            <p class="text-charcoal">Sarah & James's Wedding</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-sage-dark mb-1">
+              Event Date
+            </label>
+            <p class="text-charcoal">Saturday, 25 December 2024</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-sage-dark mb-1">
+              Venue
+            </label>
+            <p class="text-charcoal">Thornbury Manor</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Sharing Access -->
+      <section class="bg-white rounded-xl shadow-sm p-6">
+        <h2 class="font-serif text-2xl text-charcoal mb-4 pb-4 border-b border-sage-light">
+          Share Access
+        </h2>
+        
+        <div class="space-y-4">
+          <p class="text-sage-dark">
+            To share access with your partner or family members, simply give them your login credentials:
+          </p>
+          
+          <div class="p-4 bg-sage-light/20 rounded-lg">
+            <p class="text-sm font-medium text-charcoal mb-2">Login Details to Share:</p>
+            <p class="text-sm text-charcoal mb-1">
+              <strong>Email:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8efdeffcefe6ceebf6efe3fee2eba0ede1e3">[email&#160;protected]</a>
+            </p>
+            <p class="text-sm text-charcoal">
+              <strong>Password:</strong> Your password (they'll need to ask you)
+            </p>
+          </div>
+          
+          <div class="p-4 bg-deep-green/5 border border-deep-green/20 rounded-lg">
+            <p class="text-sm text-deep-green">
+              <strong>💡 Tip:</strong> Everyone with these credentials will be able to view, organize, and download messages. Only share with people you trust.
+            </p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Change Password -->
+      <section class="bg-white rounded-xl shadow-sm p-6">
+        <h2 class="font-serif text-2xl text-charcoal mb-4 pb-4 border-b border-sage-light">
+          Change Password
+        </h2>
+        
+        <form class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              New Password
+            </label>
+            <input
+              type="password"
+              class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+              placeholder="••••••••"
+            />
+            <p class="text-xs text-sage-dark mt-1">At least 8 characters</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              class="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+              placeholder="••••••••"
+            />
+          </div>
+          
+          <button
+            type="submit"
+            class="px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+          >
+            Update Password
+          </button>
+        </form>
+      </section>
+      
+      <!-- Export & Download -->
+      <section class="bg-white rounded-xl shadow-sm p-6">
+        <h2 class="font-serif text-2xl text-charcoal mb-4 pb-4 border-b border-sage-light">
+          Export & Download
+        </h2>
+        
+        <div class="space-y-4">
+          <div>
+            <h3 class="font-medium text-charcoal mb-2">Download All Messages</h3>
+            <p class="text-sm text-sage-dark mb-3">
+              Download all voice messages and photos as a ZIP file to keep forever.
+            </p>
+            <button class="px-6 py-3 bg-rose text-white rounded-lg font-medium hover:bg-rose-dark transition">
+              Download ZIP File
+            </button>
+          </div>
+          
+          <div class="pt-4 border-t border-sage-light">
+            <h3 class="font-medium text-charcoal mb-2">Export Message List (CSV)</h3>
+            <p class="text-sm text-sage-dark mb-3">
+              Export a spreadsheet with message details (guest names, dates, notes, tags).
+            </p>
+            <button class="px-6 py-3 bg-sage text-white rounded-lg font-medium hover:bg-sage-dark transition">
+              Export CSV
+            </button>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Sign Out -->
+      <section class="bg-white rounded-xl shadow-sm p-6">
+        <h2 class="font-serif text-2xl text-charcoal mb-4 pb-4 border-b border-sage-light">
+          Account Actions
+        </h2>

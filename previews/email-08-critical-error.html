@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Critical Error Alert - Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="margin: 0; padding: 0; background-color: #FAF8F3; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  
+  <div style="margin: 0 auto; padding: 20px 0 48px; max-width: 600px;">
+    
+    <!-- Header -->
+    <div style="padding: 32px 0; text-align: center; border-bottom: 1px solid #C5D5B8;">
+      <h1 style="font-size: 32px; font-weight: 700; color: #2D5016; margin: 0; font-family: 'Crimson Text', Georgia, serif;">
+        WeddingRingRing
+      </h1>
+    </div>
+
+    <!-- Content -->
+    <div style="padding: 32px; background-color: #ffffff; border-radius: 8px; margin-top: 24px;">
+      
+      <!-- Error Header -->
+      <div style="background-color: #DC2626; color: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 24px; text-align: center;">
+        <h2 style="font-size: 24px; font-weight: 600; color: #ffffff; margin: 0;">
+          🚨 Critical Error Detected
+        </h2>
+      </div>
+
+      <!-- Error Details -->
+      <div style="background-color: #FEE2E2; border: 1px solid #DC2626; border-radius: 8px; padding: 16px; margin: 16px 0;">
+        <p style="font-size: 14px; font-weight: 600; color: #6B8E5C; margin: 0 0 4px;">Error Type</p>
+        <p style="font-size: 16px; font-weight: 600; color: #2C2C2C; margin: 0 0 16px;">Phone Purchase Failed</p>
+        
+        <p style="font-size: 14px; font-weight: 600; color: #6B8E5C; margin: 0 0 4px;">Error Message</p>
+        <p style="font-size: 14px; font-family: monospace; color: #DC2626; margin: 0 0 16px;">
+          No available phone numbers in country: FR
+        </p>
+        
+        <p style="font-size: 14px; font-weight: 600; color: #6B8E5C; margin: 0 0 4px;">Source</p>
+        <p style="font-size: 16px; font-weight: 600; color: #2C2C2C; margin: 0 0 16px;">cron:purchase-numbers</p>
+        
+        <p style="font-size: 14px; font-weight: 600; color: #6B8E5C; margin: 0 0 4px;">Timestamp</p>
+        <p style="font-size: 16px; font-weight: 600; color: #2C2C2C; margin: 0 0 16px;">10/02/2026, 03:00:15</p>
+      </div>
+
+      <!-- Context -->
+      <div style="background-color: #FAF8F3; border: 1px solid #C5D5B8; border-radius: 8px; padding: 16px; margin: 16px 0;">
+        <p style="font-size: 14px; font-weight: 600; color: #6B8E5C; margin: 0 0 4px;">Context</p>
+        <p style="font-size: 14px; margin: 4px 0; color: #2C2C2C;">
+          <strong>Event ID:</strong> evt_abc123
+        </p>
+        <p style="font-size: 14px; margin: 4px 0; color: #2C2C2C;">
+          <strong>Country:</strong> FR
+        </p>
+        <p style="font-size: 14px; margin: 4px 0; color: #2C2C2C;">
+          <strong>Event Date:</strong> 2025-03-15
+        </p>
+      </div>
+
+      <a href="#" style="background-color: #DC2626; border-radius: 8px; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; text-align: center; display: inline-block; padding: 12px 32px; margin: 16px 0;">
+        View Error in Dashboard
+      </a>
+
+      <!-- Stack Trace -->
+      <div style="background-color: #FAF8F3; border: 1px solid #C5D5B8; border-radius: 8px; padding: 16px; margin: 16px 0;">
+        <p style="font-size: 14px; font-weight: 600; color: #6B8E5C; margin: 0 0 4px;">Stack Trace</p>
+        <p style="font-size: 12px; font-family: monospace; color: #2C2C2C; white-space: pre-wrap; margin: 8px 0 0;">
+Error: No available phone numbers in country: FR
+    at purchasePhoneNumber (twilio.ts:45)
+    at processPurchase (route.ts:112)
+    at GET (route.ts:78)
+        </p>
+      </div>
+
+      <p style="font-size: 16px; line-height: 24px; color: #2C2C2C; margin: 0 0 16px;">
+        This is an automated alert from the error logging system.
+      </p>
+
+      <p style="font-size: 12px; color: #6B8E5C; margin: 16px 0 0;">
+        WeddingRingRing Error Monitoring System
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div style="margin-top: 32px; text-align: center;">
+      <p style="color: #6B8E5C; font-size: 12px; line-height: 16px; margin: 4px 0;">
+        WeddingRingRing - Capture Audio Messages from Your Special Day
+      </p>
+      <p style="color: #6B8E5C; font-size: 12px; line-height: 16px; margin: 4px 0;">
+        Need help? Email 
+        <a href="/cdn-cgi/l/email-protection#2d5e585d5d425f596d5a48494944434a5f44434a5f44434a034e4240" style="color: #2D5016; text-decoration: underline;">
+          <span class="__cf_email__" data-cfemail=

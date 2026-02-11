@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Detail - WeddingRingRing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFF8F0',
+            sage: {
+              light: '#C8D3CC',
+              DEFAULT: '#8B9B8E',
+              dark: '#6B7B6E'
+            },
+            'deep-green': {
+              DEFAULT: '#3D5A4C',
+              dark: '#2D4A3C'
+            },
+            rose: {
+              light: '#F5E6E6',
+              DEFAULT: '#D4A5A5',
+              dark: '#B48585'
+            },
+            charcoal: '#2C2C2C'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-sans bg-cream">
+  
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 z-50 overflow-y-auto">
+    <!-- Dark Backdrop -->
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm"></div>
+    
+    <!-- Modal -->
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        
+        <!-- Close Button -->
+        <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-sage-light/30 hover:bg-sage-light transition flex items-center justify-center z-10">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        
+        <!-- Photo Section -->
+        <div class="relative h-80 bg-gradient-to-br from-sage-light to-sage">
+          <img 
+            src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=600&fit=crop" 
+            alt="Guest"
+            class="w-full h-full object-cover object-center"
+          />
+          
+          <button class="absolute bottom-4 right-4 px-4 py-2 bg-white/90 hover:bg-white text-charcoal rounded-lg font-medium transition text-sm">
+            Change Photo
+          </button>
+        </div>
+        
+        <!-- Content Section -->
+        <div class="p-8">
+          
+          <!-- Header with Actions -->
+          <div class="flex items-start justify-between mb-6">
+            <div class="flex-1">
+              <h2 class="text-2xl font-medium text-charcoal">
+                Grandma Rose
+              </h2>
+              <p class="text-sage-dark mt-1">
+                Saturday, 25 December 2024, 14:32
+              </p>
+            </div>
+            
+            <div class="flex gap-2 ml-4">
+              <!-- Favorite (filled) -->
+              <button class="p-3 rounded-lg transition bg-rose-light text-rose" title="Remove from favorites">
+                <svg class="w-5 h-5" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
+              
+              <!-- Download -->
+              <button class="p-3 bg-sage-light/30 text-sage-dark rounded-lg hover:bg-sage-light transition" title="Download message">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </button>
+              
+              <!-- Share -->
+              <button class="p-3 bg-sage-light/30 text-sage-dark rounded-lg hover:bg-sage-light transition" title="Share message">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Audio Player -->
+          <div class="bg-deep-green/5 rounded-xl p-6 mb-6">
+            <div class="flex items-center gap-4 mb-4">
+              <!-- Play Button -->
+              <button class="w-14 h-14 rounded-full bg-deep-green text-white flex items-center justify-center hover:bg-deep-green-dark transition flex-shrink-0">
+                <svg class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </button>
+              
+              <!-- Progress Bar -->
+              <div class="flex-1">
+                <input
+                  type="range"
+                  min="0"
+                  max="135"
+                  value="0"
+                  class="w-full h-2 bg-deep-green/20 rounded-lg appearance-none cursor-pointer"
+                  style="background: linear-gradient(to right, #3D5A4C 0%, #3D5A4C 0%, rgba(61, 90, 76, 0.2) 0%, rgba(61, 90, 76, 0.2) 100%);"
+                />
+                <div class="flex justify-between text-xs text-sage-dark mt-1">
+                  <span>0:00</span>
+                  <span>2:15</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tags -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-charcoal mb-3">
+              Tags
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <button class="px-3 py-1 rounded-full text-sm transition bg-deep-green text-white">
+                Family
+              </button>
+              <button class="px-3 py-1 rounded-full text-sm transition bg-deep-green text-white">
+                Emotional
+              </button>
+              <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+                Friends
+              </button>
+              <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+                Funny
+              </button>
+              <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+                Heartfelt
+              </button>
+              <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+                Work
+              </button>
+              <button class="px-3 py-1 rounded-full text-sm transition bg-sage-light/30 text-sage-dark hover:bg-sage-light">
+                Surprise
+              </button>
+            </div>
+          </div>
+          
+          <!-- Notes (View Mode) -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-charcoal mb-2">
+              Notes
+            </label>
+            <div class="p-4 bg-sage-light/20 rounded-lg min-h-[100px]">
+              <p class="text-charcoal whitespace-pre-wrap">Such a beautiful ceremony! We're so happy for you both. Wishing you a lifetime of love and happiness. ❤️
+
+She got a bit emotional at the end - you could hear it in her voice!</p>
+            </div>
+          </div>
+          
+          <!-- Edit Button -->
+          <button class="w-full py-3 bg-sage-light/30 text-charcoal rounded-lg font-medium hover:bg-sage-light transition">
+            Edit Message
+          </button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

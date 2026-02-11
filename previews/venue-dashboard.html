@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venue Dashboard - WeddingRingRing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFF8F0',
+            sage: {
+              light: '#C8D3CC',
+              DEFAULT: '#8B9B8E',
+              dark: '#6B7B6E'
+            },
+            'deep-green': {
+              DEFAULT: '#3D5A4C',
+              dark: '#2D4A3C'
+            },
+            rose: {
+              light: '#F5E6E6',
+              DEFAULT: '#D4A5A5',
+              dark: '#B48585'
+            },
+            charcoal: '#2C2C2C'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-sans bg-cream">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-sage-light shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-4">
+          <h1 style="font-family: 'Brush Script MT', cursive; font-size: 28px; color: #F4A5A5; letter-spacing: 2px;">RingRing~~~</h1>
+          <span class="text-xs text-sage-dark border-l border-sage-light pl-4">Thornbury Manor</span>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-sm text-sage-dark hover:text-charcoal transition">
+            Settings
+          </a>
+          <button class="text-sm text-sage-dark hover:text-charcoal transition">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <p class="text-sm text-sage-dark mb-1">Upcoming Events</p>
+        <p class="text-3xl font-bold text-deep-green">8</p>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <p class="text-sm text-sage-dark mb-1">Past Events</p>
+        <p class="text-3xl font-bold text-sage-dark">24</p>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <p class="text-sm text-sage-dark mb-1">Total Messages</p>
+        <p class="text-3xl font-bold text-charcoal">1,247</p>
+      </div>
+    </div>
+    
+    <!-- Actions Bar -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div class="flex gap-2">
+        <button class="px-4 py-2 rounded-lg transition bg-deep-green text-white">
+          📅 Calendar
+        </button>
+        <button class="px-4 py-2 rounded-lg transition bg-white text-charcoal hover:bg-sage-light/30">
+          📋 List
+        </button>
+      </div>
+      
+      <a href="venue-create-event.html" class="px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition">
+        + Create Event
+      </a>
+    </div>
+    
+    <!-- Calendar View -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <h2 class="font-serif text-2xl text-charcoal mb-6">Your Events</h2>
+      
+      <div class="space-y-8">
+        <!-- Upcoming Events -->
+        <div>
+          <h3 class="font-medium text-charcoal mb-4 text-lg">
+            Upcoming Events (8)
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Event Card 1 -->
+            <a href="venue-event-details.html" class="block p-6 rounded-xl border-2 border-deep-green/20 bg-white hover:border-deep-green transition hover:shadow-md">
+              <div class="mb-3">
+                <h4 class="font-serif text-lg text-charcoal mb-1">
+                  Sarah & James's Wedding
+                </h4>
+                <p class="text-sm text-sage-dark">
+                  Saturday, 25 December 2024
+                </p>
+              </div>
+              
+              <div class="mb-3">
+                <p class="text-sm font-medium text-deep-green">
+                  In 17 days
+                </p>
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-sage-dark">
+                  47 messages
+                </span>
+                <span class="text-deep-green font-medium">
+                  View →
+                </span>
+              </div>
+            </a>
+            
+            <!-- Event Card 2 -->
+            <a href="#" class="block p-6 rounded-xl border-2 border-deep-green/20 bg-white hover:border-deep-green transition hover:shadow-md">
+              <div class="mb-3">
+                <h4 class="font-serif text-lg text-charcoal mb-1">
+                  Emma's Christening
+                </h4>
+                <p class="text-sm text-sage-dark">
+                  Sunday, 15 January 2025
+                </p>
+              </div>
+              
+              <div class="mb-3">
+                <p class="text-sm font-medium text-deep-green">
+                  In 38 days
+                </p>
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-sage-dark">
+                  0 messages
+                </span>
+                <span class="text-deep-green font-medium">
+                  View →
+                </span>
+              </div>
+            </a>
+            
+            <!-- Event Card 3 -->
+            <a href="#" class="block p-6 rounded-xl border-2 border-deep-green/20 bg-white hover:border-deep-green transition hover:shadow-md">
+              <div class="mb-3">
+                <h4 class="font-serif text-lg text-charcoal mb-1">
+                  Steve's 40th Birthday
+                </h4>
+                <p class="text-sm text-sage-dark">
+                  Saturday, 8 February 2025
+                </p>
+              </div>
+              
+              <div class="mb-3">
+                <p class="text-sm font-medium text-deep-green">
+                  Today!
+                </p>
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-sage-dark">
+                  12 messages
+                </span>
+                <span class="text-deep-green font-medium">
+                  View →
+                </span>
+              </div>
+            </a>
+            
+            <!-- Event Card 4 -->
+            <a href="#" class="block p-6 rounded-xl border-2 border-deep-green/20 bg-white hover:border-deep-green transition hover:shadow-md">
+              <div class="mb-3">
+                <h4 class="font-serif text-lg text-charcoal mb-1">
+                  Tom & Lisa's Wedding
+                </h4>
+                <p class="text-sm text-sage-dark">
+                  Saturday, 15 March 2025
+                </p>
+              </div>
+              
+              <div class="mb-3">
+                <p class="text-sm font-medium text-deep-green">
+                  In 35 days
+                </p>
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-sage-dark">
+                  8 messages
+                </span>
+                <span class="text-deep-green font-medium">
+                  View →
+                </span>
+              </div>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Past Events -->
+        <div>
+          <h3 class="font-medium text-sage-dark mb-4 text-lg">
+            Past Events (24)
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Past Event Card 1 -->
+            <a href="#" class="block p-6 rounded-xl border-2 border-sage-light bg-sage-light/10 hover:border-sage transition hover:shadow-md">
+              <div class="mb-3">
+                <h4 class="font-serif text-lg text-charcoal mb-1">
+                  John & Mary's 25th Anniversary
+                </h4>
+                <p class="text-sm text-sage-dark">
+                  Tuesday, 12 November 2024
+                </p>
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-sage-dark">
+                  31 messages
+                </span>
+                <span class="text-deep-green font-medium">
+                  View →
+                </span>
+              </div>
+            </a>
+            
+            <!-- Past Event Card 2 -->
+            <a href="#" class="block p-6 rounded-xl border-2 border-sage-light bg-sage-light/10 hover:border-sage transition hover:shadow-md">
+              <div class="mb-3">
+                <h4 class="font-serif text-lg text-charcoal mb-1">
+                  Alice & Bob's Wedding
+                </h4>
+                <p class="text-sm text-sage-dark">
+                  Saturday, 5 October 2024
+                </p>
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-sage-dark">
+                  52 messages
+                </span>
+                <span class="text-deep-green font-medium">
+                  View →
+                </span>
+              </div>
+            </a>
+            
+            <!-- Past Event Card 3 -->
+            <a href="#" class="block p-6 rounded-xl border-2 border-sage-light bg-sage-light/10 hover:border-sage transition hover:shadow-md">
+              <div class="mb-3">
+                <h4 class="font-serif text-lg text-charcoal mb-1">
+                  David's 50th Birthday
+                </h4>
+                <p class="text-sm text-sage-dark">
+                  Friday, 20 September 2024
+                </p>
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-sage-dark">
+                  28 messages
+                </span>
+                <span class="text-deep-green font-medium">
+                  View →
+                </span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

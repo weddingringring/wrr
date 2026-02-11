@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phone Inventory - Admin - WeddingRingRing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFF8F0',
+            sage: {
+              light: '#C8D3CC',
+              DEFAULT: '#8B9B8E',
+              dark: '#6B7B6E'
+            },
+            'deep-green': {
+              DEFAULT: '#3D5A4C',
+              dark: '#2D4A3C'
+            },
+            rose: {
+              DEFAULT: '#D4A5A5',
+              dark: '#B48585'
+            },
+            charcoal: '#2C2C2C'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-sans bg-cream">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-sage-light shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <a href="admin-dashboard.html" class="text-sm text-sage-dark hover:text-charcoal mb-2 inline-block">
+            ← Back to Dashboard
+          </a>
+          <h1 class="font-serif text-3xl text-charcoal">Phone Inventory</h1>
+          <p class="text-sm text-sage-dark mt-1">Manage physical phone devices</p>
+        </div>
+        
+        <button class="px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition">
+          + Add Phone
+        </button>
+      </div>
+    </div>
+  </header>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow-sm p-4">
+        <p class="text-sm text-sage-dark mb-1">Total Phones</p>
+        <p class="text-2xl font-bold text-charcoal">12</p>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-sm p-4">
+        <p class="text-sm text-sage-dark mb-1">Available</p>
+        <p class="text-2xl font-bold text-deep-green">8</p>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-sm p-4">
+        <p class="text-sm text-sage-dark mb-1">In Use</p>
+        <p class="text-2xl font-bold text-sage-dark">3</p>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-sm p-4">
+        <p class="text-sm text-sage-dark mb-1">Maintenance</p>
+        <p class="text-2xl font-bold text-rose">1</p>
+      </div>
+    </div>
+    
+    <!-- Phones Table -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-sage-light/20 border-b border-sage-light">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
+                Device
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
+                Serial / IMEI
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
+                SIM Details
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
+                Assigned To
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
+                Status
+              </th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-charcoal uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-sage-light">
+            <!-- Row 1 -->
+            <tr class="hover:bg-sage-light/10 transition">
+              <td class="px-6 py-4">
+                <div class="font-medium text-charcoal">Pink Opis 60s Mobile</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm">
+                  <div class="text-charcoal font-mono">OPIS001</div>
+                  <div class="text-sage-dark font-mono text-xs">123456789012345</div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm">
+                  <div class="text-charcoal font-mono">+447700900123</div>
+                  <div class="text-sage-dark">EE</div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-charcoal">Thornbury Manor</div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sage/10 text-sage-dark">
+                  in use
+                </span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <button class="text-sm text-deep-green hover:text-deep-green-dark font-medium">
+                  Edit
+                </button>
+              </td>
+            </tr>
+            
+            <!-- Row 2 -->
+            <tr class="hover:bg-sage-light/10 transition">
+              <td class="px-6 py-4">
+                <div class="font-medium text-charcoal">Black Opis 60s Mobile</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm">
+                  <div class="text-charcoal font-mono">OPIS002</div>
+                  <div class="text-sage-dark font-mono text-xs">234567890123456</div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm">
+                  <div class="text-charcoal font-mono">+447700900124</div>
+                  <div class="text-sage-dark">Vodafone</div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-charcoal">—</div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-deep-green/10 text-deep-green">
+                  available
+                </span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <button class="text-sm text-deep-green hover:text-deep-green-dark font-medium">
+                  Edit
+                </button>
+              </td>
+            </tr>
+            
+            <!-- Row 3 -->
+            <tr class="hover:bg-sage-light/10 transition">
+              <td class="px-6 py-4">
+                <div class="font-medium text-charcoal">Gold Opis 60s Mobile</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm">
+                  <div class="text-charcoal font-mono">OPIS003</div>
+                  <div class="text-sage-dark font-mono text-xs">345678901234567</div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm">
+                  <div class="text-charcoal font-mono">+447700900125</div>
+                  <div class="text-sage-dark">O2</div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-charcoal">Riverside Gardens</div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sage/10 text-sage-dark">
+                  in use
+                </span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <button class="text-sm text-deep-green hover:text-deep-green-dark font-medium">
+                  Edit
+                </button>
+              </td>
+            </tr>
+            
+            <!-- Row 4 -->
+            <tr class="hover:bg-sage-light/10 transition">
+              <td class="px-6 py-4">
+                <div class="font-medium text-charcoal">Pink Opis 60s Mobile</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm">
+                  <div class="text-charcoal font-mono">OPIS004</div>
+                  <div class="text-sage-dark font-mono text-xs">456789012345678</div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm">
+                  <div class="text-charcoal font-mono">+447700900126</div>
+                  <div class="text-sage-dark">Three</div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-charcoal">—</div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose/10 text-rose-dark">
+                  maintenance
+                </span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <button class="text-sm text-deep-green hover:text-deep-green-dark font-medium">
+                  Edit
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

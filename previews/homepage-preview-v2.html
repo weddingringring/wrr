@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeddingRingRing - Capture Audio Messages from Your Special Day</title>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #2C2C2C;
+      background: #FAF8F3;
+    }
+    .serif { font-family: 'Crimson Text', Georgia, serif; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
+    
+    /* Header */
+    header { background: white; border-bottom: 1px solid #E8D5D5; padding: 1.5rem 0; }
+    header .container { display: flex; justify-content: space-between; align-items: center; }
+    nav { display: flex; gap: 2rem; align-items: center; }
+    nav a { color: #2C2C2C; text-decoration: none; transition: color 0.3s; }
+    nav a:hover { color: #2D5016; }
+    .btn-primary { 
+      background: #2D5016; 
+      color: white; 
+      padding: 0.5rem 1.5rem; 
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .btn-primary:hover { background: #87A878; }
+    
+    /* Hero with full illustration background */
+    .hero { 
+      position: relative;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('../public/hero-illustration.svg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.15;
+      z-index: 0;
+    }
+    .hero .container { 
+      position: relative;
+      z-index: 1;
+      padding: 5rem 1rem;
+    }
+    .hero-content {
+      max-width: 700px;
+    }
+    .hero h1 { 
+      font-size: 4rem; 
+      line-height: 1.1; 
+      color: #2D5016; 
+      margin-bottom: 1.5rem;
+    }
+    .hero p { font-size: 1.5rem; margin-bottom: 2rem; }
+    .hero-ctas { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .hero-ctas a {
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .cta-primary {
+      background: #2D5016;
+      color: white;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    .cta-primary:hover { background: #87A878; transform: translateY(-2px); }
+    .cta-secondary {
+      background: #F5E8E8;
+      color: #2D5016;
+      border: 2px solid #D4A5A5;
+    }
+    .cta-secondary:hover { background: #D4A5A5; color: white; }
+    
+    .social-proof {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding-top: 1rem;
+    }
+    .avatars {
+      display: flex;
+      margin-left: -0.5rem;
+    }
+    .avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin-left: -0.75rem;
+    }
+    .avatar:first-child { margin-left: 0; }
+    
+    /* Sections */
+    section { padding: 5rem 0; }
+    .section-white { background: white; }
+    .section-cream { background: #FAF8F3; }
+    .section-blush { background: #F5E8E8; }
+    .section-green { 
+      background: linear-gradient(to bottom right, #2D5016, #87A878);
+      color: white;
+    }
+    
+    h2 { 
+      font-size: 3rem; 
+      color: #2D5016; 
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .section-green h2 { color: white; }
+    
+    .text-center { text-align: center; }
+    .max-w-3xl { max-width: 48rem; margin-left: auto; margin-right: auto; }
+    
+    /* Grid */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+    
+    /* Cards */
+    .card {
+      background: white;
+      border: 1px solid #E8D5D5;
+      border-radius: 0.75rem;
+      padding: 2rem;
+      transition: all 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(212, 165, 165, 0.2);
+    }
+    .card-white {
+      background: white;
+      border-radius: 0.75rem;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: all 0.3s;
+      border: 1px solid #E8D5D5;
+    }
+    .card-white:hover { 
+      box-shadow: 0 10px 20px rgba(212, 165, 165, 0.2);
+      transform: translateY(-4px);
+    }
+    
+    .icon-box {
+      width: 3rem;
+      height: 3rem;
+      background: #F5E8E8;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .icon-box-green {
+      background: #2D5016;
+      color: white;
+    }
+    .icon-box-blush {
+      background: #D4A5A5;
+      color: white;
+    }
+    
+    .step-card {
+      position: relative;
+      background: white;
+      border: 2px solid #F5E8E8;
+      border-radius: 0.75rem;
+      padding: 2rem;
+      padding-top: 3rem;
+      transition: all 0.3s;
+    }
+    .step-card:hover {
+      border-color: #D4A5A5;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(212, 165, 165, 0.2);
+    }
+    .step-number {
+      position: absolute;
+      top: -1rem;
+      left: -1rem;
+      width: 3rem;
+      height: 3rem;
+      background: #D4A5A5;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    /* Venue Value Prop */
+    .value-card {
+      background: linear-gradient(135deg, #F5E8E8 0%, #FAF8F3 100%);
+      border: 2px solid #D4A5A5;
+      border-radius: 1rem;
+      padding: 2.5rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .value-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 30px rgba(212, 165, 165, 0.3);
+    }
+    .value-number {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #2D5016;
+      margin-bottom: 0.5rem;
+    }
+    .value-label {
+      font-size: 1.125rem;
+      color: #87A878;
+      font-weight: 600;
+    }
+    
+    /* Testimonials */
+    .stars { color: #D4A5A5; display: flex; gap: 0.25rem; margin-bottom: 1rem; }
+    .testimonial-text { font-style: italic; margin-bottom: 1rem; }
+    .testimonial-author { font-weight: 600; color: #2D5016; }
+    .testimonial-venue { font-size: 0.875rem; color: #87A878; }
+    
+    /* FAQ */
+    details {
+      background: white;
+      border: 1px solid #E8D5D5;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s;
+    }
+    details:hover {
+      border-color: #D4A5A5;
+      box-shadow: 0 4px 10px rgba(212, 165, 165, 0.2);
+    }
+    summary {
+      font-weight: 600;
+      font-size: 1.125rem;
+      color: #2D5016;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    details p { margin-top: 1rem; }
+    
+    /* Form */
+    form { background: white; border-radius: 1rem; padding: 3rem; border: 2px solid #E8D5D5; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #2C2C2C;
+      margin-bottom: 0.5rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #E8D5D5;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #D4A5A5;
+      box-shadow: 0 0 0 3px rgba(212, 165, 165, 0.1);
+    }
+    .form-full { grid-column: 1 / -1; }
+    button[type="submit"] {
+      width: 100%;
+      background: #2D5016;
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button[type="submit"]:hover { background: #87A878; }
+    
+    /* Footer */
+    footer {
+      background: #2D5016;
+      color: white;
+      padding: 3rem 0;
+    }
+    .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+    footer h4 { margin-bottom: 1rem; }
+    footer ul { list-style: none; }
+    footer li { margin-bottom: 0.5rem; }
+    footer a { color: #C5D5B8; text-decoration: none; transition: color 0.3s; }
+    footer a:hover { color: white; }
+    .footer-bottom {
+      border-top: 1px solid #87A878;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      text-align: center;
+      color: #C5D5B8;
+    }
+    
+    .checkmark { color: #C5D5B8; margin-right: 0.75rem; }
+    
+    /* Stats bar */
+    .stats-bar {
+      background: white;
+      border-top: 1px solid #E8D5D5;
+      border-bottom: 1px solid #E8D5D5;
+      padding: 2rem 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #D4A5A5;
+      margin-bottom: 0.25rem;
+    }
+    .stat-label {
+      color: #87A878;
+      font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.5rem; }
+      h2 { font-size: 2rem; }
+      .grid-2, .grid-3, .grid-4, .form-grid, .footer-grid, .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-ctas { flex-direction: column; }
+      .hero-ctas a { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div>
+        <img src="../public/logo.svg" alt="WeddingRingRing" style="height: 50px;">
+      </div>
+      <nav style="display: none;">
+        <!-- Mobile menu hidden for now -->
+      </nav>
+      <nav style="display: flex;">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#benefits">For Venues</a>
+        <a href="#testimonials">Reviews</a>
+        <a href="#contact" class="btn-primary">Get Started</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero with full illustration background -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="serif">The Audio Guestbook That Sells Itself to Your Couples</h1>
+        <p>Add a premium offering that brings real revenue. <strong>No tech knowledge. No training. No effort.</strong> Just happy couples and better reviews.</p>
+        <div class="hero-ctas">
+          <a href="#contact" class="cta-primary">Add This to Your Venue</a>
+          <a href="#benefits" class="cta-secondary">See Venue Benefits</a>
+        </div>
+        <div class="social-proof">
+          <div class="avatars">
+            <div class="avatar" style="background: #87A878;"></div>
+            <div class="avatar" style="background: #D4A5A5;"></div>
+            <div class="avatar" style="background: #2D5016;"></div>
+            <div class="avatar" style="background: #F5E8E8;"></div>
+          </div>
+          <p style="font-size: 0.875rem; color: #87A878;"><strong style="color: #2D5016;">150+ venues</strong> trust WeddingRingRing</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="container">
+      <div class="stats-grid">
+        <div>
+          <div class="stat-number">2 min</div>
+          <div class="stat-label">Setup Time</div>
+        </div>
+        <div>
+          <div class="stat-number">Zero</div>
+          <div class="stat-label">Tech Knowledge</div>
+        </div>
+        <div>
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Success Rate</div>
+        </div>
+        <div>
+          <div class="stat-number">£500+</div>
+          <div class="stat-label">Average Upsell</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- For Venue Owners -->
+  <section class="section-blush">
+    <div class="container">
+      <div class="max-w-3xl text-center" style="margin-bottom: 4rem;">
+        <h2 class="serif">Built for Busy Venue Owners</h2>
+        <p style="font-size: 1.25rem; margin-top: 1.5rem;">You don't have time for complicated tech. Your staff doesn't either. That's exactly why we built this.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="value-card">
+          <div class="value-number">£500+</div>
+          <div class="value-label">Extra Revenue Per Event</div>
+          <p style="margin-top: 1rem; font-size: 0.875rem; color: #2C2C2C;">Easy to add to premium packages. Couples say yes every time.</p>
+        </div>
+
+        <div class="value-card">
+          <div class="value-number">2 mins</div>
+          <div class="value-label">Staff Time Required</div>
+          <p style="margin-top: 1rem; font-size: 0.875rem; color: #2C2C2C;">Plug it in. Place it. Done. No setup, no training, no hassle.</p>
+        </div>
+
+        <div class="value-card">
+          <div class="value-number">Zero</div>
+          <div class="value-label">Complaints Ever</div>
+          <p style="margin-top: 1rem; font-size: 0.875rem; color: #2C2C2C;">Unlike photo booths or apps - it just works. Every. Single. Time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Problem for Venues -->
+  <section class="section-white">
+    <div class="container">
+      <div class="max-w-3xl text-center" style="margin-bottom: 4rem;">
+        <h2 class="serif">Your Couples Keep Asking for Something Special</h2>
+        <p style="font-size: 1.25rem; margin-top: 1.5rem;">But the options are either <strong style="color: #D4A5A5;">boring, complicated, or unreliable.</strong> Until now.</p>
+      </div>
+      
+      <div class="grid-3">
+        <div class="card">
+          <div class="icon-box">📖</div>
+          <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Written Guest Books</h3>
+          <p>Generic. Forgettable. Half the guests don't even sign them. Your couples deserve better.</p>
+        </div>
+        
+        <div class="card">
+          <div class="icon-box">📱</div>
+          <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Digital Apps</h3>
+          <p>Require Wi-Fi, downloads, tech support. Your staff hates them. Guests can't figure them out.</p>
+        </div>
+        
+        <div class="card">
+          <div class="icon-box">📹</div>
+          <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Video Booths</h3>
+          <p>Expensive to rent. Awkward to use. Require staff supervision. Often break down on the day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Solution -->
+  <section class="section-green">
+    <div class="container">
+      <div class="grid-2">
+        <div>
+          <h2 class="serif">The Solution: An Audio Guestbook That Actually Works</h2>
+          <p style="font-size: 1.25rem; line-height: 1.75; margin-bottom: 2rem; color: #C5D5B8;">A beautiful vintage phone. Guests pick it up, hear a greeting, leave a heartfelt message. <strong style="color: white;">That's it.</strong></p>
+          <ul style="list-style: none;">
+            <li style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+              <span class="checkmark">✓</span>
+              <span style="font-size: 1.125rem;">Your staff just plugs it in - literally 2 minutes</span>
+            </li>
+            <li style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+              <span class="checkmark">✓</span>
+              <span style="font-size: 1.125rem;">Every guest knows how to use a phone - no confusion</span>
+            </li>
+            <li style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+              <span class="checkmark">✓</span>
+              <span style="font-size: 1.125rem;">No Wi-Fi needed, no apps, no tech support calls</span>
+            </li>
+            <li style="display: flex; gap: 0.75rem;">
+              <span class="checkmark">✓</span>
+              <span style="font-size: 1.125rem;">Couples get emotional, real messages they treasure forever</span>
+            </li>
+          </ul>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <div style="background: white; border-radius: 1rem; padding: 2rem; width: 100%;">
+            <blockquote style="padding: 2rem;">
+              <p class="serif" style="font-size: 1.5rem; color: #2D5016; line-height: 1.6; font-style: italic; margin-bottom: 1.5rem;">
+                "We added WeddingRingRing to our premium packages. It's become our easiest upsell. Couples love it, we make more money, and our staff literally do nothing."
+              </p>
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 3rem; height: 3rem; background: #D4A5A5; border-radius: 50%;"></div>
+                <div>
+                  <p style="font-weight: 600; color: #2D5016;">Emma Thompson</p>
+                  <p style="font-size: 0.875rem; color: #87A878;">Owner, Riverside Manor</p>
+                </div>
+              </div>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works for Venues -->
+  <section id="how-it-works" class="section-white">
+    <div class="container">
+      <div class="max-w-3xl text-center" style="margin-bottom: 4rem;">
+        <h2 class="serif">So Simple Your Staff Will Thank You</h2>
+        <p style="font-size: 1.25rem; margin-top: 1.5rem;">No training. No tech support. No headaches. Just revenue.</p>
+      </div>
+
+      <div class="grid-4">
+        <div class="step-card">
+          <div class="step-number serif">1</div>
+          <div class="icon-box-blush" style="margin: 0 auto 1rem;">💼</div>
+          <h3 class="serif text-center" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Add to Packages</h3>
+          <p style="text-align: center;">Include in premium packages or offer as £500+ add-on. Sells itself.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number serif">2</div>
+          <div class="icon-box-blush" style="margin: 0 auto 1rem;">📦</div>
+          <h3 class="serif text-center" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">We Ship & Setup</h3>
+          <p style="text-align: center;">Beautiful phone arrives ready. We handle everything. You do nothing.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number serif">3</div>
+          <div class="icon-box-blush" style="margin: 0 auto 1rem;">🔌</div>
+          <h3 class="serif text-center" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Staff Plugs In</h3>
+          <p style="text-align: center;">Place on table. Plug in power. That's it. 2 minutes total.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number serif">4</div>
+          <div class="icon-box-blush" style="margin: 0 auto 1rem;">⭐</div>
+          <h3 class="serif text-center" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Happy Couples</h3>
+          <p style="text-align: center;">They get magical memories. You get glowing reviews.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 3rem; text-align: center; background: #F5E8E8; padding: 2rem; border-radius: 1rem; border: 2px solid #D4A5A5;">
+        <p class="serif" style="font-size: 1.75rem; color: #2D5016; margin-bottom: 1rem;"><strong>Your venue earns an extra £500+</strong></p>
+        <p style="font-size: 1.125rem; color: #87A878; margin-bottom: 1.5rem;">Your staff spends 2 minutes. That's £15,000/hour if you think about it.</p>
+        <a href="#contact" style="display: inline-block; background: #2D5016; color: white; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1.125rem; font-weight: 600; text-decoration: none;">Start Adding Revenue</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Venue Benefits -->
+  <section id="benefits" class="section-blush">
+    <div class="container">
+      <div class="max-w-3xl text-center" style="margin-bottom: 4rem;">
+        <h2 class="serif">Why Venue Owners Choose WeddingRingRing</h2>
+      </div>
+
+      <div class="grid-3">
+        <div class="card-white">
+          <div class="icon-box-green">💰</div>
+          <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Real Revenue</h3>
+          <p>£500-£1,000 per event. Easy upsell. Couples say yes because they genuinely want it.</p>
+        </div>
+
+        <div class="card-white">
+          <div class="icon-box-green">🎯</div>
+          <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Stand Out</h3>
+          <p>The venue with the audio guestbook. Your couples' friends will ask where they got it.</p>
+        </div>
+
+        <div class="card-white">
+          <div class="icon-box-green">⏱️</div>
+          <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Zero Effort</h3>
+          <p>2 minutes setup. That's less time than setting up a guest book table.</p>
+        </div>
+
+        <div class="card-white">
+          <div class="icon-box-green">✅</div>
+          <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Never Fails</h3>
+          <p>No Wi-Fi to drop. No app to crash. No batteries to die. Just works.</p>
+        </div>
+
+        <div class="card-white">
+          <div class="icon-box-green">⭐</div>
+          <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">Better Reviews</h3>
+          <p>"The audio guestbook was the highlight" - in every couple's review of your venue.</p>
+        </div>
+
+        <div class="card-white">
+          <div class="icon-box-green">📞</div>
+          <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.75rem;">We Handle Everything</h3>
+          <p>Shipping. Setup. Support. You literally just plug it in on the day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What Couples Get -->
+  <section class="section-white">
+    <div class="container">
+      <div class="max-w-3xl text-center" style="margin-bottom: 4rem;">
+        <h2 class="serif">What Your Couples Get (Why They'll Pay £500+)</h2>
+      </div>
+
+      <div class="grid-2">
+        <div style="background: #F5E8E8; border-radius: 1rem; padding: 2.5rem; border: 2px solid #D4A5A5;">
+          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="width: 3rem; height: 3rem; background: #D4A5A5; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.5rem;">❤️</div>
+            <div>
+              <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.5rem;">Real Emotion</h3>
+              <p>Hear grandma's voice. Uncle's laugh. Best friend's tears. Written words can't capture that.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="width: 3rem; height: 3rem; background: #D4A5A5; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.5rem;">💬</div>
+            <div>
+              <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.5rem;">Every Guest Participates</h3>
+              <p>Even shy people leave messages. The phone is private and easy. 40+ messages average.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="width: 3rem; height: 3rem; background: #D4A5A5; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.5rem;">♾️</div>
+            <div>
+              <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.5rem;">Keepsake Forever</h3>
+              <p>Download, share, play on anniversaries. These messages become more precious over time.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem;">
+            <div style="width: 3rem; height: 3rem; background: #D4A5A5; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.5rem;">📸</div>
+            <div>
+              <h3 class="serif" style="font-size: 1.25rem; color: #2D5016; margin-bottom: 0.5rem;">Instagram Gold</h3>
+              <p>The vintage phone looks stunning in photos. Creates its own aesthetic moment.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: white; border-radius: 1rem; padding: 2.5rem; border: 2px solid #E8D5D5;">
+          <blockquote style="margin-bottom: 2rem;">
+            <p class="serif" style="font-size: 1.5rem; color: #2D5016; line-height: 1.6; font-style: italic; margin-bottom: 1rem;">
+              "We got 47 messages. We've cried listening to them three times already. Worth every single penny."
+            </p>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="width: 3rem; height: 3rem; background: #F5E8E8; border-radius: 50%;"></div>
+              <div>
+                <p style="font-weight: 600; color: #2D5016;">Rachel & Tom</p>
+                <p style="font-size: 0.875rem; color: #87A878;">Married October 2024</p>
+              </div>
+            </div>
+          </blockquote>
+
+          <div style="background: #F5E8E8; padding: 1.5rem; border-radius: 0.5rem;">
+            <p style="font-weight: 600; color: #2D5016; margin-bottom: 0.5rem;">This is why couples pay £500+</p>
+            <p style="font-size: 0.875rem;">And why they tell their venue owner it was the best decision they made.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section id="testimonials" class="section-blush">
+    <div class="container">
+      <div class="max-w-3xl text-center" style="margin-bottom: 4rem;">
+        <h2 class="serif">What Venue Owners Say</h2>
+      </div>
+
+      <div class="grid-3">
+        <div class="card-white">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Added £8,000 to our bottom line last quarter. Staff love it because it's literally plug and play. Best business decision we made."</p>
+          <p class="testimonial-author">Emma Thompson</p>
+          <p class="testimonial-venue">Riverside Manor</p>
+        </div>
+
+        <div class="card-white">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Every couple who sees it in our package says yes. It's become a differentiator for us. Worth way more than what we charge."</p>
+          <p class="testimonial-author">Michael Chen</p>
+          <p class="testimonial-venue">Oakwood Estate</p>
+        </div>
+
+        <div class="card-white">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Zero tech knowledge needed. My 60-year-old event manager sets it up faster than the guest book table. Couples rave about it in reviews."</p>
+          <p class="testimonial-author">Sarah Williams</p>
+          <p class="testimonial-venue">The Barn at Willowbrook</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ for Venues -->
+  <section class="section-white">
+    <div class="container" style="max-width: 56rem;">
+      <div class="text-center" style="margin-bottom: 4rem;">
+        <h2 class="serif">Questions from Venue Owners</h2>
+      </div>
+
+      <details>
+        <summary>How much time does this take my staff?</summary>
+        <p>2 minutes on event day. Literally plug it in and place it on a table. That's it. No setup, no configuration, no troubleshooting. We've timed it.</p>
+      </details>
+
+      <details>
+        <summary>What if it breaks or doesn't work?</summary>
+        <p>Hasn't happened in 500+ events. No Wi-Fi to drop, no app to crash, no batteries to die. It's just a phone line. But we're here 24/7 if you need us.</p>
+      </details>
+
+      <details>
+        <summary>How much should we charge couples?</summary>
+        <p>Most venues charge £500-£1,000. Couples say yes because it's genuinely valuable to them. We'll give you pricing guidance based on your market.</p>
+      </details>
+
+      <details>
+        <summary>Do we need to train staff?</summary>
+        <p>No training needed. If they can plug in a phone charger, they can do this. We include a one-page instruction card with each phone (but staff never actually need it).</p>
+      </details>
+
+      <details>
+        <summary>What about insurance and liability?</summary>
+        <p>Covered. The phone is insured and we handle any issues. You're not liable for anything. We can provide certificates if your insurance requires it.</p>
+      </details>
+
+      <details>
+        <summary>How do we get started?</summary>
+        <p>Fill out the form below. We'll schedule a 15-minute call to discuss your venue, answer questions, and get you set up. Most venues are taking bookings within a week.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- Contact Form -->
+  <section id="contact" class="section-green">
+    <div class="container" style="max-width: 56rem;">
+      <div class="text-center" style="margin-bottom: 3rem;">
+        <h2 class="serif">Ready to Add Revenue to Your Venue?</h2>
+        <p style="font-size: 1.25rem; color: #C5D5B8; margin-top: 1.5rem;">Fill out the form below and we'll be in touch within 24 hours with everything you need.</p>
+      </div>
+
+      <form>
+        <div class="form-grid">
+          <div>
+            <label for="name">Your Name *</label>
+            <input type="text" id="name" placeholder="John Smith" required>
+          </div>
+          <div>
+            <label for="venueName">Venue Name *</label>
+            <input type="text" id="venueName" placeholder="The Grand Ballroom" required>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top: 1.5rem;">
+          <div>
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" placeholder="john@venue.com" required>
+          </div>
+          <div>
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" placeholder="+44 20 1234 5678">
+          </div>
+        </div>
+
+        <div class="form-full" style="margin-top: 1.5rem;">
+          <label for="interest">I'm interested as a... *</label>
+          <select id="interest" required>
+            <option value="venue">Venue Owner/Manager</option>
+            <option value="couple">Engaged Couple</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-full" style="margin-top: 1.5rem;">
+          <label for="message">Tell us about your venue (optional)</label>
+          <textarea id="message" rows="4" placeholder="How many events per year? Indoor or outdoor? Any questions?"></textarea>
+        </div>
+
+        <button type="submit" style="margin-top: 1.5rem;">Get Started - Add Revenue to Your Venue</button>
+
+        <p style="font-size: 0.875rem; color: #C5D5B8; text-align: center; margin-top: 1rem;">We'll respond within 24 hours with pricing, setup details, and next steps.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4 class="serif">WeddingRingRing</h4>
+          <p style="color: #C5D5B8;">The audio guestbook that venues trust.</p>
+        </div>
+        <div>
+          <h4>For Venues</h4>
+          <ul>
+            <li><a href="#benefits">Benefits</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#contact">Get Started</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="/cdn-cgi/l/email-protection#caa2afa6a6a58abdafaeaea3a4adb8a3a4adb8a3a4ade4a9a5a7"><span class="__cf_email__" data-cfemail="4129242d2d2e0136242525282f2633282f2633282f266f222e2c">[email&#160;protected]</span></a></li>
+            <li><a href="tel:+442012345678">+44 20 1234 5678</a></li>
+          </ul>
+        </div>
+      </div>
+     

@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | WeddingRingRing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       DESIGN SYSTEM - EXACT SAME AS HOMEPAGE
+       ============================================ */
+    :root {
+      /* Typography Scale */
+      --text-xs: 0.75rem;
+      --text-sm: 0.875rem;
+      --text-base: 1rem;
+      --text-lg: 1.125rem;
+      --text-xl: 1.25rem;
+      --text-2xl: 1.5rem;
+      --text-3xl: 2rem;
+      --text-4xl: 3rem;
+      --text-5xl: 3.5rem;
+      --text-6xl: 4.5rem;
+      
+      /* Spacing Scale (8pt grid) */
+      --space-1: 0.5rem;
+      --space-2: 1rem;
+      --space-3: 1.5rem;
+      --space-4: 2rem;
+      --space-6: 3rem;
+      --space-8: 4rem;
+      --space-12: 6rem;
+      
+      /* Colors */
+      --color-primary: #1a1a1a;
+      --color-secondary: #C9A6A6;
+      --color-text-primary: #1a1a1a;
+      --color-text-secondary: #6a6a6a;
+      --color-surface-white: #ffffff;
+      --color-surface-cream: #FAF8F3;
+      --color-surface-blush: #F5E8E8;
+      --color-border: rgba(0, 0, 0, 0.08);
+      
+      /* Pink text for dark backgrounds */
+      --color-text-on-dark: #E8C9C9;
+      --color-heading-on-dark: #F5E8E8;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+      
+      /* Radius */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      
+      /* Fonts */
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* ============================================
+       BASE STYLES
+       ============================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: var(--font-sans);
+      line-height: 1.7;
+      color: var(--color-text-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 0 var(--space-4); 
+    }
+    
+    /* ============================================
+       TYPOGRAPHY
+       ============================================ */
+    h1 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-6xl);
+      line-height: 1.05; 
+      font-weight: 400;
+      letter-spacing: -0.03em;
+    }
+    
+    h2 { 
+      font-family: var(--font-serif);
+      font-size: var(--text-5xl);
+      line-height: 1.1;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+    
+    h3 { 
+      font-family: var(--font-sans);
+      font-size: var(--text-xl);
+      line-height: 1.4;
+      font-weight: 600;
+    }
+    
+    p { 
+      font-size: var(--text-base);
+      line-height: 1.7;
+    }
+    
+    /* ============================================
+       HEADER
+       ============================================ */
+    header { 
+      background: var(--color-surface-blush);
+      padding: var(--space-3) 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    header .container { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    
+    .nav-desktop { 
+      display: flex; 
+      gap: var(--space-6); 
+      align-items: center; 
+    }
+    
+    .nav-desktop a { 
+      color: var(--color-text-primary); 
+      text-decoration: none; 
+      font-weight: 500;
+      font-size: var(--text-sm);
+      transition: color 0.2s;
+    }
+    
+    .nav-desktop a:hover { 
+      color: var(--color-secondary);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--color-primary);
+      padding: 0.5rem;
+    }
+    
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn {
+      display: inline-block;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-sans);
+    }
+    
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--color-secondary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-white {
+      background: var(--color-surface-white);
+      color: var(--color-primary);
+    }
+    
+    .btn-white:hover {
+      background: var(--color-surface-blush);
+    }
+    
+    /* ============================================
+       SECTIONS
+       ============================================ */
+    section { 
+      padding: var(--space-12) 0; 
+    }
+    
+    .section-white { 
+      background: var(--color-surface-white); 
+    }
+    
+    .section-blush { 
+      background: var(--color-surface-blush); 
+    }
+    
+    .section-dark { 
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+    }
+    
+    .section-dark h2 {
+      color: var(--color-heading-on-dark);
+    }
+    
+    .section-dark p {
+      color: var(--color-text-on-dark);
+    }
+    
+    /* ============================================
+       CONTENT BLOCKS
+       ============================================ */
+    .content-narrow {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .text-large {
+      font-size: var(--text-xl);
+      color: var(--color-text-secondary);
+    }
+    
+    .space-y-6 > * + * {
+      margin-top: var(--space-3); /* Reduced from space-6 to space-3 */
+    }
+    
+    /* Number cards like mission section */
+    .number-card {
+      text-align: left;
+    }
+    
+    .number-card .number {
+      font-family: var(--font-serif);
+      font-size: var(--text-4xl);
+      font-weight: 300;
+      color: var(--color-secondary);
+      margin-bottom: 0.5rem; /* 8px gap */
+      line-height: 1;
+    }
+    
+    .number-card h3 {
+      margin-bottom: var(--space-2);
+    }
+    
+    .number-card p {
+      color: var(--color-text-secondary);
+    }
+    
+    /* Border accent blocks */
+    .border-accent {
+      border-left: 4px solid var(--color-secondary);
+      padding-left: var(--space-4);
+      margin-bottom: var(--space-4); /* Reduced from space-6 to space-4 */
+    }
+    
+    .border-accent h3 {
+      margin-bottom: var(--space-2);
+    }
+    
+    .border-accent p {
+      color: var(--color-text-secondary);
+    }
+    
+    /* ============================================
+       MODAL
+       ============================================ */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2);
+      backdrop-filter: blur(4px);
+    }
+    
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-md);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+    
+    .modal-header {
+      padding: var(--space-6) var(--space-6) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .modal-header h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-1);
+    }
+    
+    .modal-header p {
+      color: var(--color-text-secondary);
+      font-size: var(--text-base);
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: all 0.2s;
+      font-size: var(--text-2xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      line-height: 1;
+    }
+    
+    .modal-close:hover {
+      color: var(--color-primary);
+      background: var(--color-surface-cream);
+    }
+    
+    .modal-body {
+      padding: var(--space-6);
+    }
+    
+    /* ============================================
+       FORMS
+       ============================================ */
+    form { 
+      display: grid;
+      gap: var(--space-4);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: var(--text-sm);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-base);
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(201, 166, 166, 0.1);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .form-note {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+    
+    /* ============================================
+       ANIMATIONS
+       ============================================ */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* ============================================
+       GRID
+       ============================================ */
+    .grid {
+      display: grid;
+      gap: var(--space-6);
+    }
+    
+    .grid-3 { 
+      grid-template-columns: repeat(3, 1fr); 
+    }
+    
+    /* ============================================
+       FOOTER
+       ============================================ */
+    footer {
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+      padding: var(--space-8) 0 var(--space-4);
+    }
+    
+    .footer-grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    
+    footer h4 { 
+      margin-bottom: var(--space-3);
+      font-weight: 600;
+      font-size: var(--text-base);
+      color: var(--color-heading-on-dark);
+    }
+    
+    footer ul { 
+      list-style: none; 
+    }
+    
+    footer li { 
+      margin-bottom: var(--space-2); 
+    }
+    
+    footer a { 
+      color: var(--color-text-on-dark);
+      text-decoration: none; 
+      transition: color 0.2s;
+      font-size: var(--text-sm);
+    }
+    
+    footer a:hover { 
+      color: white; 
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: var(--space-4);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: var(--text-sm);
+    }
+    
+    /* ============================================
+    /* ============================================
+       COOKIE BANNER
+       ============================================ */
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-primary);
+      color: var(--color-text-on-dark);
+      padding: var(--space-3) 0;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: none;
+    }
+    
+    .cookie-banner.show {
+      display: block;
+    }
+    
+    .cookie-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+    
+    .cookie-text {
+      flex: 1;
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+    
+    .cookie-text a {
+      color: var(--color-secondary);
+      text-decoration: underline;
+    }
+    
+    .cookie-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+    
+    .cookie-btn {
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .cookie-accept {
+      background: var(--color-secondary);
+      color: var(--color-primary);
+    }
+    
+    .cookie-accept:hover {
+      background: var(--color-heading-on-dark);
+    }
+    
+    .cookie-decline {
+      background: transparent;
+      color: var(--color-text-on-dark);
+      border: 1px solid var(--color-text-on-dark);
+    }
+    
+    .cookie-decline:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) {
+      :root {
+        --text-6xl: 2.5rem;
+        --text-5xl: 2rem;
+        --text-4xl: 1.75rem;
+      }
+      
+      section {
+        padding: var(--space-8) 0;
+      }
+      
+      .nav-desktop {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .grid-3,
+      .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal-content {
+        margin: var(--space-2);
+        max-height: calc(100vh - var(--space-4));
+      }
+      
+      .modal-header,
+      .modal-body {
+        padding: var(--space-4);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div>
+        <a href="/"><img src="../public/logo.svg" alt="WeddingRingRing" style="height: 45px;"></a>
+      </div>
+      <nav class="nav-desktop">
+        <a href="/">Home</a>
+        <a href="/how-it-works">How It Works</a>
+        <a href="/login">Log In</a>
+        <button class="btn btn-primary" onclick="openModal()">Get Started</button>
+      </nav>
+      <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="section-blush">
+    <div class="container content-narrow">
+      <h1>About WeddingRingRing.</h1>
+      <p class="text-large" style="margin-top: var(--space-4);">
+        We believe every wedding deserves to be remembered not just in photos, but in the voices and laughter of the people who matter most.
+      </p>
+    </div>
+  </section>
+
+  <!-- Our Story -->
+  <section class="section-dark">
+    <div class="container content-narrow">
+      <h2 style="margin-bottom: var(--space-6);">Our Story.</h2>
+      <div class="space-y-6" style="font-size: var(--text-lg);">
+        <p>
+          WeddingRingRing was born from a simple observation: traditional guest books sit forgotten on shelves, their heartfelt messages rarely revisited. We knew there had to be a better way to capture the emotion of a wedding day.
+        </p>
+        <p>
+          Our founder, Callum, loved the idea of an audio guestbook for his own wedding but hated the reality - having to rent and send a phone to a company, then wait days for messages to be downloaded and returned. He knew there had to be a simpler way.
+        </p>
+        <p>
+          So he designed it himself. A vintage phone that stays permanently at the venue, battery-powered and using cellular technology so it works anywhere. No shipping, no waiting, no hassle. Just plug it in, and couples get their messages instantly.
+        </p>
+        <p>
+          Today, we partner with venues across the UK, helping them offer couples an experience that goes beyond the ordinary. Every venue gets their own dedicated phone that lives on-site, ready whenever they need it. Every message captured is a memory preserved forever.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Mission -->
+  <section class="section-blush">
+    <div class="container content-narrow">
+      <h2 style="margin-bottom: var(--space-4);">Our Mission.</h2>
+      <p class="text-large" style="margin-bottom: var(--space-4);">
+        To make preserving authentic wedding memories effortless for venues and unforgettable for couples.
+      </p>
+
+      <div class="grid grid-3">
+        <div class="number-card">
+          <div class="number">01</div>
+          <h3>Simple for Venues</h3>
+          <p>Each venue gets their own dedicated phone that stays on-site. Battery-powered and cellular-enabled - works anywhere, anytime.</p>
+        </div>
+
+        <div class="number-card">
+          <div class="number">02</div>
+          <h3>Magical for Couples</h3>
+          <p>Messages delivered instantly to couples' secure online accounts. No waiting, no shipping phones back and forth.</p>
+        </div>
+
+        <div class="number-card">
+          <div class="number">03</div>
+          <h3>Built to Last</h3>
+          <p>Vintage aesthetic, modern reliability. Battery-powered with cellular technology means it works every single time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Venues Trust Us -->
+  <section class="section-white">
+    <div class="container content-narrow">
+      <h2 style="margin-bottom: var(--space-8); text-align: center;">Why Venues Trust Us.</h2>
+
+      <div class="border-accent">
+        <h3>No Technical Expertise Needed</h3>
+        <p>
+          Your staff doesn't need to be tech-savvy. Each venue gets their own dedicated phone that lives on-site permanently. It's battery-powered and uses cellular technology, so it works anywhere in your venue without Wi-Fi setup or complicated configuration.
+        </p>
+      </div>
+
+      <div class="border-accent">
+        <h3>It Just Works</h3>
+        <p>
+          No Wi-Fi dropouts. No app downloads. No battery anxiety. Our cellular-enabled system has been designed to be absolutely bulletproof. Your phone stays at your venue, always charged, always ready. You never have to ship it anywhere.
+        </p>
+      </div>
+
+      <div class="border-accent">
+        <h3>We Handle Everything</h3>
+        <p>
+          Unlike rental services where you ship phones back and forth, your dedicated phone stays with you. Setup takes 30 seconds online. Couples get their messages delivered automatically to their secure account. You get glowing reviews. We handle all the behind-the-scenes technology.
+        </p>
+      </div>
+
+      <div class="border-accent">
+        <h3>Built for Beautiful Venues</h3>
+        <p>
+          Our vintage phones aren't just functional - they're beautiful. They photograph well, they feel premium, and they add a touch of elegance to your space. Because they're battery-powered and cellular-enabled, you can place them anywhere that looks best, not just near power outlets or Wi-Fi routers.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-dark">
+    <div class="container" style="max-width: 800px; text-align: center;">
+      <h2 style="margin-bottom: var(--space-4);">Ready to Add This to Your Venue?</h2>
+      <p class="text-large" style="margin-bottom: var(--space-6);">
+        Join venues across the UK creating unforgettable memories for their couples.
+      </p>
+      <button onclick="openModal()" class="btn btn-white">Get In Touch</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/docs">Documentation</a></li>
+            <li><a href="/faqs">FAQs</a></li>
+            <li><a href="/help">Help Center</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>RingRing Digital Ltd</h4>
+          <p style="color: rgba(255, 255, 255, 0.5); font-size: var(--text-sm); line-height: 1.6;">The audio guestbook for venues.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 RingRing Digital Ltd. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Contact Form Modal -->
+  <div id="contactModal" class="modal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Get In Touch</h2>
+        <p>Tell us about your venue and we'll be in touch within 24 hours</p>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div>
+              <label for="name">Your Name *</label>
+              <input type="text" id="name" name="name" placeholder="John Smith" required>
+            </div>
+            <div>
+              <label for="venueName">Venue Name *</label>
+              <input type="text" id="venueName" name="venueName" placeholder="The Grand Ballroom" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" placeholder="john@venue.com" required>
+            </div>
+            <div>
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+44 20 1234 5678">
+            </div>
+          </div>
+
+          <div>
+            <label for="interest">I'm interested as a... *</label>
+            <select id="interest" name="interest" required>
+              <option value="venue">Venue Owner/Manager</option>
+              <option value="couple">Engaged Couple</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="message">Tell us about your venue (optional)</label>
+            <textarea id="message" name="message" placeholder="Tell us more about your venue..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Send Message</button>
+          
+          <p class="form-note">We'll respond within 24 hours</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('contactModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('contactModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOnBackdrop(event) {
+      if (event.target.id === 'contactModal') {
+        closeModal();
+      }
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      alert('Thank you! We\'ll be in touch within 24 hours.');
+      closeModal();
+      document.getElementById('contactForm').reset();
+    }
+  </script>
+
+  <!-- Cookie Consent Banner -->
+  <div class="cookie-banner" id="cookieBanner">
+    <div class="container">
+      <div class="cookie-content">
+        <div class="cookie-text">
+          We use cookies to keep you logged in and improve your experience. <a href="/privacy">Learn more</a>
+        </div>
+        <div class="cookie-actions">
+          <button class="cookie-btn cookie-decline" onclick="declineCookies()">Decline</button>
+          <button class="cookie-btn cookie-accept" onclick="acceptCookies()">Accept</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function acceptCookies() {
+      localStorage.setItem("cookieConsent", "accepted");
+      document.getElementById("cookieBanner").classList.remove("show");
+    }
+    
+    function declineCookies() {
+      localStorage.setItem("cookieConsent", "declined");
+      document.getElementById("cookieBanner").classList.remove("show");
+    }
+    
+    window.addEventListener("load", function() {
+      const consent = localStorage.getItem("cookieConsent");
+      if (!consent) {
+        document.getElementById("cookieBanner").classList.add("show");
+      }
+    });
+  </script>
+
+</body>
+</html>

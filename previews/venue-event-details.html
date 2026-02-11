@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details - Venue - WeddingRingRing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFF8F0',
+            sage: {
+              light: '#C8D3CC',
+              DEFAULT: '#8B9B8E',
+              dark: '#6B7B6E'
+            },
+            'deep-green': {
+              DEFAULT: '#3D5A4C',
+              dark: '#2D4A3C'
+            },
+            rose: {
+              DEFAULT: '#D4A5A5',
+              dark: '#B48585'
+            },
+            charcoal: '#2C2C2C'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-sans bg-cream">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-sage-light shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center">
+        <a href="venue-dashboard.html" class="flex items-center gap-4 hover:opacity-80 transition">
+          <img src="logo.svg" alt="WeddingRingRing" class="h-10" />
+          <span class="text-xs text-sage-dark">← Back to Dashboard</span>
+        </a>
+        
+        <a href="#" class="px-4 py-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition">
+          Edit Event
+        </a>
+      </div>
+    </div>
+  </header>
+  
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Event Header Card -->
+    <div class="bg-white rounded-xl shadow-sm p-8 mb-6">
+      <div class="flex items-start justify-between mb-6">
+        <div>
+          <h2 class="font-serif text-3xl text-charcoal mb-2">
+            Sarah & James's Wedding
+          </h2>
+          <p class="text-lg text-sage-dark">
+            Saturday, 25 December 2024
+          </p>
+        </div>
+        
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-deep-green/10 text-deep-green">
+          Active
+        </span>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <p class="text-sm text-sage-dark mb-1">Customer Email</p>
+          <p class="text-charcoal font-medium"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="196a786b7871597c61787469757c377a7674">[email&#160;protected]</a></p>
+        </div>
+        
+        <div>
+          <p class="text-sm text-sage-dark mb-1">Customer Phone</p>
+          <p class="text-charcoal font-medium">+44 7700 900301</p>
+        </div>
+        
+        <div>
+          <p class="text-sm text-sage-dark mb-1">Expected Guests</p>
+          <p class="text-charcoal font-medium">120 guests</p>
+        </div>
+        
+        <div>
+          <p class="text-sm text-sage-dark mb-1">Event Type</p>
+          <p class="text-charcoal font-medium">Wedding</p>
+        </div>
+      </div>
+      
+      <!-- Unique Event Phone Number - HIGHLIGHTED -->
+      <div class="bg-deep-green/5 border-2 border-deep-green/20 rounded-xl p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <p class="text-sm text-sage-dark mb-2">Unique Event Phone Number</p>
+            <p class="text-2xl font-mono font-bold text-deep-green">+44 1234 567890</p>
+          </div>
+          <button class="px-4 py-2 bg-white border border-sage-light rounded-lg text-sm hover:bg-sage-light/30 transition">
+            📋 Copy
+          </button>
+        </div>
+        
+        <div class="bg-white rounded-lg p-4 border border-sage-light">
+          <p class="text-sm font-medium text-charcoal mb-3">📱 How to Program the Phone:</p>
+          <ol class="space-y-2 text-sm text-charcoal">
+            <li class="flex items-start">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-deep-green text-white text-xs font-bold mr-3 flex-shrink-0">1</span>
+              <span><strong>Turn on the device</strong> and ensure it has a dial tone</span>
+            </li>
+            <li class="flex items-start">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-deep-green text-white text-xs font-bold mr-3 flex-shrink-0">2</span>
+              <span><strong>Pick up the handset</strong> and dial: <code class="bg-sage-light/30 px-2 py-0.5 rounded font-mono text-deep-green">*02#+441234567890*</code></span>
+            </li>
+            <li class="flex items-start">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-deep-green text-white text-xs font-bold mr-3 flex-shrink-0">3</span>
+              <span><strong>The phone will ring once</strong> to confirm the number is programmed to Speed Dial 1</span>
+            </li>
+            <li class="flex items-start">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-deep-green text-white text-xs font-bold mr-3 flex-shrink-0">4</span>
+              <span><strong>Hang up the receiver</strong> - programming complete!</span>
+            </li>
+            <li class="flex items-start">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-deep-green text-white text-xs font-bold mr-3 flex-shrink-0">5</span>
+              <span><strong>Test it!</strong> Press and hold "1" - you should hear the custom greeting for this event (confirms everything is working correctly)</span>
+            </li>
+          </ol>
+          
+          <div class="mt-3 pt-3 border-t border-sage-light">
+            <p class="text-xs text-sage-dark">
+              💡 <strong>Problems?</strong> If you don't hear the ring in step 3, hang up the receiver and start again from step 1.
+            </p>
+          </div>
+        </div>
+        
+        <div class="mt-4 bg-rose-light/30 border border-rose-light rounded-lg p-3">
+          <p class="text-sm text-charcoal">
+            💡 <strong>Tip:</strong> Remote guests can also call <span class="font-mono text-deep-green">+44 1234 567890</span> directly from their own phones to leave messages!
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Live Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+        <p class="text-sm text-sage-dark mb-1">Days Until Event</p>
+        <p class="text-3xl font-bold text-deep-green">17</p>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+        <p class="text-sm text-sage-dark mb-1">Messages Received</p>
+        <p class="text-3xl font-bold text-charcoal">47</p>
+        <p class="text-xs text-sage-dark mt-1">Updates in real-time</p>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+        <p class="text-sm text-sage-dark mb-1">Greeting Status</p>
+        <p class="text-lg font-medium text-deep-green mt-2">✓ Uploaded</p>
+      </div>
+    </div>
+    
+    <!-- Notes Section -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <h3 class="font-serif text-xl text-charcoal mb-4">Notes & Requirements</h3>
+      <div class="bg-sage-light/10 rounded-lg p-4">
+        <p class="text-charcoal">
+          Ceremony at 2pm in the garden. Reception in the main hall from 4pm. 
+          Phone should be placed near the guest book table.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <h3 class="font-serif text-xl text-charcoal mb-4">Actions</h3>
+      
+      <div class="space-y-3">
+        <button class="w-full px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition text-left flex items-center justify-between">
+          <span>Edit Event Details</span>
+          <span>→</span>
+        </button>
+        
+        <button class="w-full px-6 py-3 border-2 border-rose text-rose rounded-lg font-medium hover:bg-rose/10 transition text-left flex items-center justify-between">
+          <span>Cancel Event</span>
+          <span>⚠️</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Info Box -->
+    <div class="mt-6 bg-sage-light/20 border border-sage-light rounded-lg p-4">
+      <p class="text-sm text-sage-dark">
+        <strong>Note:</strong> You can view the event details and message count, but only customers can listen to their messages. 
+        They acces
