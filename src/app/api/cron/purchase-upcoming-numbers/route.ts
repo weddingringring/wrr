@@ -139,19 +139,20 @@ export async function GET(request: NextRequest) {
         console.log(`✓ Purchased ${purchased.phoneNumber} for event ${event.id}`)
         
         // Send emails to customer and venue
+        const customer = event.customers as any
         try {
           await Promise.all([
             sendCustomerPhoneAssigned({
               ...event,
               twilio_phone_number: purchased.phoneNumber,
-              customer: event.customers,
-              venue: event.venues
+              customer: customer,
+              venue: venue
             }),
             sendVenuePhoneReady({
               ...event,
               twilio_phone_number: purchased.phoneNumber,
-              customer: event.customers,
-              venue: event.venues
+              customer: customer,
+              venue: venue
             })
           ])
           console.log(`✓ Sent notification emails for event ${event.id}`)
