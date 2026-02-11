@@ -93,7 +93,9 @@ export async function GET(request: NextRequest) {
     // Purchase number for each event
     for (const event of events) {
       try {
-        const countryCode = event.venues?.country_code || 'GB'
+        // Type assertion for venues object
+        const venue = event.venues as any
+        const countryCode = venue?.country_code || 'GB'
         
         console.log(`Purchasing number for event ${event.id} (${countryCode})...`)
         
@@ -170,9 +172,10 @@ export async function GET(request: NextRequest) {
         console.error(errorMsg)
         
         // Log to database with context
+        const venue = event.venues as any
         await logCritical('cron:purchase-numbers', error, {
           eventId: event.id,
-          countryCode: event.venues?.country_code,
+          countryCode: venue?.country_code,
           eventDate: event.event_date,
           errorType: 'purchase_failed'
         })

@@ -62,17 +62,18 @@ export async function GET(request: NextRequest) {
     // Send reminder email to each venue
     const results = await Promise.allSettled(
       events.map(async (event) => {
-        if (!event.venue?.email) {
-          throw new Error(`No email for venue: ${event.venue?.name || 'Unknown'}`)
+        const venue = event.venue as any
+        if (!venue?.email) {
+          throw new Error(`No email for venue: ${venue?.name || 'Unknown'}`)
         }
 
         const setupUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/venue/events/${event.id}/setup`
 
         await sendEmailSafe({
-          to: event.venue.email,
+          to: venue.email,
           subject: `Event Tomorrow - Setup Required for ${event.partner_1_first_name} ${event.partner_1_last_name}'s ${event.event_type}`,
           react: VenueReminderEmail({
-            venueName: event.venue.name,
+            venueName: venue.name,
             partner1FirstName: event.partner_1_first_name,
             partner1LastName: event.partner_1_last_name,
             partner2FirstName: event.partner_2_first_name || undefined,
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
           }),
         })
 
-        return { eventId: event.id, venueName: event.venue.name }
+        return { eventId: event.id, venueName: venue.name }
       })
     )
 
