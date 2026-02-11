@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="240" height="60" viewBox="0 0 240 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left ring (outer - deep green) -->
+  <circle cx="20" cy="30" r="12" stroke="#2D5016" stroke-width="3" fill="none" />
+  
+  <!-- Left ring (inner - sage) -->
+  <circle cx="20" cy="30" r="8" stroke="#87A878" stroke-width="2" fill="none" />
+  
+  <!-- Right ring (outer - deep green) -->
+  <circle cx="32" cy="30" r="12" stroke="#2D5016" stroke-width="3" fill="none" />
+  
+  <!-- Right ring (inner - sage) -->
+  <circle cx="32" cy="30" r="8" stroke="#87A878" stroke-width="2" fill="none" />
+  
+  <!-- Text -->
+  <text x="52" y="38" font-family="Crimson Text, Georgia, serif" font-size="24" font-weight="700" fill="#2D5016">
+    WeddingRingRing
+  </text>
+</svg>
