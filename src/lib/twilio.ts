@@ -11,7 +11,7 @@ export const twilioClient = twilio(
  */
 export async function getAccountBalance() {
   try {
-    const account = await twilioClient.api.accounts(process.env.TWILIO_ACCOUNT_SID!).fetch()
+    const account: any = await twilioClient.api.accounts(process.env.TWILIO_ACCOUNT_SID!).fetch()
     return {
       balance: parseFloat(account.balance),
       currency: 'USD' // Twilio uses USD
@@ -27,8 +27,8 @@ export async function getAccountBalance() {
  */
 export async function listPurchasedNumbers() {
   try {
-    const numbers = await twilioClient.incomingPhoneNumbers.list()
-    return numbers.map(number => ({
+    const numbers: any[] = await twilioClient.incomingPhoneNumbers.list()
+    return numbers.map((number: any) => ({
       sid: number.sid,
       phoneNumber: number.phoneNumber,
       friendlyName: number.friendlyName,
@@ -59,12 +59,12 @@ export async function searchAvailableNumbers(country: string = 'GB', areaCode?: 
       searchParams.areaCode = areaCode
     }
     
-    const numbers = await twilioClient
+    const numbers: any[] = await twilioClient
       .availablePhoneNumbers(country)
       .local
       .list(searchParams)
     
-    return numbers.map(number => ({
+    return numbers.map((number: any) => ({
       phoneNumber: number.phoneNumber,
       friendlyName: number.friendlyName,
       locality: number.locality,

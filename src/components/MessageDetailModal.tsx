@@ -32,7 +32,7 @@ export default function MessageDetailModal({ message, isOpen, onClose, onUpdate 
   const [editData, setEditData] = useState({
     caller_name: message.caller_name || '',
     notes: message.notes || '',
-    tags: message.tags || []
+    tags: (message as any).tags || []
   })
   
   useEffect(() => {
