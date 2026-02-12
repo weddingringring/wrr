@@ -191,7 +191,7 @@ export default function MessageDetailModal({ message, isOpen, onClose, onUpdate 
   
   const toggleTag = (tag: string) => {
     if (editData.tags.includes(tag)) {
-      setEditData({ ...editData, tags: editData.tags.filter(t => t !== tag) })
+      setEditData({ ...editData, tags: editData.tags.filter((t: string) => t !== tag) })
     } else {
       setEditData({ ...editData, tags: [...editData.tags, tag] })
     }

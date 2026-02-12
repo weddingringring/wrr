@@ -125,7 +125,7 @@ export default function CustomerDashboardPage() {
     if (selectedTags.length > 0) {
       filtered = filtered.filter(m => {
         const tags = (m as any).tags
-        return tags && selectedTags.some(tag => tags.includes(tag))
+        return tags && selectedTags.some((tag: string) => tags.includes(tag))
       })
     }
     
@@ -150,7 +150,7 @@ export default function CustomerDashboardPage() {
   
   const toggleTag = (tag: string) => {
     if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter(t => t !== tag))
+      setSelectedTags(selectedTags.filter((t: string) => t !== tag))
     } else {
       setSelectedTags([...selectedTags, tag])
     }
