@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [cookieBannerVisible, setCookieBannerVisible] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     venueName: '',
@@ -14,8 +16,25 @@ export default function HomePage() {
     message: '',
     interest: 'venue'
   })
-  const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    // Check cookie consent on load
+    const consent = localStorage.getItem('cookieConsent')
+    if (!consent) {
+      setCookieBannerVisible(true)
+    }
+
+    // ESC key handler
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setModalOpen(false)
+        setMobileMenuOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handleEsc)
+    return () => document.removeEventListener('keydown', handleEsc)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,7 +48,8 @@ export default function HomePage() {
       })
 
       if (response.ok) {
-        setSubmitted(true)
+        alert("Thank you! We'll be in touch within 24 hours.")
+        setModalOpen(false)
         setFormData({
           name: '',
           venueName: '',
@@ -38,128 +58,295 @@ export default function HomePage() {
           message: '',
           interest: 'venue'
         })
-        setTimeout(() => {
-          setModalOpen(false)
-          setSubmitted(false)
-        }, 3000)
       }
     } catch (error) {
-      console.error('Form submission error:', error)
+      console.error('Form error:', error)
     } finally {
       setLoading(false)
     }
   }
 
+  const acceptCookies = () => {
+    localStorage.setItem('cookieConsent', 'accepted')
+    setCookieBannerVisible(false)
+  }
+
+  const declineCookies = () => {
+    localStorage.setItem('cookieConsent', 'declined')
+    setCookieBannerVisible(false)
+  }
+
   return (
-    <div className="min-h-screen" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+        
+        :root {
+          --color-primary: #1a1a1a;
+          --color-secondary: #C9A6A6;
+          --color-text-primary: #1a1a1a;
+          --color-text-secondary: #6a6a6a;
+          --color-surface-white: #ffffff;
+          --color-surface-cream: #FAF8F3;
+          --color-surface-blush: #F5E8E8;
+          --color-border: rgba(0, 0, 0, 0.08);
+          --color-text-on-dark: #E8C9C9;
+          --color-heading-on-dark: #F5E8E8;
+          --font-serif: 'Playfair Display', Georgia, serif;
+          --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+          font-family: var(--font-sans);
+          line-height: 1.7;
+          color: var(--color-text-primary);
+          background: var(--color-surface-cream);
+        }
+      `}</style>
+
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-serif" style={{ fontFamily: 'Playfair Display, serif' }}>
-              WeddingRingRing
+      <header style={{
+        background: '#F5E8E8',
+        padding: '1.5rem 0',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)'
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 2rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div>
+            <Link href="/">
+              <Image src="/logo.svg" alt="WeddingRingRing" width={180} height={45} priority />
             </Link>
-            
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-8">
-              <a href="#how-it-works" className="text-gray-700 hover:text-gray-900 transition">
-                How It Works
-              </a>
-              <Link href="/login" className="text-gray-700 hover:text-gray-900 transition">
-                Log In
-              </Link>
-              <button 
-                onClick={() => setModalOpen(true)}
-                className="bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition font-medium"
-              >
-                Get Started
-              </button>
-            </nav>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2"
-            >
-              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
           </div>
-        </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-200 px-6 py-4 space-y-4">
-            <a 
-              href="#how-it-works" 
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-gray-700"
-            >
+          {/* Desktop Nav */}
+          <nav style={{ 
+            display: 'flex', 
+            gap: '3rem', 
+            alignItems: 'center' 
+          }} className="nav-desktop">
+            <Link href="/how-it-works" style={{ 
+              color: '#1a1a1a', 
+              textDecoration: 'none', 
+              fontWeight: 500,
+              fontSize: '0.875rem'
+            }}>
               How It Works
-            </a>
-            <Link 
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-gray-700"
-            >
+            </Link>
+            <Link href="/about" style={{ 
+              color: '#1a1a1a', 
+              textDecoration: 'none', 
+              fontWeight: 500,
+              fontSize: '0.875rem'
+            }}>
+              About
+            </Link>
+            <Link href="/login" style={{ 
+              color: '#1a1a1a', 
+              textDecoration: 'none', 
+              fontWeight: 500,
+              fontSize: '0.875rem'
+            }}>
               Log In
             </Link>
-            <button 
-              onClick={() => { setModalOpen(true); setMobileMenuOpen(false); }}
-              className="w-full bg-gray-900 text-white px-6 py-2.5 rounded-lg"
+            <button
+              onClick={() => setModalOpen(true)}
+              style={{
+                background: '#1a1a1a',
+                color: 'white',
+                padding: '1rem 2rem',
+                borderRadius: '0.375rem',
+                fontSize: '1rem',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
             >
               Get Started
             </button>
-          </div>
-        )}
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="mobile-menu-btn"
+            style={{
+              display: 'none',
+              background: 'none',
+              border: 'none',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              color: '#1a1a1a',
+              padding: '0.5rem'
+            }}
+          >
+            ☰
+          </button>
+        </div>
       </header>
 
+      {/* Mobile Nav Overlay */}
+      {mobileMenuOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: '#F5E8E8',
+          zIndex: 999,
+          padding: '3rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '2rem',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              position: 'absolute',
+              top: '2rem',
+              right: '2rem',
+              fontSize: '2rem',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#1a1a1a'
+            }}
+          >
+            ×
+          </button>
+          <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1.25rem', color: '#1a1a1a', textDecoration: 'none', fontWeight: 500 }}>How It Works</a>
+          <Link href="/login" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1.25rem', color: '#1a1a1a', textDecoration: 'none', fontWeight: 500 }}>Log In</Link>
+          <button onClick={() => { setModalOpen(true); setMobileMenuOpen(false); }} style={{ background: '#1a1a1a', color: 'white', padding: '1rem 2rem', borderRadius: '0.375rem', fontSize: '1rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}>Get Started</button>
+        </div>
+      )}
+
       {/* Hero */}
-      <section className="pt-32 pb-24 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 
-              className="text-5xl md:text-6xl lg:text-7xl mb-6 text-gray-900"
-              style={{ fontFamily: 'Playfair Display, serif', lineHeight: '1.1' }}
-            >
+      <section style={{
+        position: 'relative',
+        background: '#F5E8E8',
+        padding: '6rem 0 4rem',
+        overflow: 'hidden'
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: '45%',
+          backgroundImage: 'url(/hero-illustration.svg)',
+          backgroundSize: 'contain',
+          backgroundPosition: 'center right',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.25,
+          zIndex: 0
+        }} />
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 2rem',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          <div style={{ maxWidth: '700px' }}>
+            <h1 style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: '4.5rem',
+              lineHeight: 1.05,
+              fontWeight: 400,
+              letterSpacing: '-0.03em',
+              marginBottom: '2rem'
+            }}>
               The Audio Guestbook For Venues.
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-8">
+            <p style={{
+              fontSize: '1.25rem',
+              color: '#6a6a6a',
+              marginBottom: '3rem'
+            }}>
               Memories to listen back to for a lifetime
             </p>
-            <button
-              onClick={() => setModalOpen(true)}
-              className="bg-gray-900 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-800 transition"
-            >
-              Find Out More
-            </button>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '3rem' }}>
+              <button
+                onClick={() => setModalOpen(true)}
+                style={{
+                  background: '#1a1a1a',
+                  color: 'white',
+                  padding: '1rem 2rem',
+                  borderRadius: '0.375rem',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                Find Out More
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       {/* What We Do */}
-      <section className="py-20 bg-gray-900 text-white">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 
-            className="text-4xl md:text-5xl mb-8"
-            style={{ fontFamily: 'Playfair Display, serif' }}
-          >
+      <section style={{
+        background: '#1a1a1a',
+        color: '#E8C9C9',
+        padding: '6rem 0'
+      }}>
+        <div style={{
+          maxWidth: '900px',
+          margin: '0 auto',
+          padding: '0 2rem'
+        }}>
+          <h2 style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: '3.5rem',
+            lineHeight: 1.1,
+            fontWeight: 500,
+            letterSpacing: '-0.02em',
+            marginBottom: '2rem',
+            color: '#F5E8E8'
+          }}>
             What We Do.
           </h2>
-          <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
-            <p>
+          <div style={{ fontSize: '1.125rem', lineHeight: 1.8, color: '#E8C9C9' }}>
+            <p style={{ marginBottom: '1.5rem' }}>
               We are the audio guestbook where timeless elegance meets modern convenience. Our vintage-style phones, combined with our modern software, creates an unforgettable audio guestbook experience.
             </p>
-            <p>
+            <p style={{ marginBottom: '1.5rem' }}>
               With a swift 30-second setup on our user-friendly online system, venues can effortlessly enhance their offerings and attract couples seeking that extra touch of charm.
             </p>
-            <p>
+            <p style={{ marginBottom: '3rem' }}>
               Elevate your venue, captivate your clients, and ensure every celebration is a resounding success with WeddingRingRing.
             </p>
             <a 
               href="#how-it-works"
-              className="inline-block mt-4 px-6 py-3 border-2 border-white text-white rounded-lg hover:bg-white hover:text-gray-900 transition"
+              style={{
+                display: 'inline-block',
+                background: 'white',
+                color: '#1a1a1a',
+                padding: '1rem 2rem',
+                borderRadius: '0.375rem',
+                fontSize: '1rem',
+                fontWeight: 600,
+                textDecoration: 'none',
+                border: '2px solid white',
+                transition: 'all 0.2s'
+              }}
             >
               Find Out How It Works
             </a>
@@ -168,19 +355,41 @@ export default function HomePage() {
       </section>
 
       {/* Why You Need An Audio Guestbook */}
-      <section className="py-20 bg-pink-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 
-              className="text-4xl md:text-5xl mb-4"
-              style={{ fontFamily: 'Playfair Display, serif' }}
-            >
+      <section style={{
+        background: '#F5E8E8',
+        padding: '6rem 0'
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 2rem'
+        }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: '3.5rem',
+              lineHeight: 1.1,
+              fontWeight: 500,
+              letterSpacing: '-0.02em',
+              marginBottom: '1.5rem'
+            }}>
               Why You Need An Audio Guestbook.
             </h2>
-            <p className="text-xl text-gray-600">What does it add to your business?</p>
+            <p style={{
+              fontSize: '1.25rem',
+              color: '#6a6a6a',
+              maxWidth: '700px',
+              margin: '0 auto'
+            }}>
+              What does it add to your business?
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '2rem'
+          }}>
             {[
               {
                 icon: (
@@ -237,24 +446,84 @@ export default function HomePage() {
                 description: 'Adds an element of fun, allowing guests to contribute heartfelt messages and laughter.'
               }
             ].map((benefit, idx) => (
-              <div key={idx} className="bg-white rounded-xl p-8 shadow-sm">
-                <div className="w-12 h-12 bg-gray-900 text-white rounded-lg flex items-center justify-center mb-4">
+              <div key={idx} style={{
+                background: 'white',
+                borderRadius: '0.5rem',
+                padding: '2rem',
+                border: '1px solid rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
+                transition: 'all 0.3s'
+              }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  background: '#F5E8E8',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '1.5rem',
+                  color: '#C9A6A6'
+                }}>
                   {benefit.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
+                <h3 style={{
+                  fontSize: '1.25rem',
+                  lineHeight: 1.4,
+                  fontWeight: 600,
+                  marginBottom: '1rem',
+                  color: '#1a1a1a'
+                }}>
+                  {benefit.title}
+                </h3>
+                <p style={{
+                  fontSize: '1rem',
+                  color: '#6a6a6a',
+                  lineHeight: 1.7
+                }}>
+                  {benefit.description}
+                </p>
               </div>
             ))}
           </div>
 
-          <div className="text-center mt-16">
-            <h3 className="text-2xl font-semibold mb-4">Want to know more?</h3>
-            <p className="text-xl text-gray-600 mb-6">
+          {/* CTA Section */}
+          <div style={{
+            textAlign: 'center',
+            padding: '4rem 0',
+            marginTop: '4rem'
+          }}>
+            <h3 style={{
+              fontSize: '3rem',
+              marginBottom: '1.5rem',
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontWeight: 500,
+              color: '#1a1a1a'
+            }}>
+              Want to know more?
+            </h3>
+            <p style={{
+              color: '#6a6a6a',
+              marginBottom: '3rem',
+              fontSize: '1.25rem',
+              maxWidth: '600px',
+              margin: '0 auto 3rem'
+            }}>
               Get in touch to find out how we can help you host your own audio guestbook
             </p>
             <button
               onClick={() => setModalOpen(true)}
-              className="bg-gray-900 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-800 transition"
+              style={{
+                background: '#1a1a1a',
+                color: 'white',
+                padding: '1rem 2rem',
+                borderRadius: '0.375rem',
+                fontSize: '1rem',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
             >
               Get In Touch
             </button>
@@ -263,19 +532,44 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 
-              className="text-4xl md:text-5xl mb-4"
-              style={{ fontFamily: 'Playfair Display, serif' }}
-            >
+      <section id="how-it-works" style={{
+        background: '#1a1a1a',
+        color: '#E8C9C9',
+        padding: '6rem 0'
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 2rem'
+        }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: '3.5rem',
+              lineHeight: 1.1,
+              fontWeight: 500,
+              letterSpacing: '-0.02em',
+              marginBottom: '1.5rem',
+              color: '#F5E8E8'
+            }}>
               The No-Fuss Audio Guestbook
             </h2>
-            <p className="text-xl text-gray-300">It only takes a minute!</p>
+            <p style={{
+              fontSize: '1.25rem',
+              color: '#E8C9C9'
+            }}>
+              It only takes a minute!
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '2rem',
+            maxWidth: '1000px',
+            margin: '0 auto',
+            padding: '4rem 0'
+          }}>
             {[
               {
                 number: '1',
@@ -298,12 +592,34 @@ export default function HomePage() {
                 description: 'Couples access all messages instantly from their secure online account.'
               }
             ].map((step) => (
-              <div key={step.number} className="text-center">
-                <div className="w-16 h-16 bg-white text-gray-900 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+              <div key={step.number} style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: '6rem',
+                  fontWeight: 300,
+                  color: '#C9A6A6',
+                  marginBottom: '1.5rem',
+                  lineHeight: 1
+                }}>
                   {step.number}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                <p className="text-gray-300">{step.description}</p>
+                <h3 style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: '1.25rem',
+                  fontWeight: 500,
+                  color: '#F5E8E8',
+                  marginBottom: '1rem',
+                  lineHeight: 1.3
+                }}>
+                  {step.title}
+                </h3>
+                <p style={{
+                  fontSize: '1rem',
+                  lineHeight: 1.6,
+                  color: '#E8C9C9'
+                }}>
+                  {step.description}
+                </p>
               </div>
             ))}
           </div>
@@ -311,129 +627,427 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
+      <footer style={{
+        background: '#1a1a1a',
+        color: '#E8C9C9',
+        padding: '4rem 0 2rem'
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 2rem'
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '3rem',
+            marginBottom: '3rem'
+          }}>
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li><Link href="/docs">Documentation</Link></li>
-                <li><Link href="/faqs">FAQs</Link></li>
-                <li><Link href="/help">Help Center</Link></li>
+              <h4 style={{
+                marginBottom: '1.5rem',
+                fontWeight: 600,
+                fontSize: '1rem',
+                color: '#F5E8E8'
+              }}>
+                Support
+              </h4>
+              <ul style={{ listStyle: 'none' }}>
+                <li style={{ marginBottom: '1rem' }}>
+                  <Link href="/docs" style={{ color: '#E8C9C9', textDecoration: 'none', fontSize: '0.875rem' }}>Documentation</Link>
+                </li>
+                <li style={{ marginBottom: '1rem' }}>
+                  <Link href="/faqs" style={{ color: '#E8C9C9', textDecoration: 'none', fontSize: '0.875rem' }}>FAQs</Link>
+                </li>
+                <li style={{ marginBottom: '1rem' }}>
+                  <Link href="/help" style={{ color: '#E8C9C9', textDecoration: 'none', fontSize: '0.875rem' }}>Help Center</Link>
+                </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li><Link href="/about">About</Link></li>
-                <li><Link href="/contact">Contact Us</Link></li>
+              <h4 style={{
+                marginBottom: '1.5rem',
+                fontWeight: 600,
+                fontSize: '1rem',
+                color: '#F5E8E8'
+              }}>
+                Company
+              </h4>
+              <ul style={{ listStyle: 'none' }}>
+                <li style={{ marginBottom: '1rem' }}>
+                  <Link href="/about" style={{ color: '#E8C9C9', textDecoration: 'none', fontSize: '0.875rem' }}>About</Link>
+                </li>
+                <li style={{ marginBottom: '1rem' }}>
+                  <Link href="/contact" style={{ color: '#E8C9C9', textDecoration: 'none', fontSize: '0.875rem' }}>Contact Us</Link>
+                </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li><Link href="/privacy">Privacy Policy</Link></li>
-                <li><Link href="/terms">Terms</Link></li>
+              <h4 style={{
+                marginBottom: '1.5rem',
+                fontWeight: 600,
+                fontSize: '1rem',
+                color: '#F5E8E8'
+              }}>
+                Legal
+              </h4>
+              <ul style={{ listStyle: 'none' }}>
+                <li style={{ marginBottom: '1rem' }}>
+                  <Link href="/privacy" style={{ color: '#E8C9C9', textDecoration: 'none', fontSize: '0.875rem' }}>Privacy Policy</Link>
+                </li>
+                <li style={{ marginBottom: '1rem' }}>
+                  <Link href="/terms" style={{ color: '#E8C9C9', textDecoration: 'none', fontSize: '0.875rem' }}>Terms</Link>
+                </li>
               </ul>
+            </div>
+            <div>
+              <h4 style={{
+                marginBottom: '1.5rem',
+                fontWeight: 600,
+                fontSize: '1rem',
+                color: '#F5E8E8'
+              }}>
+                RingRing Digital Ltd
+              </h4>
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontSize: '0.875rem',
+                lineHeight: 1.6
+              }}>
+                The audio guestbook for venues.
+              </p>
             </div>
           </div>
-          <div className="text-center text-gray-500 text-sm border-t border-gray-200 pt-8">
-            © {new Date().getFullYear()} WeddingRingRing. All rights reserved.
+          <div style={{
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            paddingTop: '2rem',
+            textAlign: 'center',
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontSize: '0.875rem'
+          }}>
+            <p>&copy; 2026 RingRing Digital Ltd. All rights reserved.</p>
           </div>
         </div>
       </footer>
 
       {/* Contact Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-serif" style={{ fontFamily: 'Playfair Display, serif' }}>
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setModalOpen(false)
+          }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.7)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+            backdropFilter: 'blur(4px)'
+          }}
+        >
+          <div style={{
+            background: 'white',
+            borderRadius: '0.5rem',
+            maxWidth: '600px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            position: 'relative'
+          }}>
+            <div style={{
+              padding: '3rem 3rem 2rem',
+              borderBottom: '1px solid rgba(0, 0, 0, 0.08)'
+            }}>
+              <h2 style={{
+                fontSize: '1.5rem',
+                marginBottom: '0.5rem',
+                fontFamily: "'Playfair Display', Georgia, serif"
+              }}>
                 Get In Touch
               </h2>
-              <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+              <p style={{
+                color: '#6a6a6a',
+                fontSize: '1rem'
+              }}>
+                Tell us about your venue and we'll be in touch within 24 hours
+              </p>
+              <button
+                onClick={() => setModalOpen(false)}
+                style={{
+                  position: 'absolute',
+                  top: '1.5rem',
+                  right: '1.5rem',
+                  width: '44px',
+                  height: '44px',
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  color: '#6a6a6a',
+                  fontSize: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '0.375rem',
+                  lineHeight: 1
+                }}
+              >
+                ×
               </button>
             </div>
 
-            {submitted ? (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+            <div style={{ padding: '3rem' }}>
+              <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem' }} className="form-row-responsive">
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                      Your Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="John Smith"
+                      style={{
+                        width: '100%',
+                        padding: '1rem 1.5rem',
+                        border: '1px solid rgba(0, 0, 0, 0.08)',
+                        borderRadius: '0.375rem',
+                        fontSize: '1rem',
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                      Venue Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.venueName}
+                      onChange={(e) => setFormData({ ...formData, venueName: e.target.value })}
+                      placeholder="The Grand Ballroom"
+                      style={{
+                        width: '100%',
+                        padding: '1rem 1.5rem',
+                        border: '1px solid rgba(0, 0, 0, 0.08)',
+                        borderRadius: '0.375rem',
+                        fontSize: '1rem',
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-semibold mb-2">Thank You!</h3>
-                <p className="text-gray-600">We'll be in touch soon.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem' }} className="form-row-responsive">
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="john@venue.com"
+                      style={{
+                        width: '100%',
+                        padding: '1rem 1.5rem',
+                        border: '1px solid rgba(0, 0, 0, 0.08)',
+                        borderRadius: '0.375rem',
+                        fontSize: '1rem',
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+44 20 1234 5678"
+                      style={{
+                        width: '100%',
+                        padding: '1rem 1.5rem',
+                        border: '1px solid rgba(0, 0, 0, 0.08)',
+                        borderRadius: '0.375rem',
+                        fontSize: '1rem',
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-sm font-medium mb-2">Your Name *</label>
-                  <input
-                    type="text"
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                    I'm interested as a... *
+                  </label>
+                  <select
                     required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  />
+                    value={formData.interest}
+                    onChange={(e) => setFormData({ ...formData, interest: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '1rem 1.5rem',
+                      border: '1px solid rgba(0, 0, 0, 0.08)',
+                      borderRadius: '0.375rem',
+                      fontSize: '1rem',
+                      fontFamily: 'inherit',
+                      background: 'white'
+                    }}
+                  >
+                    <option value="venue">Venue Owner/Manager</option>
+                    <option value="couple">Engaged Couple</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Venue Name</label>
-                  <input
-                    type="text"
-                    value={formData.venueName}
-                    onChange={(e) => setFormData({ ...formData, venueName: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Email *</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Phone</label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Message</label>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                    Tell us about your venue (optional)
+                  </label>
                   <textarea
-                    rows={4}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    placeholder="Tell us more about your venue..."
+                    style={{
+                      width: '100%',
+                      padding: '1rem 1.5rem',
+                      border: '1px solid rgba(0, 0, 0, 0.08)',
+                      borderRadius: '0.375rem',
+                      fontSize: '1rem',
+                      fontFamily: 'inherit',
+                      minHeight: '100px',
+                      resize: 'vertical'
+                    }}
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gray-900 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
+                  style={{
+                    background: '#1a1a1a',
+                    color: 'white',
+                    padding: '1rem 2rem',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    opacity: loading ? 0.6 : 1
+                  }}
                 >
                   {loading ? 'Sending...' : 'Send Message'}
                 </button>
+
+                <p style={{
+                  fontSize: '0.875rem',
+                  color: '#6a6a6a',
+                  textAlign: 'center'
+                }}>
+                  We'll respond within 24 hours
+                </p>
               </form>
-            )}
+            </div>
           </div>
         </div>
       )}
-    </div>
+
+      {/* Cookie Banner */}
+      {cookieBannerVisible && (
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: '#1a1a1a',
+          color: '#E8C9C9',
+          padding: '1.5rem 0',
+          boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+          zIndex: 1000
+        }}>
+          <div style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+            padding: '0 2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '2rem',
+            flexWrap: 'wrap'
+          }}>
+            <div style={{
+              flex: 1,
+              fontSize: '0.875rem',
+              lineHeight: 1.5
+            }}>
+              We use cookies to keep you logged in and improve your experience.{' '}
+              <Link href="/privacy" style={{ color: '#C9A6A6', textDecoration: 'underline' }}>
+                Learn more
+              </Link>
+            </div>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button
+                onClick={declineCookies}
+                style={{
+                  padding: '0.5rem 1.5rem',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  background: 'transparent',
+                  color: '#E8C9C9',
+                  border: '1px solid #E8C9C9',
+                  transition: 'all 0.2s'
+                }}
+              >
+                Decline
+              </button>
+              <button
+                onClick={acceptCookies}
+                style={{
+                  padding: '0.5rem 1.5rem',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  background: '#C9A6A6',
+                  color: '#1a1a1a',
+                  border: 'none',
+                  transition: 'all 0.2s'
+                }}
+              >
+                Accept
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .nav-desktop {
+            display: none !important;
+          }
+          .mobile-menu-btn {
+            display: block !important;
+          }
+          .form-row-responsive {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
+    </>
   )
 }
