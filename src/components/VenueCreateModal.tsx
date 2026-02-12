@@ -65,52 +65,33 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
     setError(null)
     
     try {
-      // Step 1: Create auth user for venue owner
-      const temporaryPassword = Math.random().toString(36).slice(-12) + 'Aa1!'
+      // Get the current user's session token
+      const { data: { session } } = await supabase.auth.getSession()
       
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: formData.ownerEmail,
-        password: temporaryPassword,
-        email_confirm: true,
-        user_metadata: {
-          first_name: formData.ownerFirstName,
-          last_name: formData.ownerLastName,
-          role: 'venue'
-        }
+      if (!session) {
+        throw new Error('Not authenticated')
+      }
+
+      // Call API route to create venue (uses Service Role Key on backend)
+      const response = await fetch('/api/admin/create-venue', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(formData)
       })
-      
-      if (authError) throw authError
-      if (!authData.user) throw new Error('Failed to create user')
-      
-      // Step 2: Create venue record
-      const { error: venueError } = await supabase
-        .from('venues')
-        .insert({
-          owner_id: authData.user.id,
-          name: formData.venueName,
-          business_type: formData.businessType,
-          address_line_1: formData.addressLine1,
-          address_line_2: formData.addressLine2,
-          city: formData.city,
-          county: formData.county,
-          postcode: formData.postcode,
-          country: formData.countryCode === 'GB' ? 'UK' : 'Other',
-          primary_contact_name: `${formData.ownerFirstName} ${formData.ownerLastName}`,
-          primary_contact_email: formData.ownerEmail,
-          primary_contact_phone: formData.ownerPhone,
-          website: formData.website || null,
-          instagram_handle: formData.instagram || null,
-          subscription_type: formData.subscriptionType,
-          subscription_status: formData.subscriptionStatus,
-          is_active: true,
-        })
-      
-      if (venueError) throw venueError
-      
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create venue')
+      }
+
       // Success!
       setSuccess(true)
       
-      // Send welcome email (optional - you can implement this)
+      // Send welcome email (optional)
       try {
         await fetch('/api/admin/send-venue-welcome', {
           method: 'POST',
@@ -119,7 +100,7 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
             email: formData.ownerEmail,
             venueName: formData.venueName,
             ownerName: `${formData.ownerFirstName} ${formData.ownerLastName}`,
-            temporaryPassword
+            temporaryPassword: result.temporaryPassword
           })
         })
       } catch (emailError) {
