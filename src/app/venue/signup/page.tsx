@@ -139,7 +139,7 @@ export default function VenueSignupPage() {
                   required
                   value={formData.venueName}
                   onChange={(e) => setFormData({...formData, venueName: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="Thornbury Manor"
                 />
               </div>
@@ -152,7 +152,7 @@ export default function VenueSignupPage() {
                   required
                   value={formData.businessType}
                   onChange={(e) => setFormData({...formData, businessType: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                 >
                   <option value="wedding_venue">Wedding Venue</option>
                   <option value="hotel">Hotel</option>
@@ -171,7 +171,7 @@ export default function VenueSignupPage() {
                   type="number"
                   value={formData.estimatedWeddingsPerYear}
                   onChange={(e) => setFormData({...formData, estimatedWeddingsPerYear: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="50"
                 />
               </div>
@@ -192,7 +192,7 @@ export default function VenueSignupPage() {
                   required
                   value={formData.fullName}
                   onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="Jane Smith"
                 />
               </div>
@@ -206,7 +206,7 @@ export default function VenueSignupPage() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="jane@thornbury.co.uk"
                 />
                 <p className="text-sm text-sage-dark mt-1">This will be your login email</p>
@@ -221,7 +221,7 @@ export default function VenueSignupPage() {
                   required
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="+44 7700 900123"
                 />
               </div>
@@ -236,7 +236,7 @@ export default function VenueSignupPage() {
                   minLength={8}
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="At least 8 characters"
                 />
               </div>
@@ -257,7 +257,7 @@ export default function VenueSignupPage() {
                   required
                   value={formData.addressLine1}
                   onChange={(e) => setFormData({...formData, addressLine1: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="123 High Street"
                 />
               </div>
@@ -270,7 +270,7 @@ export default function VenueSignupPage() {
                   type="text"
                   value={formData.addressLine2}
                   onChange={(e) => setFormData({...formData, addressLine2: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                 />
               </div>
               
@@ -284,7 +284,7 @@ export default function VenueSignupPage() {
                     required
                     value={formData.city}
                     onChange={(e) => setFormData({...formData, city: e.target.value})}
-                    className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                    className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                     placeholder="London"
                   />
                 </div>
@@ -298,7 +298,7 @@ export default function VenueSignupPage() {
                     required
                     value={formData.county}
                     onChange={(e) => setFormData({...formData, county: e.target.value})}
-                    className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                    className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                     placeholder="Greater London"
                   />
                 </div>
@@ -313,7 +313,7 @@ export default function VenueSignupPage() {
                   required
                   value={formData.postcode}
                   onChange={(e) => setFormData({...formData, postcode: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="SW1A 1AA"
                 />
               </div>
@@ -333,7 +333,7 @@ export default function VenueSignupPage() {
                   type="url"
                   value={formData.website}
                   onChange={(e) => setFormData({...formData, website: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="https://thornbury.co.uk"
                 />
               </div>
@@ -346,7 +346,7 @@ export default function VenueSignupPage() {
                   type="text"
                   value={formData.instagram}
                   onChange={(e) => setFormData({...formData, instagram: e.target.value})}
-                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full px-4 py-3 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent text-black placeholder:text-gray-400"
                   placeholder="@thornburymanor"
                 />
               </div>
