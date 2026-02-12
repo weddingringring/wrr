@@ -331,11 +331,11 @@ export default function HomePage() {
           right: 0,
           bottom: 0,
           width: '100%',
-          backgroundImage: 'url(/hero-illustration.svg)',
+          backgroundImage: 'url(/hero-phones-background.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          opacity: 0.25,
+          opacity: 0.4,
           zIndex: 0
         }} />
         <div style={{
