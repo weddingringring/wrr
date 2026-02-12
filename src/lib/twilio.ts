@@ -2,8 +2,8 @@ import twilio from 'twilio'
 
 // Initialize Twilio client
 export const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
+  process.env.TWILIO_ACCOUNT_SID!,
+  process.env.TWILIO_AUTH_TOKEN!
 )
 
 /**
@@ -11,7 +11,7 @@ export const twilioClient = twilio(
  */
 export async function getAccountBalance() {
   try {
-    const account = await twilioClient.api.accounts(process.env.TWILIO_ACCOUNT_SID).fetch()
+    const account = await twilioClient.api.accounts(process.env.TWILIO_ACCOUNT_SID!).fetch()
     return {
       balance: parseFloat(account.balance),
       currency: 'USD' // Twilio uses USD
@@ -83,7 +83,7 @@ export async function searchAvailableNumbers(country: string = 'GB', areaCode?: 
  */
 export async function updatePhoneWebhooks(phoneSid: string) {
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL!
     
     await twilioClient.incomingPhoneNumbers(phoneSid).update({
       voiceUrl: `${appUrl}/api/twilio/voice`,
@@ -146,8 +146,8 @@ export function estimateMonthlyCost(country: string = 'GB', estimatedMinutes: nu
  * @param recordingSid Twilio recording SID
  */
 export function getAuthenticatedRecordingUrl(recordingSid: string): string {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID
-  const authToken = process.env.TWILIO_AUTH_TOKEN
+  const accountSid = process.env.TWILIO_ACCOUNT_SID!
+  const authToken = process.env.TWILIO_AUTH_TOKEN!
   const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64')
   
   return `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Recordings/${recordingSid}.mp3`
@@ -158,7 +158,7 @@ export function getAuthenticatedRecordingUrl(recordingSid: string): string {
  */
 export async function testTwilioCredentials(): Promise<boolean> {
   try {
-    await twilioClient.api.accounts(process.env.TWILIO_ACCOUNT_SID).fetch()
+    await twilioClient.api.accounts(process.env.TWILIO_ACCOUNT_SID!).fetch()
     return true
   } catch (error) {
     console.error('Invalid Twilio credentials:', error)

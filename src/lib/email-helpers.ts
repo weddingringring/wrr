@@ -38,7 +38,7 @@ export async function sendCustomerWelcomeEmail(
     throw new Error('Customer email not found')
   }
 
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL!}/dashboard`
 
   return await sendEmailSafe({
     to: event.customer.email,
@@ -67,7 +67,7 @@ export async function sendVenueEventNotification(event: EventData) {
     throw new Error('Venue email not found')
   }
 
-  const eventDetailsUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/venue/events/${event.id}`
+  const eventDetailsUrl = `${process.env.NEXT_PUBLIC_BASE_URL!}/venue/events/${event.id}`
 
   return await sendEmailSafe({
     to: event.venue.email,
@@ -98,7 +98,7 @@ export async function sendCustomerPhoneAssigned(event: EventData) {
     throw new Error('Phone number not assigned')
   }
 
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL!}/dashboard`
 
   return await sendEmailSafe({
     to: event.customer.email,
@@ -129,7 +129,7 @@ export async function sendVenuePhoneReady(event: EventData) {
     throw new Error('Phone number not assigned')
   }
 
-  const setupUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/venue/events/${event.id}/setup`
+  const setupUrl = `${process.env.NEXT_PUBLIC_BASE_URL!}/venue/events/${event.id}/setup`
 
   return await sendEmailSafe({
     to: event.venue.email,
