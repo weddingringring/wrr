@@ -223,12 +223,13 @@ export default function AdminVenuesPage() {
                 {searchQuery ? 'Try adjusting your search' : 'Get started by adding your first venue'}
               </p>
               {!searchQuery && (
-                <Link
-                  href="/admin/venues/create"
+                <button
+                  onClick={() => setVenueModalOpen(true)}
                   className="inline-block px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+                  style={{ border: 'none', cursor: 'pointer' }}
                 >
                   + Add Venue
-                </Link>
+                </button>
               )}
             </div>
           ) : (
