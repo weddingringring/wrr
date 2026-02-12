@@ -38,7 +38,7 @@ export default function AdminDashboardPage() {
     // Verify admin role
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role, full_name')
+      .select('role, first_name, last_name')
       .eq('id', user.id)
       .single()
     
@@ -48,7 +48,11 @@ export default function AdminDashboardPage() {
       return
     }
     
-    setUser(profile)
+    // Combine first and last name for display
+    setUser({
+      ...profile,
+      full_name: `${profile.first_name} ${profile.last_name}`
+    })
   }
   
   const loadStats = async () => {
