@@ -244,12 +244,13 @@ export default function HomePage() {
         <div style={{
           position: 'absolute',
           top: 0,
+          left: 0,
           right: 0,
           bottom: 0,
-          width: '45%',
+          width: '100%',
           backgroundImage: 'url(/hero-illustration.svg)',
-          backgroundSize: 'contain',
-          backgroundPosition: 'center right',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           opacity: 0.25,
           zIndex: 0
