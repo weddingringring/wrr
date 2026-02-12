@@ -123,9 +123,10 @@ export default function CustomerDashboardPage() {
     
     // Filter by tags
     if (selectedTags.length > 0) {
-      filtered = filtered.filter(m => 
-        m.tags && selectedTags.some(tag => m.tags.includes(tag))
-      )
+      filtered = filtered.filter(m => {
+        const tags = (m as any).tags
+        return tags && selectedTags.some(tag => tags.includes(tag))
+      })
     }
     
     // Sort

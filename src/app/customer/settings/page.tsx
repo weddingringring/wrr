@@ -119,7 +119,7 @@ export default function CustomerSettingsPage() {
         m.caller_name || 'Unknown',
         m.duration,
         m.notes || '',
-        (m.tags || []).join('; '),
+        ((m as any).tags || []).join('; '),
         m.is_favorite ? 'Yes' : 'No'
       ])
       
