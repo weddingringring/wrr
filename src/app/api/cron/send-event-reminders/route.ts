@@ -9,6 +9,9 @@ import VenueReminderEmail from '@/emails/venue-reminder'
  * Runs: Daily at 8:00 AM
  * Purpose: Send reminder emails to venues 1 day before events
  */
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     // Verify cron secret

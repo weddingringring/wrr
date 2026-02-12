@@ -24,6 +24,9 @@ const twilioClient = twilio(
  * - Event date + 37 days has passed
  * - Number hasn't been released yet
  */
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     // Verify cron secret (basic security)

@@ -8,6 +8,9 @@ const twilioClient = twilio(
   process.env.TWILIO_AUTH_TOKEN!
 )
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }

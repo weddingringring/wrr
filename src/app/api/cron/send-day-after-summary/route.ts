@@ -9,6 +9,9 @@ import DayAfterSummaryEmail from '@/emails/day-after-summary'
  * Runs: Daily at 10:00 AM
  * Purpose: Send summary email to customers 1 day after their event
  */
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     // Verify cron secret
