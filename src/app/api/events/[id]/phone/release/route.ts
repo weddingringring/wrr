@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { cookies } from 'next/headers'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/server'
 import twilio from 'twilio'
 
 const twilioClient = twilio(
@@ -23,24 +23,13 @@ export async function POST(
     
     if (isCronRequest) {
       // Cron request - use service role
-      supabase = createClient(
+      supabase = createSupabaseClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
       )
     } else {
       // User request - check authentication
-      const cookieStore = cookies()
-      supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          cookies: {
-            get(name: string) {
-              return cookieStore.get(name)?.value
-            },
-          },
-        }
-      )
+      supabase = await createClient()
       
       // Check authentication
       const { data: { user }, error: authError } = await supabase.auth.getUser()
