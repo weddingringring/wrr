@@ -91,22 +91,41 @@ export default function HomePage() {
     setLoginError('')
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData)
+      const { supabase } = await import('@/lib/supabase/client')
+      
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: loginData.email,
+        password: loginData.password
       })
-
-      if (response.ok) {
-        // Redirect to dashboard or reload page
-        window.location.href = '/dashboard'
-      } else {
-        const data = await response.json()
-        setLoginError(data.error || 'Invalid email or password')
+      
+      if (authError) throw authError
+      
+      // Get user role and redirect accordingly
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+      
+      if (!profile) throw new Error('Profile not found')
+      
+      // Redirect based on role
+      switch (profile.role) {
+        case 'admin':
+          window.location.href = '/admin/dashboard'
+          break
+        case 'venue':
+          window.location.href = '/venue/dashboard'
+          break
+        case 'customer':
+          window.location.href = '/customer/dashboard'
+          break
+        default:
+          window.location.href = '/dashboard'
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error)
-      setLoginError('Unable to sign in. Please try again.')
+      setLoginError(error.message || 'Invalid email or password')
     } finally {
       setLoginLoading(false)
     }
