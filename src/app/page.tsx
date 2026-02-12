@@ -7,6 +7,7 @@ import Image from 'next/image'
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [cookieBannerVisible, setCookieBannerVisible] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -16,9 +17,15 @@ export default function HomePage() {
     message: '',
     interest: 'venue'
   })
+  const [loginData, setLoginData] = useState({
+    email: '',
+    password: ''
+  })
   const [loading, setLoading] = useState(false)
+  const [loginLoading, setLoginLoading] = useState(false)
   const [formSuccess, setFormSuccess] = useState(false)
   const [formError, setFormError] = useState('')
+  const [loginError, setLoginError] = useState('')
 
   useEffect(() => {
     // Check cookie consent on load
@@ -31,6 +38,7 @@ export default function HomePage() {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setModalOpen(false)
+        setLoginModalOpen(false)
         setMobileMenuOpen(false)
       }
     }
@@ -74,6 +82,33 @@ export default function HomePage() {
       setFormError('Unable to send message. Please check your connection and try again.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginLoading(true)
+    setLoginError('')
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData)
+      })
+
+      if (response.ok) {
+        // Redirect to dashboard or reload page
+        window.location.href = '/dashboard'
+      } else {
+        const data = await response.json()
+        setLoginError(data.error || 'Invalid email or password')
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      setLoginError('Unable to sign in. Please try again.')
+    } finally {
+      setLoginLoading(false)
     }
   }
 
@@ -173,14 +208,21 @@ export default function HomePage() {
             }}>
               About
             </Link>
-            <Link href="/login" style={{ 
-              color: '#1a1a1a', 
-              textDecoration: 'none', 
-              fontWeight: 500,
-              fontSize: '0.875rem'
-            }}>
+            <button 
+              onClick={() => setLoginModalOpen(true)}
+              style={{ 
+                color: '#6a6a6a', 
+                textDecoration: 'none', 
+                fontWeight: 500,
+                fontSize: '0.875rem',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0
+              }}
+            >
               Log In
-            </Link>
+            </button>
             <button
               onClick={() => setModalOpen(true)}
               style={{
@@ -1011,6 +1053,161 @@ export default function HomePage() {
                 }}>
                   We'll respond within 24 hours
                 </p>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Login Modal */}
+      {loginModalOpen && (
+        <div onClick={(e) => {
+          if (e.target === e.currentTarget) setLoginModalOpen(false)
+        }} style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '0.5rem',
+            maxWidth: '450px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            position: 'relative'
+          }}>
+            <div style={{
+              padding: '3rem 3rem 2rem',
+              borderBottom: '1px solid rgba(0, 0, 0, 0.08)'
+            }}>
+              <h2 style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '2rem',
+                marginBottom: '0.5rem',
+                textAlign: 'center'
+              }}>Welcome Back</h2>
+              <p style={{ color: '#6a6a6a', fontSize: '1rem', textAlign: 'center' }}>
+                Sign in to your account
+              </p>
+              <button 
+                onClick={() => setLoginModalOpen(false)}
+                style={{
+                  position: 'absolute',
+                  top: '1.5rem',
+                  right: '1.5rem',
+                  width: '44px',
+                  height: '44px',
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  color: '#6a6a6a',
+                  fontSize: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '0.375rem'
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ padding: '3rem' }}>
+              <form onSubmit={handleLogin} style={{ display: 'grid', gap: '1.5rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={loginData.email}
+                    onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                    placeholder="your@email.com"
+                    style={{
+                      width: '100%',
+                      padding: '1rem 1.5rem',
+                      border: '1px solid rgba(0, 0, 0, 0.08)',
+                      borderRadius: '0.375rem',
+                      fontSize: '1rem',
+                      fontFamily: 'inherit'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    placeholder="••••••••"
+                    style={{
+                      width: '100%',
+                      padding: '1rem 1.5rem',
+                      border: '1px solid rgba(0, 0, 0, 0.08)',
+                      borderRadius: '0.375rem',
+                      fontSize: '1rem',
+                      fontFamily: 'inherit'
+                    }}
+                  />
+                </div>
+
+                {loginError && (
+                  <div style={{
+                    padding: '1rem',
+                    background: '#f8d7da',
+                    border: '1px solid #f5c6cb',
+                    borderRadius: '0.375rem',
+                    color: '#721c24',
+                    textAlign: 'center',
+                    fontWeight: 500,
+                    fontSize: '0.875rem'
+                  }}>
+                    {loginError}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loginLoading}
+                  style={{
+                    background: '#1a1a1a',
+                    color: 'white',
+                    padding: '1rem 2rem',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: loginLoading ? 'not-allowed' : 'pointer',
+                    opacity: loginLoading ? 0.6 : 1,
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {loginLoading ? 'Signing In...' : 'Sign In'}
+                </button>
+
+                <div style={{ textAlign: 'center' }}>
+                  <Link href="/login" style={{
+                    fontSize: '0.875rem',
+                    color: '#6a6a6a',
+                    textDecoration: 'none'
+                  }}>
+                    Forgot your password?
+                  </Link>
+                </div>
               </form>
             </div>
           </div>
