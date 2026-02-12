@@ -20,7 +20,8 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
     businessType: 'wedding_venue',
     
     // Owner account
-    ownerName: '',
+    ownerFirstName: '',
+    ownerLastName: '',
     ownerEmail: '',
     ownerPhone: '',
     
@@ -72,7 +73,8 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
         password: temporaryPassword,
         email_confirm: true,
         user_metadata: {
-          full_name: formData.ownerName,
+          first_name: formData.ownerFirstName,
+          last_name: formData.ownerLastName,
           role: 'venue'
         }
       })
@@ -93,7 +95,7 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
           county: formData.county,
           postcode: formData.postcode,
           country: formData.countryCode === 'GB' ? 'UK' : 'Other',
-          primary_contact_name: formData.ownerName,
+          primary_contact_name: `${formData.ownerFirstName} ${formData.ownerLastName}`,
           primary_contact_email: formData.ownerEmail,
           primary_contact_phone: formData.ownerPhone,
           website: formData.website || null,
@@ -116,7 +118,7 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
           body: JSON.stringify({
             email: formData.ownerEmail,
             venueName: formData.venueName,
-            ownerName: formData.ownerName,
+            ownerName: `${formData.ownerFirstName} ${formData.ownerLastName}`,
             temporaryPassword
           })
         })
@@ -134,7 +136,8 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
         setFormData({
           venueName: '',
           businessType: 'wedding_venue',
-          ownerName: '',
+          ownerFirstName: '',
+          ownerLastName: '',
           ownerEmail: '',
           ownerPhone: '',
           addressLine1: '',
@@ -329,26 +332,50 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
                 Owner Account
               </h3>
               <div style={{ display: 'grid', gap: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#374151', marginBottom: '0.5rem' }}>
-                    Owner Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.ownerName}
-                    onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-                    placeholder="Jane Smith"
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem 1rem',
-                      border: '1px solid rgba(0, 0, 0, 0.08)',
-                      borderRadius: '0.375rem',
-                      fontSize: '1rem',
-                      color: '#000',
-                    }}
-                    className="placeholder:text-gray-400"
-                  />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#374151', marginBottom: '0.5rem' }}>
+                      First Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.ownerFirstName}
+                      onChange={(e) => setFormData({ ...formData, ownerFirstName: e.target.value })}
+                      placeholder="Jane"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '1px solid rgba(0, 0, 0, 0.08)',
+                        borderRadius: '0.375rem',
+                        fontSize: '1rem',
+                        color: '#000',
+                      }}
+                      className="placeholder:text-gray-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#374151', marginBottom: '0.5rem' }}>
+                      Last Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.ownerLastName}
+                      onChange={(e) => setFormData({ ...formData, ownerLastName: e.target.value })}
+                      placeholder="Smith"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '1px solid rgba(0, 0, 0, 0.08)',
+                        borderRadius: '0.375rem',
+                        fontSize: '1rem',
+                        color: '#000',
+                      }}
+                      className="placeholder:text-gray-400"
+                    />
+                  </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
