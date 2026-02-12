@@ -9,9 +9,11 @@ const supabase = createClient(
 )
 
 export async function POST(request: NextRequest) {
+  let params: URLSearchParams | null = null
+  
   try {
     const body = await request.text()
-    const params = new URLSearchParams(body)
+    params = new URLSearchParams(body)
     
     // Extract Twilio recording data
     const recordingSid = params.get('RecordingSid')
@@ -114,10 +116,10 @@ export async function POST(request: NextRequest) {
     
     // CRITICAL: Recording webhook failed - message will be lost!
     await logCritical('webhook:recording', error as Error, {
-      recordingSid: params.get('RecordingSid'),
-      callSid: params.get('CallSid'),
-      calledNumber: params.get('To'),
-      callerNumber: params.get('From')
+      recordingSid: params?.get('RecordingSid') || 'unknown',
+      callSid: params?.get('CallSid') || 'unknown',
+      calledNumber: params?.get('To') || 'unknown',
+      callerNumber: params?.get('From') || 'unknown'
     })
     
     return NextResponse.json({ 
