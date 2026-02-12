@@ -72,7 +72,8 @@ export async function POST(
     }
     
     // Get venue's country code (defaults to GB if not set)
-    const countryCode = event.venues?.country_code || 'GB'
+    const venue = event.venues as any
+    const countryCode = venue?.country_code || 'GB'
     
     console.log(`Purchasing number for event ${eventId} (${countryCode})...`)
     
