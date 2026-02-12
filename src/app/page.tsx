@@ -17,6 +17,8 @@ export default function HomePage() {
     interest: 'venue'
   })
   const [loading, setLoading] = useState(false)
+  const [formSuccess, setFormSuccess] = useState(false)
+  const [formError, setFormError] = useState('')
 
   useEffect(() => {
     // Check cookie consent on load
@@ -39,6 +41,8 @@ export default function HomePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setFormError('')
+    setFormSuccess(false)
 
     try {
       const response = await fetch('/api/contact', {
@@ -48,8 +52,7 @@ export default function HomePage() {
       })
 
       if (response.ok) {
-        alert("Thank you! We'll be in touch within 24 hours.")
-        setModalOpen(false)
+        setFormSuccess(true)
         setFormData({
           name: '',
           venueName: '',
@@ -58,9 +61,17 @@ export default function HomePage() {
           message: '',
           interest: 'venue'
         })
+        // Auto-close modal after 3 seconds
+        setTimeout(() => {
+          setModalOpen(false)
+          setFormSuccess(false)
+        }, 3000)
+      } else {
+        setFormError('Something went wrong. Please try again or email us directly.')
       }
     } catch (error) {
       console.error('Form error:', error)
+      setFormError('Unable to send message. Please check your connection and try again.')
     } finally {
       setLoading(false)
     }
@@ -944,6 +955,36 @@ export default function HomePage() {
                     }}
                   />
                 </div>
+
+                {/* Success Message */}
+                {formSuccess && (
+                  <div style={{
+                    padding: '1rem',
+                    background: '#d4edda',
+                    border: '1px solid #c3e6cb',
+                    borderRadius: '0.375rem',
+                    color: '#155724',
+                    textAlign: 'center',
+                    fontWeight: 500
+                  }}>
+                    ✓ Thank you! We'll be in touch as soon as possible.
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {formError && (
+                  <div style={{
+                    padding: '1rem',
+                    background: '#f8d7da',
+                    border: '1px solid #f5c6cb',
+                    borderRadius: '0.375rem',
+                    color: '#721c24',
+                    textAlign: 'center',
+                    fontWeight: 500
+                  }}>
+                    {formError}
+                  </div>
+                )}
 
                 <button
                   type="submit"
