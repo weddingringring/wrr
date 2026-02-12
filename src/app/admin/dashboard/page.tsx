@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
+import VenueCreateModal from '@/components/VenueCreateModal'
 
 interface DashboardStats {
   totalVenues: number
@@ -19,6 +20,7 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
+  const [venueModalOpen, setVenueModalOpen] = useState(false)
   
   useEffect(() => {
     checkAuth()
@@ -155,7 +157,7 @@ export default function AdminDashboardPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <ActionButton
-              href="/admin/venues/create"
+              onClick={() => setVenueModalOpen(true)}
               icon="+"
               label="Add Venue"
               color="deep-green"
@@ -208,6 +210,15 @@ export default function AdminDashboardPage() {
           />
         </div>
       </div>
+
+      {/* Venue Create Modal */}
+      <VenueCreateModal 
+        isOpen={venueModalOpen}
+        onClose={() => setVenueModalOpen(false)}
+        onSuccess={() => {
+          loadStats() // Reload stats after venue created
+        }}
+      />
     </div>
   )
 }
@@ -244,8 +255,9 @@ function StatCard({ title, value, subtitle, icon, color }: {
 }
 
 // Action Button Component
-function ActionButton({ href, icon, label, color }: {
-  href: string
+function ActionButton({ href, onClick, icon, label, color }: {
+  href?: string
+  onClick?: () => void
   icon: string
   label: string
   color: string
@@ -257,10 +269,25 @@ function ActionButton({ href, icon, label, color }: {
     'gold': 'bg-gold hover:bg-charcoal'
   }
   
+  const className = `${colorClasses[color as keyof typeof colorClasses]} text-white rounded-lg p-4 text-center transition flex flex-col items-center justify-center gap-2 cursor-pointer`
+  
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className={className}
+        style={{ border: 'none', width: '100%' }}
+      >
+        <span className="text-2xl">{icon}</span>
+        <span className="font-medium">{label}</span>
+      </button>
+    )
+  }
+  
   return (
     <Link
-      href={href}
-      className={`${colorClasses[color as keyof typeof colorClasses]} text-white rounded-lg p-4 text-center transition flex flex-col items-center justify-center gap-2`}
+      href={href!}
+      className={className}
     >
       <span className="text-2xl">{icon}</span>
       <span className="font-medium">{label}</span>
