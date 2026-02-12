@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
+import VenueCreateModal from '@/components/VenueCreateModal'
 
 interface Venue {
   id: string
@@ -22,6 +23,7 @@ export default function AdminVenuesPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
+  const [venueModalOpen, setVenueModalOpen] = useState(false)
   
   useEffect(() => {
     loadVenues()
@@ -135,12 +137,13 @@ export default function AdminVenuesPage() {
               <h1 className="font-serif text-3xl text-charcoal">Venues</h1>
             </div>
             
-            <Link
-              href="/admin/venues/create"
+            <button
+              onClick={() => setVenueModalOpen(true)}
               className="px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+              style={{ border: 'none', cursor: 'pointer' }}
             >
               + Add Venue
-            </Link>
+            </button>
           </div>
         </div>
       </header>
@@ -334,6 +337,15 @@ export default function AdminVenuesPage() {
           )}
         </div>
       </div>
+
+      {/* Venue Create Modal */}
+      <VenueCreateModal 
+        isOpen={venueModalOpen}
+        onClose={() => setVenueModalOpen(false)}
+        onSuccess={() => {
+          loadVenues() // Reload venues list after venue created
+        }}
+      />
     </div>
   )
 }
