@@ -125,7 +125,18 @@ export default function HomePage() {
         }}>
           <div>
             <Link href="/">
-              <Image src="/logo.svg" alt="WeddingRingRing" width={180} height={45} priority />
+              <Image 
+                src="/logo.svg" 
+                alt="WeddingRingRing" 
+                width={180} 
+                height={45} 
+                priority 
+                style={{
+                  imageRendering: 'crisp-edges',
+                  shapeRendering: 'crispEdges',
+                  filter: 'none'
+                }}
+              />
             </Link>
           </div>
 
