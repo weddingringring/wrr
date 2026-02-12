@@ -110,7 +110,7 @@ export default function VenueSignupPage() {
     <div className="min-h-screen bg-cream py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="font-serif text-4xl text-charcoal mb-2">
+          <h1 className="font-serif text-4xl text-gray-700 mb-2">
             Partner with WeddingRingRing
           </h1>
           <p className="text-sage-dark">
@@ -127,11 +127,11 @@ export default function VenueSignupPage() {
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-8 space-y-6">
           {/* Business Information */}
           <div>
-            <h2 className="font-serif text-2xl text-charcoal mb-4">Business Information</h2>
+            <h2 className="font-serif text-2xl text-gray-700 mb-4">Business Information</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Venue Name *
                 </label>
                 <input
@@ -145,7 +145,7 @@ export default function VenueSignupPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Venue Type *
                 </label>
                 <select
@@ -164,7 +164,7 @@ export default function VenueSignupPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Estimated Weddings Per Year
                 </label>
                 <input
@@ -180,11 +180,11 @@ export default function VenueSignupPage() {
           
           {/* Your Details */}
           <div>
-            <h2 className="font-serif text-2xl text-charcoal mb-4">Your Details</h2>
+            <h2 className="font-serif text-2xl text-gray-700 mb-4">Your Details</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Your Name *
                 </label>
                 <input
@@ -198,7 +198,7 @@ export default function VenueSignupPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address *
                 </label>
                 <input
@@ -213,7 +213,7 @@ export default function VenueSignupPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Phone Number *
                 </label>
                 <input
@@ -227,7 +227,7 @@ export default function VenueSignupPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Password *
                 </label>
                 <input
@@ -245,11 +245,11 @@ export default function VenueSignupPage() {
           
           {/* Venue Address */}
           <div>
-            <h2 className="font-serif text-2xl text-charcoal mb-4">Venue Address</h2>
+            <h2 className="font-serif text-2xl text-gray-700 mb-4">Venue Address</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Address Line 1 *
                 </label>
                 <input
@@ -263,7 +263,7 @@ export default function VenueSignupPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Address Line 2
                 </label>
                 <input
@@ -276,7 +276,7 @@ export default function VenueSignupPage() {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-charcoal mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     City *
                   </label>
                   <input
@@ -290,7 +290,7 @@ export default function VenueSignupPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-charcoal mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     County *
                   </label>
                   <input
@@ -305,7 +305,7 @@ export default function VenueSignupPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Postcode *
                 </label>
                 <input
@@ -322,11 +322,11 @@ export default function VenueSignupPage() {
           
           {/* Optional Info */}
           <div>
-            <h2 className="font-serif text-2xl text-charcoal mb-4">Online Presence (Optional)</h2>
+            <h2 className="font-serif text-2xl text-gray-700 mb-4">Online Presence (Optional)</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Website
                 </label>
                 <input
@@ -339,7 +339,7 @@ export default function VenueSignupPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Instagram Handle
                 </label>
                 <input
@@ -355,7 +355,7 @@ export default function VenueSignupPage() {
           
           {/* Subscription Choice */}
           <div>
-            <h2 className="font-serif text-2xl text-charcoal mb-4">How Would You Like to Work With Us?</h2>
+            <h2 className="font-serif text-2xl text-gray-700 mb-4">How Would You Like to Work With Us?</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className={`cursor-pointer border-2 rounded-lg p-6 transition ${
@@ -372,10 +372,10 @@ export default function VenueSignupPage() {
                   className="sr-only"
                 />
                 <div className="text-center">
-                  <h3 className="font-serif text-xl text-charcoal mb-2">Rental Model</h3>
+                  <h3 className="font-serif text-xl text-gray-700 mb-2">Rental Model</h3>
                   <p className="text-3xl font-bold text-deep-green mb-2">£50</p>
                   <p className="text-sm text-sage-dark mb-4">per event</p>
-                  <ul className="text-sm text-left space-y-2 text-charcoal">
+                  <ul className="text-sm text-left space-y-2 text-gray-700">
                     <li>✓ Charge couples £500+</li>
                     <li>✓ Keep £450+ profit</li>
                     <li>✓ No upfront costs</li>
@@ -398,10 +398,10 @@ export default function VenueSignupPage() {
                   className="sr-only"
                 />
                 <div className="text-center">
-                  <h3 className="font-serif text-xl text-charcoal mb-2">Own the Equipment</h3>
+                  <h3 className="font-serif text-xl text-gray-700 mb-2">Own the Equipment</h3>
                   <p className="text-3xl font-bold text-deep-green mb-2">£1,299</p>
                   <p className="text-sm text-sage-dark mb-4">+ £299/year software</p>
-                  <ul className="text-sm text-left space-y-2 text-charcoal">
+                  <ul className="text-sm text-left space-y-2 text-gray-700">
                     <li>✓ Unlimited events</li>
                     <li>✓ Keep 100% revenue</li>
                     <li>✓ ROI in 3 events</li>
