@@ -27,11 +27,11 @@ export const EmailLayout = ({ preview, children }: EmailLayoutProps) => {
           {/* Header with Logo */}
           <Section style={header}>
             <Img
-              src={`${process.env.NEXT_PUBLIC_BASE_URL}/logo.svg`}
+              src={`${process.env.NEXT_PUBLIC_BASE_URL}/logo.png`}
               alt="WeddingRingRing"
-              width="200"
-              height="67"
-              style={{ margin: '0 auto', display: 'block' }}
+              width="400"
+              height="100"
+              style={{ margin: '0 auto', display: 'block', maxWidth: '200px', height: 'auto' }}
             />
           </Section>
 
