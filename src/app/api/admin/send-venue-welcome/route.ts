@@ -15,6 +15,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'https://wrr-29ly.vercel.app'
+
     // Send email using Resend
     const { data, error } = await resend.emails.send({
       from: 'WeddingRingRing <noreply@weddingringring.com>', // Replace with your verified domain
@@ -35,7 +37,7 @@ export async function POST(request: NextRequest) {
             <!-- Logo and Header -->
             <div style="background: #fff; padding: 40px 20px; text-align: center; border-radius: 8px 8px 0 0; border: 1px solid #e5e7eb; border-bottom: none;">
               <img 
-                src="${process.env.NEXT_PUBLIC_SITE_URL}/logo.png" 
+                src="${siteUrl.startsWith('http') ? siteUrl : 'https://' + siteUrl}/logo.png" 
                 alt="WeddingRingRing" 
                 style="max-width: 200px; height: auto; margin: 0 auto 20px; display: block;"
               />
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/login" 
+                <a href="${siteUrl.startsWith('http') ? siteUrl : 'https://' + siteUrl}/login" 
                    style="display: inline-block; background: #2d5f4f; color: #fff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
                   Login to Your Account
                 </a>
