@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
+import EventCreateModal from '@/components/EventCreateModal'
 
 interface Event {
   id: string
@@ -22,6 +23,7 @@ export default function VenueDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
   const [venue, setVenue] = useState<any>(null)
+  const [createModalOpen, setCreateModalOpen] = useState(false)
   
   useEffect(() => {
     checkAuth()
@@ -52,7 +54,7 @@ export default function VenueDashboardPage() {
     // Get profile
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name')
+      .select('first_name, last_name')
       .eq('id', user.id)
       .single()
     
@@ -139,12 +141,30 @@ export default function VenueDashboardPage() {
       <header className="bg-white border-b border-sage-light shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="font-serif text-2xl text-deep-green">WeddingRingRing</h1>
-              <p className="text-xs text-sage-dark">{venue?.name}</p>
+            <div className="flex items-center gap-3">
+              <Link href="/venue/dashboard">
+                <img 
+                  src="/logo.png" 
+                  alt="WeddingRingRing" 
+                  className="h-8 w-auto"
+                />
+              </Link>
+              <div className="border-l border-sage-light pl-3">
+                <p className="text-xs text-sage-dark">{venue?.name}</p>
+              </div>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
+              {user && (
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-deep-green text-white flex items-center justify-center font-medium">
+                    {user.first_name?.[0]}{user.last_name?.[0]}
+                  </div>
+                  <span className="text-sm text-gray-900">
+                    {user.first_name} {user.last_name}
+                  </span>
+                </div>
+              )}
               <Link
                 href="/venue/settings"
                 className="text-sm text-sage-dark hover:text-charcoal transition"
@@ -206,12 +226,12 @@ export default function VenueDashboardPage() {
             </button>
           </div>
           
-          <Link
-            href="/venue/events/create"
+          <button
+            onClick={() => setCreateModalOpen(true)}
             className="px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
           >
             + Create Event
-          </Link>
+          </button>
         </div>
         
         {/* Calendar View */}
@@ -223,12 +243,12 @@ export default function VenueDashboardPage() {
               <div className="text-center py-12">
                 <p className="text-xl text-sage-dark mb-2">No events yet</p>
                 <p className="text-sm text-sage-dark mb-6">Create your first event to get started</p>
-                <Link
-                  href="/venue/events/create"
+                <button
+                  onClick={() => setCreateModalOpen(true)}
                   className="inline-block px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
                 >
                   + Create Event
-                </Link>
+                </button>
               </div>
             ) : (
               <div className="space-y-8">
@@ -389,5 +409,17 @@ function EventCard({ event, getDisplayName, isPast = false }: {
         </span>
       </div>
     </Link>
+  )
+}
+
+      {/* Event Create Modal */}
+      <EventCreateModal 
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={() => {
+          loadEvents() // Reload events after creating
+        }}
+      />
+    </div>
   )
 }
