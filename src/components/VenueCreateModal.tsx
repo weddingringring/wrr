@@ -595,6 +595,47 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
                       className="placeholder:text-gray-400"
                     />
                   </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#374151', marginBottom: '0.5rem' }}>
+                      Country *
+                    </label>
+                    <select
+                      required
+                      value={formData.countryCode}
+                      onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '1px solid rgba(0, 0, 0, 0.08)',
+                        borderRadius: '0.375rem',
+                        fontSize: '1rem',
+                        color: '#000',
+                        backgroundColor: '#fff',
+                      }}
+                    >
+                      <option value="GB">United Kingdom</option>
+                      <option value="US">United States</option>
+                      <option value="CA">Canada</option>
+                      <option value="AU">Australia</option>
+                      <option value="NZ">New Zealand</option>
+                      <option value="IE">Ireland</option>
+                      <option value="DE">Germany</option>
+                      <option value="FR">France</option>
+                      <option value="ES">Spain</option>
+                      <option value="IT">Italy</option>
+                      <option value="NL">Netherlands</option>
+                      <option value="BE">Belgium</option>
+                      <option value="SE">Sweden</option>
+                      <option value="DK">Denmark</option>
+                      <option value="NO">Norway</option>
+                      <option value="FI">Finland</option>
+                      <option value="CH">Switzerland</option>
+                      <option value="AT">Austria</option>
+                      <option value="PL">Poland</option>
+                      <option value="PT">Portugal</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
