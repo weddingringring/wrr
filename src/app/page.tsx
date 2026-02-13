@@ -100,12 +100,19 @@ export default function HomePage() {
       
       if (authError) throw authError
       
+      if (!data.user) throw new Error('No user returned from auth')
+      
       // Get user role and redirect accordingly
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', data.user.id)
         .single()
+      
+      if (profileError) {
+        console.error('Profile fetch error:', profileError)
+        throw new Error('Profile not found')
+      }
       
       if (!profile) throw new Error('Profile not found')
       
@@ -121,7 +128,7 @@ export default function HomePage() {
           window.location.href = '/customer/dashboard'
           break
         default:
-          window.location.href = '/dashboard'
+          throw new Error('Invalid user role')
       }
     } catch (error: any) {
       console.error('Login error:', error)
@@ -191,15 +198,14 @@ export default function HomePage() {
           <div>
             <Link href="/">
               <Image 
-                src="/logo.svg" 
+                src="/logo.png" 
                 alt="WeddingRingRing" 
-                width={180} 
-                height={45} 
+                width={400} 
+                height={100} 
                 priority 
                 style={{
-                  imageRendering: 'crisp-edges',
-                  shapeRendering: 'crispEdges',
-                  filter: 'none'
+                  maxWidth: '200px',
+                  height: 'auto'
                 }}
               />
             </Link>
