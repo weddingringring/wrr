@@ -78,45 +78,6 @@ export default function AdminVenuesPage() {
     setFilteredVenues(filtered)
   }
   
-  const handleDeactivate = async (venueId: string) => {
-    if (!confirm('Deactivate this venue? Future events will be cancelled.')) {
-      return
-    }
-    
-    try {
-      // Deactivate venue
-      await supabase
-        .from('venues')
-        .update({ 
-          is_active: false,
-          deactivated_at: new Date().toISOString()
-        })
-        .eq('id', venueId)
-      
-      // Reload venues
-      loadVenues()
-    } catch (error) {
-      console.error('Error deactivating venue:', error)
-      alert('Failed to deactivate venue')
-    }
-  }
-  
-  const handleReactivate = async (venueId: string) => {
-    try {
-      await supabase
-        .from('venues')
-        .update({ 
-          is_active: true,
-          deactivated_at: null
-        })
-        .eq('id', venueId)
-      
-      loadVenues()
-    } catch (error) {
-      console.error('Error reactivating venue:', error)
-      alert('Failed to reactivate venue')
-    }
-  }
   
   if (loading) {
     return (
@@ -319,34 +280,16 @@ export default function AdminVenuesPage() {
                       </td>
                       
                       <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setSelectedVenueId(venue.id)
-                              setEditModalOpen(true)
-                            }}
-                            className="text-sm text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
-                            style={{ background: 'none', border: 'none', padding: 0 }}
-                          >
-                            Edit
-                          </button>
-                          
-                          {venue.is_active ? (
-                            <button
-                              onClick={() => handleDeactivate(venue.id)}
-                              className="text-sm text-rose hover:text-rose-dark font-medium"
-                            >
-                              Deactivate
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleReactivate(venue.id)}
-                              className="text-sm text-sage hover:text-gray-600 font-medium"
-                            >
-                              Reactivate
-                            </button>
-                          )}
-                        </div>
+                        <button
+                          onClick={() => {
+                            setSelectedVenueId(venue.id)
+                            setEditModalOpen(true)
+                          }}
+                          className="text-sm text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
+                          style={{ background: 'none', border: 'none', padding: 0 }}
+                        >
+                          Edit
+                        </button>
                       </td>
                     </tr>
                   ))}
