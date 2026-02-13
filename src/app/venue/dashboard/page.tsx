@@ -355,6 +355,15 @@ export default function VenueDashboardPage() {
           </div>
         )}
       </div>
+      
+      {/* Event Create Modal - Deploy EventCreateModal.tsx first */}
+      {/* <EventCreateModal 
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={() => {
+          loadEvents() // Reload events after creating
+        }}
+      /> */}
     </div>
   )
 }
@@ -409,17 +418,5 @@ function EventCard({ event, getDisplayName, isPast = false }: {
         </span>
       </div>
     </Link>
-  )
-}
-
-      {/* Event Create Modal - Deploy EventCreateModal.tsx first */}
-      {/* <EventCreateModal 
-        isOpen={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSuccess={() => {
-          loadEvents() // Reload events after creating
-        }}
-      /> */}
-    </div>
   )
 }
