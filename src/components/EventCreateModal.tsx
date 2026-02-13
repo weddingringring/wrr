@@ -472,9 +472,10 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess }: EventCr
                         Phone
                       </label>
                       <input
-                        type="tel"
+                        type="text"
                         value={formData.customerPhone}
                         onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+                        placeholder="e.g., 07123 456789"
                         style={{
                           width: '100%',
                           padding: '0.75rem 1rem',
