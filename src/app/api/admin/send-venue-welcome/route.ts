@@ -27,10 +27,21 @@ export async function POST(request: NextRequest) {
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Welcome to WeddingRingRing</title>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
           </head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #2d5f4f 0%, #1a3d30 100%); padding: 40px 20px; text-align: center; border-radius: 8px 8px 0 0;">
-              <h1 style="color: #fff; margin: 0; font-size: 28px;">Welcome to WeddingRingRing</h1>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background: #FAF8F3;">
+            <!-- Logo and Header -->
+            <div style="background: #fff; padding: 40px 20px; text-align: center; border-radius: 8px 8px 0 0; border: 1px solid #e5e7eb; border-bottom: none;">
+              <img 
+                src="${process.env.NEXT_PUBLIC_SITE_URL}/logo.png" 
+                alt="WeddingRingRing" 
+                style="max-width: 200px; height: auto; margin: 0 auto 20px; display: block;"
+              />
+              <h1 style="font-family: 'Crimson Text', Georgia, serif; color: #2d5f4f; margin: 0; font-size: 32px; font-weight: 600;">
+                Welcome to WeddingRingRing
+              </h1>
             </div>
             
             <div style="background: #fff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
