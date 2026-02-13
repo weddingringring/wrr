@@ -10,10 +10,15 @@ interface Event {
   id: string
   event_type: string
   event_date: string
-  partner_1_name: string
-  partner_2_name: string | null
+  partner_1_first_name: string
+  partner_1_last_name: string
+  partner_2_first_name: string | null
+  partner_2_last_name: string | null
   status: string
   messages_count: number
+  venue_location?: string
+  customer_email?: string
+  customer_phone?: string
 }
 
 export default function VenueDashboardPage() {
@@ -24,6 +29,8 @@ export default function VenueDashboardPage() {
   const [user, setUser] = useState<any>(null)
   const [venue, setVenue] = useState<any>(null)
   const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [filterStatus, setFilterStatus] = useState<'all' | 'upcoming' | 'past'>('all')
+  const [filterEventType, setFilterEventType] = useState<string>('all')
   
   useEffect(() => {
     checkAuth()
@@ -107,12 +114,17 @@ export default function VenueDashboardPage() {
   }
   
   const getEventDisplayName = (event: Event) => {
+    const partner1Name = `${event.partner_1_first_name} ${event.partner_1_last_name}`.trim()
+    const partner2Name = event.partner_2_first_name && event.partner_2_last_name
+      ? `${event.partner_2_first_name} ${event.partner_2_last_name}`.trim()
+      : null
+    
     if (event.event_type === 'wedding') {
-      return event.partner_2_name 
-        ? `${event.partner_1_name} & ${event.partner_2_name}'s Wedding`
-        : `${event.partner_1_name}'s Wedding`
+      return partner2Name 
+        ? `${partner1Name} & ${partner2Name}'s Wedding`
+        : `${partner1Name}'s Wedding`
     }
-    return `${event.partner_1_name}'s ${event.event_type}`
+    return `${partner1Name}'s ${event.event_type}`
   }
   
   const upcomingEvents = events.filter(e => 
@@ -121,6 +133,18 @@ export default function VenueDashboardPage() {
   const pastEvents = events.filter(e => 
     new Date(e.event_date) < new Date() || e.status === 'completed'
   )
+  
+  // Apply filters
+  const filteredEvents = events.filter(event => {
+    // Status filter
+    if (filterStatus === 'upcoming' && new Date(event.event_date) < new Date()) return false
+    if (filterStatus === 'past' && new Date(event.event_date) >= new Date()) return false
+    
+    // Event type filter
+    if (filterEventType !== 'all' && event.event_type !== filterEventType) return false
+    
+    return true
+  })
   
   const totalMessages = events.reduce((acc, e) => acc + e.messages_count, 0)
   
@@ -149,9 +173,16 @@ export default function VenueDashboardPage() {
                   className="h-8 w-auto"
                 />
               </Link>
-              <div className="border-l border-sage-light pl-3">
-                <p className="text-xs text-sage-dark">{venue?.name}</p>
-              </div>
+              {venue?.logo_url && (
+                <>
+                  <div className="border-l border-sage-light h-8"></div>
+                  <img 
+                    src={venue.logo_url} 
+                    alt={venue.name}
+                    className="h-8 w-auto object-contain"
+                  />
+                </>
+              )}
             </div>
             
             <div className="flex items-center gap-6">
@@ -201,6 +232,40 @@ export default function VenueDashboardPage() {
           </div>
         </div>
         
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+          <div className="flex flex-wrap gap-4">
+            <div>
+              <label className="block text-xs text-sage-dark mb-2">Status</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value as any)}
+                className="px-4 py-2 rounded-lg border border-sage-light bg-white text-charcoal"
+              >
+                <option value="all">All Events</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="past">Past</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-xs text-sage-dark mb-2">Event Type</label>
+              <select
+                value={filterEventType}
+                onChange={(e) => setFilterEventType(e.target.value)}
+                className="px-4 py-2 rounded-lg border border-sage-light bg-white text-charcoal"
+              >
+                <option value="all">All Types</option>
+                <option value="wedding">Weddings</option>
+                <option value="birthday">Birthdays</option>
+                <option value="anniversary">Anniversaries</option>
+                <option value="corporate">Corporate</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
         {/* Actions Bar */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div className="flex gap-2">
@@ -239,46 +304,38 @@ export default function VenueDashboardPage() {
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="font-serif text-2xl text-charcoal mb-6">Your Events</h2>
             
-            {events.length === 0 ? (
+            {filteredEvents.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-xl text-sage-dark mb-2">No events yet</p>
-                <p className="text-sm text-sage-dark mb-6">Create your first event to get started</p>
-                <button
-                  onClick={() => setCreateModalOpen(true)}
-                  className="inline-block px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
-                >
-                  + Create Event
-                </button>
+                <p className="text-xl text-sage-dark mb-2">
+                  {events.length === 0 ? 'No events yet' : 'No events match your filters'}
+                </p>
+                <p className="text-sm text-sage-dark mb-6">
+                  {events.length === 0 
+                    ? 'Create your first event to get started' 
+                    : 'Try adjusting your filters'}
+                </p>
+                {events.length === 0 && (
+                  <button
+                    onClick={() => setCreateModalOpen(true)}
+                    className="inline-block px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+                  >
+                    + Create Event
+                  </button>
+                )}
               </div>
             ) : (
-              <div className="space-y-8">
-                {/* Upcoming Events */}
-                {upcomingEvents.length > 0 && (
-                  <div>
-                    <h3 className="font-medium text-charcoal mb-4 text-lg">
-                      Upcoming Events ({upcomingEvents.length})
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {upcomingEvents.map(event => (
-                        <EventCard key={event.id} event={event} getDisplayName={getEventDisplayName} />
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Past Events */}
-                {pastEvents.length > 0 && (
-                  <div>
-                    <h3 className="font-medium text-sage-dark mb-4 text-lg">
-                      Past Events ({pastEvents.length})
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {pastEvents.slice(0, 6).map(event => (
-                        <EventCard key={event.id} event={event} getDisplayName={getEventDisplayName} isPast />
-                      ))}
-                    </div>
-                  </div>
-                )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredEvents.map(event => {
+                  const isPast = new Date(event.event_date) < new Date()
+                  return (
+                    <EventCard 
+                      key={event.id} 
+                      event={event} 
+                      getDisplayName={getEventDisplayName} 
+                      isPast={isPast}
+                    />
+                  )
+                })}
               </div>
             )}
           </div>
@@ -309,7 +366,7 @@ export default function VenueDashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-sage-light">
-                  {events.map(event => (
+                  {filteredEvents.map(event => (
                     <tr key={event.id} className="hover:bg-sage-light/10 transition">
                       <td className="px-6 py-4">
                         <div className="font-medium text-charcoal">
