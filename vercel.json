@@ -20,5 +20,20 @@
       "path": "/api/cron/send-day-after-summary",
       "schedule": "0 10 * * *"
     }
+  ],
+  "headers": [
+    {
+      "source": "/logo.png",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
   ]
 }
