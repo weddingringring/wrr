@@ -141,7 +141,7 @@ export default function EventDetailsModal({ isOpen, onClose, event }: EventDetai
               <div>
                 <p className="text-sm text-gray-600 mb-2">Unique Event Phone Number</p>
                 <p className="text-2xl font-mono font-bold text-green-700">
-                  {event.twilio_phone_number || 'Number not assigned yet'}
+                  {event.twilio_phone_number || 'Number not yet assigned - check back a week before the event'}
                 </p>
               </div>
               {event.twilio_phone_number && (
