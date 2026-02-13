@@ -32,7 +32,9 @@ export async function POST(request: NextRequest) {
       website,
       instagram,
       subscriptionType,
-      subscriptionStatus
+      subscriptionStatus,
+      logo,
+      logoFileName
     } = body
 
     // Verify the requesting user is an admin
@@ -83,10 +85,50 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
     }
 
+    const venueId = crypto.randomUUID()
+    let logoUrl = null
+
+    // Upload logo if provided
+    if (logo && logoFileName) {
+      try {
+        // Convert base64 to buffer
+        const base64Data = logo.split(',')[1]
+        const buffer = Buffer.from(base64Data, 'base64')
+        
+        // Generate unique filename
+        const fileExt = logoFileName.split('.').pop()
+        const fileName = `${venueId}.${fileExt}`
+        
+        // Upload to Supabase storage
+        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+          .from('venue-logos')
+          .upload(fileName, buffer, {
+            contentType: logo.split(';')[0].split(':')[1],
+            upsert: true
+          })
+
+        if (uploadError) {
+          console.error('Logo upload error:', uploadError)
+          // Don't fail the whole operation if logo upload fails
+        } else {
+          // Get public URL
+          const { data: { publicUrl } } = supabaseAdmin.storage
+            .from('venue-logos')
+            .getPublicUrl(fileName)
+          
+          logoUrl = publicUrl
+        }
+      } catch (logoError) {
+        console.error('Logo processing error:', logoError)
+        // Continue without logo
+      }
+    }
+
     // Create venue record
     const { error: venueError } = await supabaseAdmin
       .from('venues')
       .insert({
+        id: venueId,
         owner_id: authData.user.id,
         name: venueName,
         business_type: businessType,
@@ -101,6 +143,7 @@ export async function POST(request: NextRequest) {
         primary_contact_phone: ownerPhone,
         website: website || null,
         instagram_handle: instagram || null,
+        logo_url: logoUrl,
         subscription_type: subscriptionType,
         subscription_status: subscriptionStatus,
         is_active: true,
