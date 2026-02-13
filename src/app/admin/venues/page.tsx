@@ -392,8 +392,6 @@ export default function AdminVenuesPage() {
           }}
         />
       )}
-        }}
-      />
     </div>
   )
 }
