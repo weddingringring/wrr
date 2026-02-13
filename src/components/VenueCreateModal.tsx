@@ -13,6 +13,8 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
   
   const [formData, setFormData] = useState({
     // Business info
@@ -41,6 +43,19 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
     subscriptionType: 'rental',
     subscriptionStatus: 'active',
   })
+
+  // Handle logo file selection
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setLogoFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   // Close on ESC key
   useEffect(() => {
@@ -72,6 +87,17 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
         throw new Error('Not authenticated')
       }
 
+      // Prepare form data with logo as base64 if present
+      let logoBase64 = null
+      if (logoFile) {
+        const reader = new FileReader()
+        logoBase64 = await new Promise<string>((resolve, reject) => {
+          reader.onloadend = () => resolve(reader.result as string)
+          reader.onerror = reject
+          reader.readAsDataURL(logoFile)
+        })
+      }
+
       // Call API route to create venue (uses Service Role Key on backend)
       const response = await fetch('/api/admin/create-venue', {
         method: 'POST',
@@ -79,7 +105,11 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          logo: logoBase64,
+          logoFileName: logoFile?.name
+        })
       })
 
       const result = await response.json()
@@ -132,6 +162,8 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
           subscriptionType: 'rental',
           subscriptionStatus: 'active',
         })
+        setLogoFile(null)
+        setLogoPreview(null)
       }, 2000)
       
     } catch (err: any) {
@@ -302,6 +334,49 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
                       <option value="garden">Garden Venue</option>
                       <option value="other">Other</option>
                     </select>
+                  </div>
+                </div>
+
+                {/* Logo Upload */}
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#374151', marginBottom: '0.5rem' }}>
+                    Venue Logo
+                  </label>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    {logoPreview && (
+                      <div style={{ 
+                        width: '80px', 
+                        height: '80px', 
+                        borderRadius: '0.5rem', 
+                        overflow: 'hidden',
+                        border: '2px solid rgba(0, 0, 0, 0.08)'
+                      }}>
+                        <img 
+                          src={logoPreview} 
+                          alt="Logo preview" 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      </div>
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoChange}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '1px solid rgba(0, 0, 0, 0.08)',
+                          borderRadius: '0.375rem',
+                          fontSize: '0.875rem',
+                          color: '#000',
+                          background: 'white'
+                        }}
+                      />
+                      <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                        PNG, JPG or SVG (max 2MB)
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
