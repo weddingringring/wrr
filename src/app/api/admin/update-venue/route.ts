@@ -1,22 +1,40 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-// Use Service Role Key for admin operations
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-)
-
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
+    // Get auth token from header
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Verify user is admin
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    const token = authHeader.replace('Bearer ', '')
+    
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check if user is admin
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+    
+    if (profile?.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 })
+    }
+
+    // Get form data
     const body = await request.json()
-    const { 
+    const {
       venueId,
       venueName,
       businessType,
@@ -25,7 +43,7 @@ export async function POST(request: NextRequest) {
       city,
       county,
       postcode,
-      countryCode,
+      countryCode, // ISO 3166-1 alpha-2 code
       website,
       instagram,
       subscriptionType,
@@ -34,67 +52,52 @@ export async function POST(request: NextRequest) {
       logoFileName
     } = body
 
-    // Verify the requesting user is an admin
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!venueId) {
+      return NextResponse.json({ error: 'Venue ID is required' }, { status: 400 })
     }
 
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
-    
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Validate country code if provided
+    const validCountryCodes = ['GB', 'US', 'CA', 'AU', 'NZ', 'IE', 'DE', 'FR', 'ES', 'IT', 'NL', 'BE', 'SE', 'DK', 'NO', 'FI', 'CH', 'AT', 'PL', 'PT']
+    if (countryCode && !validCountryCodes.includes(countryCode)) {
+      return NextResponse.json({ 
+        error: `Invalid country code. Must be one of: ${validCountryCodes.join(', ')}` 
+      }, { status: 400 })
     }
 
-    // Check if user is admin
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+    // Use Service Role Key for admin operations
+    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+    const adminClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
 
-    if (profile?.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden: Admin only' }, { status: 403 })
-    }
-
+    // Upload new logo if provided
     let logoUrl = null
-
-    // Upload logo if provided
     if (logo && logoFileName) {
-      try {
-        // Convert base64 to buffer
-        const base64Data = logo.split(',')[1]
-        const buffer = Buffer.from(base64Data, 'base64')
-        
-        // Generate unique filename
-        const fileExt = logoFileName.split('.').pop()
-        const fileName = `${venueId}.${fileExt}`
-        
-        // Upload to Supabase storage
-        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
-          .from('venue-logos')
-          .upload(fileName, buffer, {
-            contentType: logo.split(';')[0].split(':')[1],
-            upsert: true
-          })
+      const base64Data = logo.split(',')[1]
+      const buffer = Buffer.from(base64Data, 'base64')
+      const fileName = `${venueId}-${Date.now()}-${logoFileName}`
+      
+      const { error: uploadError } = await adminClient.storage
+        .from('venue-logos')
+        .upload(fileName, buffer, {
+          contentType: logoFileName.endsWith('.png') ? 'image/png' : 'image/jpeg',
+          upsert: false
+        })
 
-        if (uploadError) {
-          console.error('Logo upload error:', uploadError)
-        } else {
-          // Get public URL
-          const { data: { publicUrl } } = supabaseAdmin.storage
-            .from('venue-logos')
-            .getPublicUrl(fileName)
-          
-          logoUrl = publicUrl
-        }
-      } catch (logoError) {
-        console.error('Logo processing error:', logoError)
+      if (uploadError) {
+        console.error('Logo upload error:', uploadError)
+      } else {
+        const { data: urlData } = adminClient.storage
+          .from('venue-logos')
+          .getPublicUrl(fileName)
+        logoUrl = urlData.publicUrl
       }
     }
 
-    // Update venue record
+    // Prepare update data
     const updateData: any = {
       name: venueName,
       business_type: businessType,
@@ -103,36 +106,41 @@ export async function POST(request: NextRequest) {
       city: city,
       county: county,
       postcode: postcode,
-      country: countryCode === 'GB' ? 'UK' : 'Other',
-      website: website || null,
-      instagram_handle: instagram || null,
+      country_code: countryCode, // CRITICAL: Can be changed if venue moves or expands
+      website: website,
+      instagram_handle: instagram,
       subscription_type: subscriptionType,
       subscription_status: subscriptionStatus,
-      updated_at: new Date().toISOString()
     }
 
-    // Only update logo if a new one was provided
+    // Only update logo if new one was uploaded
     if (logoUrl) {
       updateData.logo_url = logoUrl
     }
 
-    const { error: venueError } = await supabaseAdmin
+    // Update venue
+    const { data: venueData, error: venueError } = await adminClient
       .from('venues')
       .update(updateData)
       .eq('id', venueId)
+      .select()
+      .single()
 
     if (venueError) {
-      console.error('Update venue error:', venueError)
-      return NextResponse.json({ error: venueError.message }, { status: 400 })
+      throw new Error(`Failed to update venue: ${venueError.message}`)
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      venueId: venueId
+      venue: venueData,
+      message: 'Venue updated successfully'
     })
 
   } catch (error: any) {
-    console.error('API error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('Update venue error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    )
   }
 }
