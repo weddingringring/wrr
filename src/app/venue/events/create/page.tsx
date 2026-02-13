@@ -47,10 +47,10 @@ export default function VenueCreateEventPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
       
-      // Get venue ID
+      // Get venue ID and country code
       const { data: venueData } = await supabase
         .from('venues')
-        .select('id')
+        .select('id, country_code')
         .eq('owner_id', user.id)
         .single()
       
@@ -146,10 +146,34 @@ export default function VenueCreateEventPage() {
       
       if (eventError) throw eventError
       
-      // Note: Phone number will be purchased automatically 1 month before event date
-      // See: /api/cron/purchase-upcoming-numbers
+      // Step 5: Purchase phone number if event is less than 30 days away
+      // Events 30+ days away will be handled by daily cron job
+      try {
+        const purchaseResponse = await fetch('/api/events/purchase-if-near-term', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            eventId: event.id,
+            eventDate: formData.eventDate,
+            countryCode: venueData.country_code || 'GB'
+          })
+        })
+        
+        const purchaseResult = await purchaseResponse.json()
+        
+        if (purchaseResult.success && purchaseResult.phoneNumber) {
+          console.log(`✓ Phone number purchased: ${purchaseResult.phoneNumber}`)
+        } else if (purchaseResult.daysUntilEvent >= 30) {
+          console.log(`Event is ${purchaseResult.daysUntilEvent} days away - number will be purchased by cron`)
+        } else {
+          console.warn('Phone purchase failed (non-critical):', purchaseResult.error)
+        }
+      } catch (purchaseError) {
+        // Non-critical error - log but don't fail event creation
+        console.error('Phone purchase error (non-critical):', purchaseError)
+      }
       
-      // Step 5: Send password reset email to customer
+      // Step 6: Send password reset email to customer
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(
         formData.customerEmail,
         { redirectTo: `${window.location.origin}/customer/dashboard` }
