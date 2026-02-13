@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import VenueCreateModal from '@/components/VenueCreateModal'
+import VenueDetailsModal from '@/components/VenueDetailsModal'
+import VenueEditModal from '@/components/VenueEditModal'
 
 interface Venue {
   id: string
@@ -24,6 +26,9 @@ export default function AdminVenuesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
   const [venueModalOpen, setVenueModalOpen] = useState(false)
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [selectedVenueId, setSelectedVenueId] = useState<string | null>(null)
   
   useEffect(() => {
     loadVenues()
@@ -262,7 +267,16 @@ export default function AdminVenuesPage() {
                     <tr key={venue.id} className="hover:bg-sage-light/10 transition">
                       <td className="px-6 py-4">
                         <div>
-                          <div className="font-medium text-gray-900">{venue.name}</div>
+                          <button
+                            onClick={() => {
+                              setSelectedVenueId(venue.id)
+                              setDetailsModalOpen(true)
+                            }}
+                            className="font-medium text-gray-900 hover:text-blue-600 transition cursor-pointer text-left"
+                            style={{ background: 'none', border: 'none', padding: 0 }}
+                          >
+                            {venue.name}
+                          </button>
                           <div className="text-sm text-gray-600">
                             {venue.subscription_type === 'rental' && 'Rental Model'}
                             {venue.subscription_type === 'owned' && 'Owned Equipment'}
@@ -306,12 +320,16 @@ export default function AdminVenuesPage() {
                       
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
-                          <Link
-                            href={`/admin/venues/${venue.id}/edit`}
-                            className="text-sm text-deep-green hover:text-deep-green-dark font-medium"
+                          <button
+                            onClick={() => {
+                              setSelectedVenueId(venue.id)
+                              setEditModalOpen(true)
+                            }}
+                            className="text-sm text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
+                            style={{ background: 'none', border: 'none', padding: 0 }}
                           >
                             Edit
-                          </Link>
+                          </button>
                           
                           {venue.is_active ? (
                             <button
@@ -345,6 +363,35 @@ export default function AdminVenuesPage() {
         onClose={() => setVenueModalOpen(false)}
         onSuccess={() => {
           loadVenues() // Reload venues list after venue created
+        }}
+      />
+
+      {/* Venue Details Modal */}
+      {selectedVenueId && (
+        <VenueDetailsModal
+          isOpen={detailsModalOpen}
+          onClose={() => {
+            setDetailsModalOpen(false)
+            setSelectedVenueId(null)
+          }}
+          venueId={selectedVenueId}
+        />
+      )}
+
+      {/* Venue Edit Modal */}
+      {selectedVenueId && (
+        <VenueEditModal
+          isOpen={editModalOpen}
+          onClose={() => {
+            setEditModalOpen(false)
+            setSelectedVenueId(null)
+          }}
+          venueId={selectedVenueId}
+          onSuccess={() => {
+            loadVenues() // Reload venues list after edit
+          }}
+        />
+      )}
         }}
       />
     </div>
