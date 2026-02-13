@@ -1,530 +1,200 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase/client'
-import Link from 'next/link'
-import EventCreateModal from '@/components/EventCreateModal'
-import EventDetailsModal from '@/components/EventDetailsModal'
+import { useEffect } from 'react'
 
-interface Event {
-  id: string
-  event_type: string
-  event_date: string
-  partner_1_first_name: string
-  partner_1_last_name: string
-  partner_2_first_name: string | null
-  partner_2_last_name: string | null
-  status: string
-  messages_count: number
-  venue_location?: string
-  customer_email?: string
-  customer_phone?: string
+interface EventDetailsModalProps {
+  isOpen: boolean
+  onClose: () => void
+  event: any
 }
 
-export default function VenueDashboardPage() {
-  const router = useRouter()
-  const [events, setEvents] = useState<Event[]>([])
-  const [view, setView] = useState<'calendar' | 'list'>('calendar')
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
-  const [venue, setVenue] = useState<any>(null)
-  const [createModalOpen, setCreateModalOpen] = useState(false)
-  const [filterStatus, setFilterStatus] = useState<'all' | 'upcoming' | 'past'>('all')
-  const [filterEventType, setFilterEventType] = useState<string>('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
-  const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false)
-  
+export default function EventDetailsModal({ isOpen, onClose, event }: EventDetailsModalProps) {
   useEffect(() => {
-    checkAuth()
-    loadEvents()
-  }, [])
-  
-  const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      router.push('/venue/login')
-      return
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
     }
-    
-    // Get venue
-    const { data: venueData } = await supabase
-      .from('venues')
-      .select('*')
-      .eq('owner_id', user.id)
-      .single()
-    
-    if (!venueData) {
-      await supabase.auth.signOut()
-      router.push('/venue/login')
-      return
+    if (isOpen) {
+      document.addEventListener('keydown', handleEsc)
+      return () => document.removeEventListener('keydown', handleEsc)
     }
-    
-    // Get profile
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('first_name, last_name')
-      .eq('id', user.id)
-      .single()
-    
-    setUser(profile)
-    setVenue(venueData)
-  }
-  
-  const loadEvents = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      
-      // Get venue first
-      const { data: venueData } = await supabase
-        .from('venues')
-        .select('id')
-        .eq('owner_id', user.id)
-        .single()
-      
-      if (!venueData) return
-      
-      // Get events for this venue
-      const { data, error } = await supabase
-        .from('events')
-        .select(`
-          *,
-          messages:messages(count)
-        `)
-        .eq('venue_id', venueData.id)
-        .order('event_date', { ascending: false })
-      
-      if (error) throw error
-      
-      const eventsWithCount = data.map(event => ({
-        ...event,
-        messages_count: event.messages[0]?.count || 0
-      }))
-      
-      setEvents(eventsWithCount || [])
-    } catch (error) {
-      console.error('Error loading events:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-  
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/venue/login')
-  }
-  
-  const getEventDisplayName = (event: Event) => {
-    const partner1Name = `${event.partner_1_first_name} ${event.partner_1_last_name}`.trim()
-    const partner2Name = event.partner_2_first_name && event.partner_2_last_name
-      ? `${event.partner_2_first_name} ${event.partner_2_last_name}`.trim()
-      : null
-    
+  }, [isOpen, onClose])
+
+  if (!isOpen || !event) return null
+
+  const partner1Name = event.partner_1_first_name + ' ' + event.partner_1_last_name
+  const partner2Name = event.partner_2_first_name && event.partner_2_last_name
+    ? event.partner_2_first_name + ' ' + event.partner_2_last_name
+    : null
+
+  const getDisplayName = () => {
     if (event.event_type === 'wedding') {
       return partner2Name 
-        ? `${partner1Name} & ${partner2Name}'s Wedding`
-        : `${partner1Name}'s Wedding`
+        ? partner1Name + ' & ' + partner2Name + "'s Wedding"
+        : partner1Name + "'s Wedding"
     }
-    return `${partner1Name}'s ${event.event_type}`
+    return partner1Name + "'s " + event.event_type
   }
-  
-  const upcomingEvents = events.filter(e => 
-    new Date(e.event_date) >= new Date() && e.status === 'active'
-  )
-  const pastEvents = events.filter(e => 
-    new Date(e.event_date) < new Date() || e.status === 'completed'
-  )
-  
-  // Apply filters
-  const filteredEvents = events.filter(event => {
-    // Status filter
-    if (filterStatus === 'upcoming' && new Date(event.event_date) < new Date()) return false
-    if (filterStatus === 'past' && new Date(event.event_date) >= new Date()) return false
-    
-    // Event type filter
-    if (filterEventType !== 'all' && event.event_type !== filterEventType) return false
-    
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      const partner1Name = `${event.partner_1_first_name} ${event.partner_1_last_name}`.toLowerCase()
-      const partner2Name = event.partner_2_first_name && event.partner_2_last_name
-        ? `${event.partner_2_first_name} ${event.partner_2_last_name}`.toLowerCase()
-        : ''
-      const eventType = event.event_type.toLowerCase()
-      const email = event.customer_email?.toLowerCase() || ''
-      
-      const matches = partner1Name.includes(query) ||
-                     partner2Name.includes(query) ||
-                     eventType.includes(query) ||
-                     email.includes(query)
-      
-      if (!matches) return false
-    }
-    
-    return true
-  })
-  
-  const totalMessages = events.reduce((acc, e) => acc + e.messages_count, 0)
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-deep-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-sage-dark">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-  
+
   return (
-    <div className="min-h-screen bg-cream">
-      {/* Header */}
-      <header className="bg-white border-b border-sage-light shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <Link href="/venue/dashboard">
-                <img 
-                  src="/logo.png" 
-                  alt="WeddingRingRing" 
-                  className="h-8 w-auto"
-                />
-              </Link>
-              {venue?.logo_url && (
-                <>
-                  <div className="border-l border-sage-light h-8"></div>
-                  <img 
-                    src={venue.logo_url} 
-                    alt={venue.name}
-                    className="h-8 w-auto object-contain"
-                  />
-                </>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-6">
-              {user && (
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-deep-green text-white flex items-center justify-center font-medium">
-                    {user.first_name?.[0]}{user.last_name?.[0]}
-                  </div>
-                  <span className="text-sm text-gray-900">
-                    {user.first_name} {user.last_name}
-                  </span>
-                </div>
-              )}
-              <Link
-                href="/venue/settings"
-                className="text-sm text-sage-dark hover:text-charcoal transition"
-              >
-                Settings
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="text-sm text-sage-dark hover:text-charcoal transition"
-              >
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <p className="text-sm text-sage-dark mb-1">Upcoming Events</p>
-            <p className="text-3xl font-bold text-deep-green">{upcomingEvents.length}</p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <p className="text-sm text-sage-dark mb-1">Past Events</p>
-            <p className="text-3xl font-bold text-sage-dark">{pastEvents.length}</p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <p className="text-sm text-sage-dark mb-1">Total Messages</p>
-            <p className="text-3xl font-bold text-charcoal">{totalMessages}</p>
-          </div>
-        </div>
-        
-        {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-          <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-xs text-sage-dark mb-2">Search</label>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name, email, or event type..."
-                className="w-full px-4 py-2 rounded-lg border border-sage-light bg-white text-charcoal placeholder:text-gray-400"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-xs text-sage-dark mb-2">Status</label>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value as any)}
-                className="px-4 py-2 rounded-lg border border-sage-light bg-white text-charcoal"
-              >
-                <option value="all">All Events</option>
-                <option value="upcoming">Upcoming</option>
-                <option value="past">Past</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-xs text-sage-dark mb-2">Event Type</label>
-              <select
-                value={filterEventType}
-                onChange={(e) => setFilterEventType(e.target.value)}
-                className="px-4 py-2 rounded-lg border border-sage-light bg-white text-charcoal"
-              >
-                <option value="all">All Types</option>
-                <option value="wedding">Weddings</option>
-                <option value="birthday">Birthdays</option>
-                <option value="anniversary">Anniversaries</option>
-                <option value="corporate">Corporate</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        
-        {/* Actions Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setView('calendar')}
-              className={`px-4 py-2 rounded-lg transition ${
-                view === 'calendar'
-                  ? 'bg-deep-green text-white'
-                  : 'bg-white text-charcoal hover:bg-sage-light/30'
-              }`}
-            >
-              📅 Calendar
-            </button>
-            <button
-              onClick={() => setView('list')}
-              className={`px-4 py-2 rounded-lg transition ${
-                view === 'list'
-                  ? 'bg-deep-green text-white'
-                  : 'bg-white text-charcoal hover:bg-sage-light/30'
-              }`}
-            >
-              📋 List
-            </button>
-          </div>
-          
-          <button
-            onClick={() => setCreateModalOpen(true)}
-            className="px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+    <div 
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+      className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
+    >
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+        <div className="sticky top-0 bg-white border-b border-gray-200 p-8 pb-4 z-10">
+          <h2 className="font-serif text-3xl mb-2 text-gray-900">
+            {getDisplayName()}
+          </h2>
+          <p className="text-gray-600">
+            {new Date(event.event_date).toLocaleDateString('en-GB', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            })}
+          </p>
+          <button 
+            onClick={onClose}
+            className="absolute top-6 right-6 w-11 h-11 flex items-center justify-center text-gray-400 hover:text-gray-600 text-2xl"
           >
-            + Create Event
+            ×
           </button>
         </div>
-        
-        {/* Calendar View */}
-        {view === 'calendar' && (
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="font-serif text-2xl text-charcoal mb-6">Your Events</h2>
-            
-            {filteredEvents.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-xl text-sage-dark mb-2">
-                  {events.length === 0 ? 'No events yet' : 'No events match your filters'}
-                </p>
-                <p className="text-sm text-sage-dark mb-6">
-                  {events.length === 0 
-                    ? 'Create your first event to get started' 
-                    : 'Try adjusting your filters'}
-                </p>
-                {events.length === 0 && (
-                  <button
-                    onClick={() => setCreateModalOpen(true)}
-                    className="inline-block px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
-                  >
-                    + Create Event
-                  </button>
-                )}
+
+        <div className="p-8">
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Event Details</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Event Type</p>
+                <p className="text-base text-gray-900 capitalize">{event.event_type}</p>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredEvents.map(event => {
-                  const isPast = new Date(event.event_date) < new Date()
-                  return (
-                    <EventCard 
-                      key={event.id} 
-                      event={event} 
-                      getDisplayName={getEventDisplayName} 
-                      isPast={isPast}
-                      onClick={() => {
-                        setSelectedEvent(event)
-                        setEventDetailsModalOpen(true)
-                      }}
-                    />
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
-        
-        {/* List View */}
-        {view === 'list' && (
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-sage-light/20 border-b border-sage-light">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Event
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Messages
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-sage-light">
-                  {filteredEvents.map(event => (
-                    <tr key={event.id} className="hover:bg-sage-light/10 transition">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-charcoal">
-                          {getEventDisplayName(event)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-charcoal">
-                          {new Date(event.event_date).toLocaleDateString('en-GB', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-charcoal">
-                          {event.messages_count} messages
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          event.status === 'active'
-                            ? 'bg-deep-green/10 text-deep-green'
-                            : 'bg-sage/10 text-sage-dark'
-                        }`}>
-                          {event.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button
-                          onClick={() => {
-                            setSelectedEvent(event)
-                            setEventDetailsModalOpen(true)
-                          }}
-                          className="text-sm text-deep-green hover:text-deep-green-dark font-medium"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              
+              {event.venue_location && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Location</p>
+                  <p className="text-base text-gray-900">{event.venue_location}</p>
+                </div>
+              )}
+
+              {event.expected_guest_count && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Expected Guests</p>
+                  <p className="text-base text-gray-900">{event.expected_guest_count}</p>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
-      
-      {/* Event Create Modal */}
-      <EventCreateModal 
-        isOpen={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSuccess={() => {
-          loadEvents() // Reload events after creating
-        }}
-      />
-      
-      {/* Event Details Modal */}
-      <EventDetailsModal 
-        isOpen={eventDetailsModalOpen}
-        onClose={() => {
-          setEventDetailsModalOpen(false)
-          setSelectedEvent(null)
-        }}
-        event={selectedEvent}
-      />
-    </div>
-  )
-}
 
-// Event Card Component
-function EventCard({ event, getDisplayName, isPast = false, onClick }: {
-  event: Event
-  getDisplayName: (event: Event) => string
-  isPast?: boolean
-  onClick: () => void
-}) {
-  const daysUntil = Math.ceil(
-    (new Date(event.event_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-  )
-  
-  return (
-    <button
-      onClick={onClick}
-      className={`block p-6 rounded-xl border-2 transition hover:shadow-md w-full text-left ${
-        isPast
-          ? 'border-sage-light bg-sage-light/10 hover:border-sage'
-          : 'border-deep-green/20 bg-white hover:border-deep-green'
-      }`}
-    >
-      <div className="mb-3">
-        <h4 className="font-serif text-lg text-charcoal mb-1">
-          {getDisplayName(event)}
-        </h4>
-        <p className="text-sm text-sage-dark">
-          {new Date(event.event_date).toLocaleDateString('en-GB', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-          })}
-        </p>
-      </div>
-      
-      {!isPast && daysUntil >= 0 && (
-        <div className="mb-3">
-          <p className="text-sm font-medium text-deep-green">
-            {daysUntil === 0 ? 'Today!' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`}
-          </p>
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Contact Information</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Primary Contact</p>
+                <p className="text-base text-gray-900">{partner1Name}</p>
+              </div>
+
+              {partner2Name && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Partner</p>
+                  <p className="text-base text-gray-900">{partner2Name}</p>
+                </div>
+              )}
+
+              {event.customer_email && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Email</p>
+                  <p className="text-base text-gray-900">
+                    <a href={'mailto:' + event.customer_email} className="text-green-700 hover:text-green-800">
+                      {event.customer_email}
+                    </a>
+                  </p>
+                </div>
+              )}
+
+              {event.customer_phone && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Phone</p>
+                  <p className="text-base text-gray-900">
+                    <a href={'tel:' + event.customer_phone} className="text-green-700 hover:text-green-800">
+                      {event.customer_phone}
+                    </a>
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Messages</h3>
+            <div className="bg-gray-50 p-6 rounded-lg text-center">
+              <p className="text-4xl font-bold text-green-700 mb-2">
+                {event.messages_count}
+              </p>
+              <p className="text-sm text-gray-600">Voice Messages Collected</p>
+            </div>
+          </div>
+
+          {(event.age || event.years_together || event.company_name || event.special_requirements || event.notes) && (
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4 text-gray-900">Additional Information</h3>
+              <div className="space-y-4">
+                {event.age && (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Age</p>
+                    <p className="text-base text-gray-900">{event.age}</p>
+                  </div>
+                )}
+
+                {event.years_together && (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Years Together</p>
+                    <p className="text-base text-gray-900">{event.years_together}</p>
+                  </div>
+                )}
+
+                {event.company_name && (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Company</p>
+                    <p className="text-base text-gray-900">{event.company_name}</p>
+                  </div>
+                )}
+
+                {event.special_requirements && (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Special Requirements</p>
+                    <p className="text-base text-gray-900">{event.special_requirements}</p>
+                  </div>
+                )}
+
+                {event.notes && (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Internal Notes</p>
+                    <p className="text-base text-gray-900">{event.notes}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      )}
-      
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-sage-dark">
-          {event.messages_count} messages
-        </span>
-        <span className="text-deep-green font-medium">
-          View →
-        </span>
+
+        <div className="border-t border-gray-200 p-6 flex justify-end gap-4">
+          <button
+            onClick={onClose}
+            className="px-6 py-3 rounded-md font-semibold border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+          >
+            Close
+          </button>
+          <a
+            href={'/venue/events/' + event.id}
+            className="px-6 py-3 rounded-md font-semibold bg-green-700 text-white hover:bg-green-800"
+          >
+            View Full Details
+          </a>
+        </div>
       </div>
-    </button>
+    </div>
   )
 }
