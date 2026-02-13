@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import EventCreateModal from '@/components/EventCreateModal'
+import EventDetailsModal from '@/components/EventDetailsModal'
 
 interface Event {
   id: string
@@ -31,6 +32,9 @@ export default function VenueDashboardPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [filterStatus, setFilterStatus] = useState<'all' | 'upcoming' | 'past'>('all')
   const [filterEventType, setFilterEventType] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false)
   
   useEffect(() => {
     checkAuth()
@@ -143,6 +147,24 @@ export default function VenueDashboardPage() {
     // Event type filter
     if (filterEventType !== 'all' && event.event_type !== filterEventType) return false
     
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      const partner1Name = `${event.partner_1_first_name} ${event.partner_1_last_name}`.toLowerCase()
+      const partner2Name = event.partner_2_first_name && event.partner_2_last_name
+        ? `${event.partner_2_first_name} ${event.partner_2_last_name}`.toLowerCase()
+        : ''
+      const eventType = event.event_type.toLowerCase()
+      const email = event.customer_email?.toLowerCase() || ''
+      
+      const matches = partner1Name.includes(query) ||
+                     partner2Name.includes(query) ||
+                     eventType.includes(query) ||
+                     email.includes(query)
+      
+      if (!matches) return false
+    }
+    
     return true
   })
   
@@ -235,6 +257,17 @@ export default function VenueDashboardPage() {
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
           <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[200px]">
+              <label className="block text-xs text-sage-dark mb-2">Search</label>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name, email, or event type..."
+                className="w-full px-4 py-2 rounded-lg border border-sage-light bg-white text-charcoal placeholder:text-gray-400"
+              />
+            </div>
+            
             <div>
               <label className="block text-xs text-sage-dark mb-2">Status</label>
               <select
@@ -333,6 +366,10 @@ export default function VenueDashboardPage() {
                       event={event} 
                       getDisplayName={getEventDisplayName} 
                       isPast={isPast}
+                      onClick={() => {
+                        setSelectedEvent(event)
+                        setEventDetailsModalOpen(true)
+                      }}
                     />
                   )
                 })}
@@ -397,12 +434,15 @@ export default function VenueDashboardPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Link
-                          href={`/venue/events/${event.id}`}
+                        <button
+                          onClick={() => {
+                            setSelectedEvent(event)
+                            setEventDetailsModalOpen(true)
+                          }}
                           className="text-sm text-deep-green hover:text-deep-green-dark font-medium"
                         >
                           View Details
-                        </Link>
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -421,24 +461,35 @@ export default function VenueDashboardPage() {
           loadEvents() // Reload events after creating
         }}
       />
+      
+      {/* Event Details Modal */}
+      <EventDetailsModal 
+        isOpen={eventDetailsModalOpen}
+        onClose={() => {
+          setEventDetailsModalOpen(false)
+          setSelectedEvent(null)
+        }}
+        event={selectedEvent}
+      />
     </div>
   )
 }
 
 // Event Card Component
-function EventCard({ event, getDisplayName, isPast = false }: {
+function EventCard({ event, getDisplayName, isPast = false, onClick }: {
   event: Event
   getDisplayName: (event: Event) => string
   isPast?: boolean
+  onClick: () => void
 }) {
   const daysUntil = Math.ceil(
     (new Date(event.event_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
   )
   
   return (
-    <Link
-      href={`/venue/events/${event.id}`}
-      className={`block p-6 rounded-xl border-2 transition hover:shadow-md ${
+    <button
+      onClick={onClick}
+      className={`block p-6 rounded-xl border-2 transition hover:shadow-md w-full text-left ${
         isPast
           ? 'border-sage-light bg-sage-light/10 hover:border-sage'
           : 'border-deep-green/20 bg-white hover:border-deep-green'
@@ -474,6 +525,6 @@ function EventCard({ event, getDisplayName, isPast = false }: {
           View →
         </span>
       </div>
-    </Link>
+    </button>
   )
 }
