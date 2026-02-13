@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
-// import EventCreateModal from '@/components/EventCreateModal'
+import EventCreateModal from '@/components/EventCreateModal'
 
 interface Event {
   id: string
@@ -226,12 +226,12 @@ export default function VenueDashboardPage() {
             </button>
           </div>
           
-          <Link
-            href="/venue/events/create"
+          <button
+            onClick={() => setCreateModalOpen(true)}
             className="px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
           >
             + Create Event
-          </Link>
+          </button>
         </div>
         
         {/* Calendar View */}
@@ -243,12 +243,12 @@ export default function VenueDashboardPage() {
               <div className="text-center py-12">
                 <p className="text-xl text-sage-dark mb-2">No events yet</p>
                 <p className="text-sm text-sage-dark mb-6">Create your first event to get started</p>
-                <Link
-                  href="/venue/events/create"
+                <button
+                  onClick={() => setCreateModalOpen(true)}
                   className="inline-block px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
                 >
                   + Create Event
-                </Link>
+                </button>
               </div>
             ) : (
               <div className="space-y-8">
@@ -356,14 +356,14 @@ export default function VenueDashboardPage() {
         )}
       </div>
       
-      {/* Event Create Modal - Deploy EventCreateModal.tsx first */}
-      {/* <EventCreateModal 
+      {/* Event Create Modal */}
+      <EventCreateModal 
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSuccess={() => {
           loadEvents() // Reload events after creating
         }}
-      /> */}
+      />
     </div>
   )
 }
