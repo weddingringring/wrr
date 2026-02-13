@@ -227,7 +227,7 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess }: EventCr
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '2rem' }}>
+          <form onSubmit={handleSubmit} noValidate style={{ display: 'grid', gap: '2rem' }}>
             {/* Step 1: Event Details */}
             {step === 1 && (
               <div>
