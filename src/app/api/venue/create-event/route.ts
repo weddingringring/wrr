@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { purchaseTwilioNumber, daysUntilEvent, PURCHASE_THRESHOLD_DAYS } from '@/lib/purchase-twilio-number'
 
 // Use Service Role Key for admin operations
 const supabaseAdmin = createClient(
@@ -120,13 +121,40 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: eventError.message }, { status: 400 })
     }
 
+    // ── Purchase Twilio number immediately if event is within threshold ──
+    let twilioResult = null
+    const days = daysUntilEvent(eventDate)
+
+    if (days <= PURCHASE_THRESHOLD_DAYS) {
+      // Event is within 7 days – purchase a number right now.
+      // Get the venue's country code for Twilio provisioning.
+      const { data: venueDetails } = await supabaseAdmin
+        .from('venues')
+        .select('country_code')
+        .eq('id', venueData.id)
+        .single()
+
+      const countryCode = venueDetails?.country_code || 'GB'
+
+      console.log(`Event ${eventData.id} is ${days} day(s) away – purchasing number immediately (${countryCode})`)
+      twilioResult = await purchaseTwilioNumber(eventData.id, countryCode)
+
+      if (!twilioResult.success) {
+        // Log but don't fail the event creation – the daily cron will retry
+        console.error(`Immediate number purchase failed for event ${eventData.id}: ${twilioResult.error}`)
+      }
+    }
+
     // TODO: Send welcome email to customer with login credentials
-    // For now, just return success
 
     return NextResponse.json({ 
       success: true,
       eventId: eventData.id,
-      temporaryPassword: tempPassword
+      temporaryPassword: tempPassword,
+      twilioNumber: twilioResult?.phoneNumber || null,
+      twilioStatus: twilioResult
+        ? (twilioResult.success ? 'purchased' : 'failed_will_retry')
+        : 'scheduled'
     })
 
   } catch (error: any) {
