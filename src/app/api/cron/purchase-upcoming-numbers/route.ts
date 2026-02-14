@@ -1,29 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import twilio from 'twilio'
+import { purchaseTwilioNumber, PURCHASE_THRESHOLD_DAYS } from '@/lib/purchase-twilio-number'
 import { logError, logCritical, logInfo } from '@/lib/error-logging'
-import { sendCustomerPhoneAssigned, sendVenuePhoneReady } from '@/lib/email-helpers'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID!,
-  process.env.TWILIO_AUTH_TOKEN!
-)
-
 /**
- * Cron job to purchase phone numbers for upcoming events
- * Should be called daily via:
- * - Vercel Cron (vercel.json)
- * - External cron service
- * 
+ * Daily cron job to purchase phone numbers for upcoming events.
+ * Runs at midnight UTC via Vercel Cron (vercel.json).
+ *
  * Purchases numbers for events where:
- * - Event date is 30 days away (tomorrow will be 29 days)
- * - No phone number assigned yet
- * - Status is active
+ *  - Event date is within PURCHASE_THRESHOLD_DAYS (7) days from now
+ *  - No phone number assigned yet
+ *  - Event is not cancelled
+ *
+ * This acts as both the primary trigger (for events created > 7 days out)
+ * and a safety net (catches any events where immediate purchase failed
+ * or the event date was moved closer).
  */
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -35,184 +31,117 @@ export async function GET(request: NextRequest) {
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    
-    // Calculate date 30 days from now
-    const targetDate = new Date()
-    targetDate.setDate(targetDate.getDate() + 30)
-    const targetDateStr = targetDate.toISOString().split('T')[0]
-    
-    console.log(`Looking for events on ${targetDateStr} (30 days from now)`)
-    
-    // Find events needing phone numbers
+
+    const today = new Date()
+    const todayStr = today.toISOString().split('T')[0]
+
+    // Calculate the cutoff date (7 days from now)
+    const cutoffDate = new Date()
+    cutoffDate.setDate(cutoffDate.getDate() + PURCHASE_THRESHOLD_DAYS)
+    const cutoffDateStr = cutoffDate.toISOString().split('T')[0]
+
+    console.log(`[cron:purchase] Looking for events between ${todayStr} and ${cutoffDateStr} without a number`)
+
+    // Find ALL active events within the threshold that don't have a number yet.
+    // This is deliberately broader than "exactly 7 days out" so it acts as a
+    // safety net for missed purchases, date changes, or failed immediate buys.
     const { data: events, error: queryError } = await supabase
       .from('events')
       .select(`
-        id, 
-        event_date, 
-        partner_1_first_name,
-        partner_1_last_name,
-        partner_2_first_name,
-        partner_2_last_name,
-        event_type,
-        greeting_text,
-        venues!inner(id, name, email, country_code),
-        customers!inner(id, first_name, last_name, email)
+        id,
+        event_date,
+        venue_id,
+        venues!inner(country_code)
       `)
-      .eq('status', 'active')
-      .is('twilio_phone_number', null) // No number yet
-      .gte('event_date', targetDateStr) // Event date >= target
-      .lt('event_date', new Date(targetDate.getTime() + 86400000).toISOString().split('T')[0]) // Event date < target + 1 day
-    
+      .neq('status', 'cancelled')
+      .is('twilio_phone_number', null)
+      .gte('event_date', todayStr)
+      .lte('event_date', cutoffDateStr)
+
     if (queryError) {
-      console.error('Query error:', queryError)
+      console.error('[cron:purchase] Query error:', queryError)
       await logError('cron:purchase-numbers', queryError, { step: 'query' })
       throw queryError
     }
-    
+
     if (!events || events.length === 0) {
-      console.log('No events need phone numbers today')
+      console.log('[cron:purchase] No events need phone numbers today')
       await logInfo('cron:purchase-numbers', 'No events needing numbers', {
-        targetDate: targetDateStr
+        todayStr,
+        cutoffDateStr
       })
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         message: 'No events need phone numbers',
-        purchased: 0
+        purchased: 0,
+        failed: 0
       })
     }
-    
-    console.log(`Found ${events.length} events needing phone numbers`)
+
+    console.log(`[cron:purchase] Found ${events.length} event(s) needing phone numbers`)
     await logInfo('cron:purchase-numbers', `Processing ${events.length} events`, {
-      targetDate: targetDateStr,
+      todayStr,
+      cutoffDateStr,
       eventCount: events.length
     })
-    
+
     const results = {
       purchased: 0,
       failed: 0,
       errors: [] as string[]
     }
-    
-    // Purchase number for each event
+
+    // Purchase a number for each event using the shared utility
     for (const event of events) {
-      try {
-        // Type assertion for venues object
-        const venue = event.venues as any
-        const countryCode = venue?.country_code || 'GB'
-        
-        console.log(`Purchasing number for event ${event.id} (${countryCode})...`)
-        
-        // Search for available numbers
-        const availableNumbers = await twilioClient
-          .availablePhoneNumbers(countryCode)
-          .local
-          .list({ limit: 5 })
-        
-        if (!availableNumbers || availableNumbers.length === 0) {
-          throw new Error(`No available numbers in ${countryCode}`)
-        }
-        
-        // Purchase first available
-        const purchased = await twilioClient.incomingPhoneNumbers.create({
-          phoneNumber: availableNumbers[0].phoneNumber,
-          voiceUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/voice`,
-          voiceMethod: 'POST',
-          statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/status`,
-          statusCallbackMethod: 'POST',
-          friendlyName: `WRR Event ${event.id}`
-        })
-        
-        // Calculate release date (event_date + 37 days)
-        const eventDate = new Date(event.event_date)
-        const releaseDate = new Date(eventDate.getTime() + (37 * 24 * 60 * 60 * 1000))
-        
-        // Update event
-        await supabase
-          .from('events')
-          .update({
-            twilio_phone_number: purchased.phoneNumber,
-            twilio_phone_sid: purchased.sid,
-            twilio_number_purchased_at: new Date().toISOString(),
-            twilio_number_release_scheduled_for: releaseDate.toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', event.id)
-        
+      const venue = event.venues as any
+      const countryCode = venue?.country_code || 'GB'
+
+      const result = await purchaseTwilioNumber(event.id, countryCode)
+
+      if (result.success) {
         results.purchased++
-        console.log(`✓ Purchased ${purchased.phoneNumber} for event ${event.id}`)
-        
-        // Send emails to customer and venue
-        const customer = event.customers as any
-        try {
-          await Promise.all([
-            sendCustomerPhoneAssigned({
-              ...event,
-              twilio_phone_number: purchased.phoneNumber,
-              customer: customer,
-              venue: venue
-            }),
-            sendVenuePhoneReady({
-              ...event,
-              twilio_phone_number: purchased.phoneNumber,
-              customer: customer,
-              venue: venue
-            })
-          ])
-          console.log(`✓ Sent notification emails for event ${event.id}`)
-        } catch (emailError: any) {
-          // Log email failures but don't fail the whole purchase
-          console.error(`Email failed for event ${event.id}:`, emailError.message)
-          await logError('cron:purchase-numbers', emailError, {
-            eventId: event.id,
-            phoneNumber: purchased.phoneNumber,
-            errorType: 'email_notification_failed'
-          }, 'warning')
+        console.log(`[cron:purchase] ✓ ${result.phoneNumber} → event ${event.id}`)
+      } else {
+        // "already has a number" isn't really a failure – skip it
+        if (result.error?.includes('already has a phone number')) {
+          console.log(`[cron:purchase] Skipped event ${event.id} (already has number)`)
+          continue
         }
-        
-      } catch (error: any) {
         results.failed++
-        const errorMsg = `Failed to purchase for event ${event.id}: ${error.message}`
+        const errorMsg = `Event ${event.id}: ${result.error}`
         results.errors.push(errorMsg)
-        console.error(errorMsg)
-        
-        // Log to database with context
-        const venue = event.venues as any
-        await logCritical('cron:purchase-numbers', error, {
+        console.error(`[cron:purchase] ✗ ${errorMsg}`)
+
+        await logCritical('cron:purchase-numbers', result.error || 'Unknown error', {
           eventId: event.id,
-          countryCode: venue?.country_code,
+          countryCode,
           eventDate: event.event_date,
           errorType: 'purchase_failed'
         })
       }
     }
-    
-    console.log(`Purchase complete: ${results.purchased} purchased, ${results.failed} failed`)
-    
-    // Log summary
+
+    console.log(`[cron:purchase] Done: ${results.purchased} purchased, ${results.failed} failed`)
+
     if (results.failed > 0) {
       await logError('cron:purchase-numbers', 'Some purchases failed', {
         purchased: results.purchased,
         failed: results.failed,
         errors: results.errors
       }, 'warning')
-    } else if (results.purchased > 0) {
-      await logInfo('cron:purchase-numbers', 'Purchase complete', {
-        purchased: results.purchased
-      })
     }
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       success: true,
       ...results
     })
-    
+
   } catch (error: any) {
-    console.error('Error in purchase cron:', error)
-    await logCritical('cron:purchase-numbers', error, {
-      errorType: 'cron_failure'
-    })
-    return NextResponse.json({ 
-      error: error.message || 'Failed to run purchase cron' 
-    }, { status: 500 })
+    console.error('[cron:purchase] Fatal error:', error)
+    await logCritical('cron:purchase-numbers', error, { errorType: 'cron_failure' })
+    return NextResponse.json(
+      { error: error.message || 'Failed to run purchase cron' },
+      { status: 500 }
+    )
   }
 }
