@@ -112,7 +112,12 @@ export async function purchaseTwilioNumber(
 
     // Add regulatory bundle if configured (required for UK and many countries)
     if (process.env.TWILIO_REGULATORY_BUNDLE_SID) {
-      purchaseParams.addressSid = process.env.TWILIO_REGULATORY_BUNDLE_SID
+      purchaseParams.bundleSid = process.env.TWILIO_REGULATORY_BUNDLE_SID
+    }
+
+    // Add address if configured (required for UK local numbers)
+    if (process.env.TWILIO_ADDRESS_SID) {
+      purchaseParams.addressSid = process.env.TWILIO_ADDRESS_SID
     }
 
     // Purchase number
