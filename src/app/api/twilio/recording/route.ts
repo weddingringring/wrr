@@ -93,23 +93,33 @@ export async function POST(request: NextRequest) {
       .getPublicUrl(fileName)
     
     // Create message record in database
+    const insertData: Record<string, any> = {
+      event_id: event.id,
+      twilio_call_sid: callSid,
+      twilio_recording_sid: recordingSid,
+      twilio_recording_url: twilioRecordingUrl,
+      recording_url: urlData.publicUrl,
+      duration: parseInt(recordingDuration || '0'),
+      caller_number: callerNumber
+    }
+    
+    console.log('Inserting message:', JSON.stringify(insertData))
+    
     const { data: message, error: messageError } = await supabase
       .from('messages')
-      .insert({
-        event_id: event.id,
-        recording_url: urlData.publicUrl,
-        duration_seconds: parseInt(recordingDuration || '0'),
-        caller_number: callerNumber
-      })
+      .insert(insertData)
       .select()
       .single()
     
     if (messageError) {
       console.error('Error creating message:', messageError)
+      // Log the returned row shape so we can see actual column names
+      console.error('Insert payload was:', JSON.stringify(insertData))
       throw messageError
     }
     
-    console.log(`Message created: ${message.id}`)
+    // Log full row so we can see all actual column names
+    console.log(`Message created:`, JSON.stringify(message))
     
     // TODO: Optional - Send notification to customer (email/SMS)
     // Could trigger a separate notification service here
