@@ -26,7 +26,7 @@ export async function uploadRecording(
     const fileName = `${eventId}/${messageId}.mp3`
     
     const { data, error } = await supabaseAdmin.storage
-      .from('recordings')
+      .from('message-recordings')
       .upload(fileName, audioBuffer, {
         contentType,
         upsert: false,
@@ -40,7 +40,7 @@ export async function uploadRecording(
 
     // Create a signed URL valid for 1 year (recordings are permanent)
     const { data: urlData, error: urlError } = await supabaseAdmin.storage
-      .from('recordings')
+      .from('message-recordings')
       .createSignedUrl(fileName, 60 * 60 * 24 * 365) // 1 year
 
     if (urlError) {
@@ -78,7 +78,7 @@ export async function uploadGreeting(
     const fileName = `${eventId}/greeting.mp3`
     
     const { data, error } = await supabaseClient.storage
-      .from('greetings')
+      .from('event-greetings')
       .upload(fileName, audioFile, {
         contentType: audioFile.type,
         upsert: true, // Allow updating existing greeting
@@ -92,7 +92,7 @@ export async function uploadGreeting(
 
     // Create signed URL for private access
     const { data: urlData, error: urlError } = await supabaseClient.storage
-      .from('greetings')
+      .from('event-greetings')
       .createSignedUrl(fileName, 60 * 60 * 24 * 365) // 1 year
 
     if (urlError) {
@@ -117,7 +117,7 @@ export async function deleteGreeting(
     const fileName = `${eventId}/greeting.mp3`
     
     const { error } = await supabaseClient.storage
-      .from('greetings')
+      .from('event-greetings')
       .remove([fileName])
 
     if (error) {
@@ -219,7 +219,7 @@ export async function getRecordingUrl(
     const fileName = `${eventId}/${messageId}.mp3`
     
     const { data, error } = await supabaseClient.storage
-      .from('recordings')
+      .from('message-recordings')
       .createSignedUrl(fileName, expiresInSeconds)
 
     if (error) {
@@ -247,7 +247,7 @@ export async function getGreetingUrl(
     
     // Use admin client for Twilio access (service role)
     const { data, error } = await supabaseAdmin.storage
-      .from('greetings')
+      .from('event-greetings')
       .createSignedUrl(fileName, expiresInSeconds)
 
     if (error) {
@@ -273,7 +273,7 @@ export async function downloadRecording(
     const fileName = `${eventId}/${messageId}.mp3`
     
     const { data, error } = await supabaseAdmin.storage
-      .from('recordings')
+      .from('message-recordings')
       .download(fileName)
 
     if (error) {
@@ -296,7 +296,7 @@ export async function listEventRecordings(
 ): Promise<{ files: string[]; error: string | null }> {
   try {
     const { data, error } = await supabaseClient.storage
-      .from('recordings')
+      .from('message-recordings')
       .list(eventId)
 
     if (error) {
@@ -323,7 +323,7 @@ export async function deleteRecording(
     const fileName = `${eventId}/${messageId}.mp3`
     
     const { error } = await supabaseAdmin.storage
-      .from('recordings')
+      .from('message-recordings')
       .remove([fileName])
 
     if (error) {
