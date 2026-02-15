@@ -97,13 +97,9 @@ export async function POST(request: NextRequest) {
       .from('messages')
       .insert({
         event_id: event.id,
-        customer_user_id: event.customer_user_id,
-        twilio_call_sid: callSid,
-        twilio_recording_sid: recordingSid,
-        audio_url: urlData.publicUrl,
+        recording_url: urlData.publicUrl,
         duration_seconds: parseInt(recordingDuration || '0'),
-        caller_phone_number: callerNumber,
-        status: 'received'
+        caller_number: callerNumber
       })
       .select()
       .single()
