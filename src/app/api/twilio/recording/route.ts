@@ -100,7 +100,8 @@ export async function POST(request: NextRequest) {
       twilio_recording_url: twilioRecordingUrl,
       recording_url: urlData.publicUrl,
       duration: parseInt(recordingDuration || '0'),
-      caller_number: callerNumber
+      caller_number: callerNumber,
+      recorded_at: new Date().toISOString()
     }
     
     console.log('Inserting message:', JSON.stringify(insertData))
