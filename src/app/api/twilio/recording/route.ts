@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import twilio from 'twilio'
 import { logError, logCritical } from '@/lib/error-logging'
 
 // Initialize Supabase client (server-side)
@@ -20,15 +21,26 @@ export async function POST(request: NextRequest) {
     const recordingUrl = params.get('RecordingUrl')
     const recordingDuration = params.get('RecordingDuration')
     const callSid = params.get('CallSid')
-    const calledNumber = params.get('To') // The event's phone number
-    const callerNumber = params.get('From') // Guest's phone number
     
-    console.log(`Recording completed: ${recordingSid} (${recordingDuration}s)`)
+    // Recording status callbacks don't include To/From — we need CallSid to look them up
+    console.log(`Recording completed: ${recordingSid} (${recordingDuration}s) for call ${callSid}`)
     
-    if (!recordingSid || !recordingUrl || !calledNumber) {
-      console.error('Missing required recording data')
+    if (!recordingSid || !recordingUrl || !callSid) {
+      console.error('Missing required recording data', { recordingSid, recordingUrl, callSid })
       return NextResponse.json({ error: 'Missing data' }, { status: 400 })
     }
+    
+    // Look up the original call from Twilio to get To/From numbers
+    const twilioClient = twilio(
+      process.env.TWILIO_ACCOUNT_SID!,
+      process.env.TWILIO_AUTH_TOKEN!
+    )
+    
+    const call = await twilioClient.calls(callSid).fetch()
+    const calledNumber = call.to   // The event's Twilio number
+    const callerNumber = call.from // The guest's phone number
+    
+    console.log(`Call ${callSid}: ${callerNumber} → ${calledNumber}`)
     
     // Find the event for this phone number
     const { data: event, error: eventError } = await supabase
