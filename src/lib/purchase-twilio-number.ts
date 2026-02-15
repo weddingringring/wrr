@@ -184,10 +184,10 @@ export async function purchaseTwilioNumber(
           } : undefined
         }
 
-        await Promise.all([
-          sendCustomerPhoneAssigned(emailEventData),
-          sendVenuePhoneReady(emailEventData)
-        ])
+        // Send sequentially with delay to avoid Resend rate limit (2 req/s)
+        await sendCustomerPhoneAssigned(emailEventData)
+        await new Promise(r => setTimeout(r, 600))
+        await sendVenuePhoneReady(emailEventData)
         console.log(`✓ Sent notification emails for event ${eventId}`)
       } catch (emailError: any) {
         // Log email failures but don't fail the whole purchase
