@@ -38,7 +38,7 @@ export async function sendCustomerWelcomeEmail(
     throw new Error('Customer email not found')
   }
 
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL!}/dashboard`
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL!}/login`
 
   return await sendEmailSafe({
     to: event.customer.email,
@@ -98,7 +98,7 @@ export async function sendCustomerPhoneAssigned(event: EventData) {
     throw new Error('Phone number not assigned')
   }
 
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL!}/dashboard`
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL!}/login`
 
   return await sendEmailSafe({
     to: event.customer.email,
