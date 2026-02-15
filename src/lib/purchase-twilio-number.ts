@@ -50,7 +50,7 @@ export async function purchaseTwilioNumber(
     console.log(`Purchasing number for event ${eventId} (${countryCode})...`)
 
     // Get event details first to check if it already has a number
-    // NOTE: Join to profiles via customer_id FK, and venues via venue_id FK
+    // NOTE: Join to profiles via customer_user_id FK, and venues via venue_id FK
     const { data: event, error: eventError } = await supabase
       .from('events')
       .select(`
@@ -65,7 +65,7 @@ export async function purchaseTwilioNumber(
         greeting_text,
         status,
         venues!inner(id, name, primary_contact_email, country_code),
-        profiles!customer_id(id, first_name, last_name, email)
+        profiles!customer_user_id(id, first_name, last_name, email)
       `)
       .eq('id', eventId)
       .single()
@@ -157,7 +157,7 @@ export async function purchaseTwilioNumber(
     // Send notification emails to customer and venue
     if (sendEmails) {
       const venue = event.venues as any
-      const customer = event.profiles as any // profiles joined via customer_id
+      const customer = event.profiles as any // profiles joined via customer_user_id
 
       try {
         // Build the event data shape that email helpers expect
