@@ -83,6 +83,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create customer account' }, { status: 500 })
     }
 
+    // Create profile for the customer (required for login role lookup)
+    const { error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .insert({
+        id: authData.user.id,
+        email: customerEmail,
+        first_name: partner1FirstName,
+        last_name: partner1LastName,
+        role: 'customer',
+        password_reset_required: true
+      })
+
+    if (profileError) {
+      console.error('Profile creation error:', profileError)
+      // Rollback: delete the auth user we just created
+      await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
+      return NextResponse.json({ error: 'Failed to create customer profile' }, { status: 500 })
+    }
+
     // Determine event name
     const eventTypeFinal = eventType === 'other' ? eventTypeOther : eventType
     const partner1Name = `${partner1FirstName} ${partner1LastName}`.trim()
@@ -95,7 +114,7 @@ export async function POST(request: NextRequest) {
       .from('events')
       .insert({
         venue_id: venueData.id,
-        customer_id: authData.user.id,
+        customer_user_id: authData.user.id,
         event_type: eventTypeFinal,
         event_date: eventDate,
         venue_location: venueLocation || null,
