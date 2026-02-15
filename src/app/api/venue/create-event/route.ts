@@ -147,6 +147,11 @@ export async function POST(request: NextRequest) {
 
     // Send welcome email to customer with login credentials
     try {
+      // If Twilio emails were just sent, wait to avoid Resend rate limit (2 req/s)
+      if (twilioResult?.success) {
+        await new Promise(r => setTimeout(r, 800))
+      }
+
       const { sendCustomerWelcomeEmail } = await import('@/lib/email-helpers')
 
       // Get venue name for the email
