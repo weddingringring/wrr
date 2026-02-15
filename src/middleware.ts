@@ -68,7 +68,7 @@ export async function middleware(request: NextRequest) {
       } else if (profile?.role === 'venue') {
         url.pathname = '/venue'
       } else if (profile?.role === 'customer') {
-        url.pathname = '/dashboard'
+        url.pathname = '/customer/dashboard'
       }
       url.searchParams.delete('required')
       return NextResponse.redirect(url)
