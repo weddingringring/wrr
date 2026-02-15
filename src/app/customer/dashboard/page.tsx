@@ -58,6 +58,44 @@ export default function CustomerDashboardPage() {
   const [photoUploading, setPhotoUploading] = useState<string | null>(null)
   const photoInputRef = useRef<HTMLInputElement>(null)
   const photoMessageRef = useRef<string | null>(null)
+  const signedUrlCache = useRef<Record<string, { url: string; expires: number }>>({})
+
+  // Get a signed URL for a recording (cached for 50 minutes)
+  const getSignedUrl = async (recordingUrl: string): Promise<string> => {
+    if (!recordingUrl) return ''
+    
+    // Check cache first (valid if more than 10 min remaining)
+    const cached = signedUrlCache.current[recordingUrl]
+    if (cached && cached.expires > Date.now() + 10 * 60 * 1000) {
+      return cached.url
+    }
+
+    try {
+      const res = await fetch('/api/customer/signed-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recordingUrl })
+      })
+      
+      if (!res.ok) {
+        console.error('Failed to get signed URL:', res.status)
+        return recordingUrl // Fallback to original URL
+      }
+
+      const data = await res.json()
+      
+      // Cache for 50 minutes (signed URLs valid for 60 min)
+      signedUrlCache.current[recordingUrl] = {
+        url: data.signedUrl,
+        expires: Date.now() + 50 * 60 * 1000
+      }
+      
+      return data.signedUrl
+    } catch (error) {
+      console.error('Error getting signed URL:', error)
+      return recordingUrl // Fallback to original URL
+    }
+  }
 
   useEffect(() => {
     if (typeof Audio !== 'undefined') {
@@ -206,7 +244,8 @@ export default function CustomerDashboardPage() {
       audio.pause()
       setCurrentlyPlaying(null)
     } else {
-      audio.src = recordingUrl
+      const signedUrl = await getSignedUrl(recordingUrl)
+      audio.src = signedUrl
       audio.play()
       setCurrentlyPlaying(messageId)
 
@@ -369,7 +408,8 @@ export default function CustomerDashboardPage() {
 
   const handleDownload = async (recordingUrl: string, guestName: string | null) => {
     try {
-      const response = await fetch(recordingUrl)
+      const signedUrl = await getSignedUrl(recordingUrl)
+      const response = await fetch(signedUrl)
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -387,7 +427,8 @@ export default function CustomerDashboardPage() {
   const handleShare = async (recordingUrl: string, guestName: string | null) => {
     if (navigator.share) {
       try {
-        const response = await fetch(recordingUrl)
+        const signedUrl = await getSignedUrl(recordingUrl)
+        const response = await fetch(signedUrl)
         const blob = await response.blob()
         const file = new File([blob], `${guestName || 'message'}.mp3`, { type: 'audio/mpeg' })
         await navigator.share({
