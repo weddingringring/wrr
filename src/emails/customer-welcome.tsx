@@ -81,7 +81,7 @@ export const CustomerWelcomeEmail = ({
       </div>
 
       <Button href={dashboardUrl} style={buttonStyle}>
-        Access Your Dashboard
+        Log In to Your Account
       </Button>
 
       {/* What's Next */}
