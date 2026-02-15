@@ -145,7 +145,45 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // TODO: Send welcome email to customer with login credentials
+    // Send welcome email to customer with login credentials
+    try {
+      const { sendCustomerWelcomeEmail } = await import('@/lib/email-helpers')
+
+      // Get venue name for the email
+      const { data: venueInfo } = await supabaseAdmin
+        .from('venues')
+        .select('name, primary_contact_email')
+        .eq('id', venueData.id)
+        .single()
+
+      const emailEventData = {
+        id: eventData.id,
+        partner_1_first_name: partner1FirstName,
+        partner_1_last_name: partner1LastName,
+        partner_2_first_name: partner2FirstName || null,
+        partner_2_last_name: partner2LastName || null,
+        event_type: eventTypeFinal,
+        event_date: eventDate,
+        greeting_text: '',
+        customer: {
+          id: authData.user.id,
+          first_name: partner1FirstName,
+          last_name: partner1LastName,
+          email: customerEmail
+        },
+        venue: venueInfo ? {
+          id: venueData.id,
+          name: venueInfo.name,
+          email: venueInfo.primary_contact_email
+        } : undefined
+      }
+
+      await sendCustomerWelcomeEmail(emailEventData, tempPassword)
+      console.log(`✓ Welcome email sent to ${customerEmail}`)
+    } catch (emailError: any) {
+      // Log but don't fail event creation
+      console.error(`Failed to send welcome email to ${customerEmail}:`, emailError.message)
+    }
 
     return NextResponse.json({ 
       success: true,
