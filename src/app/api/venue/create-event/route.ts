@@ -83,17 +83,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create customer account' }, { status: 500 })
     }
 
-    // Create profile for the customer (required for login role lookup)
+    // Create/update profile for the customer (required for login role lookup)
+    // Uses upsert because the handle_new_user() DB trigger may have already created a row
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
-      .insert({
+      .upsert({
         id: authData.user.id,
         email: customerEmail,
         first_name: partner1FirstName,
         last_name: partner1LastName,
         role: 'customer',
         password_reset_required: true
-      })
+      }, { onConflict: 'id' })
 
     if (profileError) {
       console.error('Profile creation error:', profileError)
