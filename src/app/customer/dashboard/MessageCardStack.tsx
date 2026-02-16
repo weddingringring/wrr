@@ -81,14 +81,14 @@ export default function MessageCardStack({
 
   const getCardRotation = useCallback((index: number) => {
     const seed = index * 2654435761
-    return ((seed % 500) - 250) / 100 // ±2.5 degrees max
+    return ((seed % 200) - 100) / 100 // ±1 degree max
   }, [])
 
   const getCardOffset = useCallback((index: number) => {
     const seed = index * 1597334677
     return {
-      x: ((seed % 300) - 150) / 100, // ±1.5px max
-      y: ((seed % 200) - 100) / 100,  // ±1px max
+      x: ((seed % 100) - 50) / 100, // ±0.5px
+      y: 0,
     }
   }, [])
 
@@ -255,7 +255,7 @@ export default function MessageCardStack({
                   width: '100%',
                   maxWidth: '420px',
                   height: '460px',
-                  transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y + offset * 2}px) scale(${1 - offset * 0.01})`,
+                  transform: `rotate(${rot}deg) translate(${off.x}px, ${offset * 1}px) scale(${1 - offset * 0.005})`,
                   zIndex: 10 - offset,
                   opacity: 1 - offset * 0.08,
                   transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
