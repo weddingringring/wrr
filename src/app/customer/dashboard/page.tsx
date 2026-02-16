@@ -489,7 +489,7 @@ export default function CustomerDashboardPage() {
   }
 
   const getGuestbookTitle = () => {
-    if (!event) return 'Guestbook'
+    if (!event) return { names: '', subtitle: 'Guestbook' }
     const p1First = event.partner_1_first_name || event.partner_1_name?.split(' ')[0] || ''
     const p2First = event.partner_2_first_name || event.partner_2_name?.split(' ')[0] || ''
     const eventType = (event.event_type || 'event').charAt(0).toUpperCase() + (event.event_type || 'event').slice(1)
