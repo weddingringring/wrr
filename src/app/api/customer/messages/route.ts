@@ -52,7 +52,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Only allow specific fields to be updated
-    const allowedFields = ['guest_name', 'is_favorite', 'is_deleted', 'tags', 'photo_url', 'deleted_at']
+    const allowedFields = ['caller_name', 'is_favorite', 'is_deleted', 'tags', 'guest_photo_url', 'deleted_at']
     const safeUpdates: Record<string, any> = {}
     for (const key of Object.keys(updates)) {
       if (allowedFields.includes(key)) {
