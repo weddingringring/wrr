@@ -1404,7 +1404,8 @@ export default function CustomerDashboardPage() {
               })}
             </div>
           </>
-        )}v>
+        )}
+      </div>
 
       {/* Footer */}
       <footer className="mt-16 py-10 border-t border-sage-light/30">
