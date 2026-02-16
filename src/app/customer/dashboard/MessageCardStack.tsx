@@ -73,6 +73,7 @@ export default function MessageCardStack({
   const [showMenu, setShowMenu] = useState(false)
   const [showTags, setShowTags] = useState(false)
   const [skipTransition, setSkipTransition] = useState(false)
+  const [enterFrom, setEnterFrom] = useState<'left' | 'right' | null>(null)
   const startPos = useRef({ x: 0, y: 0 })
 
   const safeIndex = Math.min(currentIndex, Math.max(0, messages.length - 1))
@@ -112,20 +113,35 @@ export default function MessageCardStack({
     setIsDragging(false)
     if (Math.abs(dragX) > 100) {
       const direction = dragX > 0 ? 'right' : 'left'
+      const goingForward = direction === 'left'
       setExitDirection(direction)
       setIsAnimating(true)
       setTimeout(() => {
         setExitDirection(null)
         setDragX(0)
         setDragY(0)
-        setIsAnimating(false)
         setShowMenu(false)
         setShowTags(false)
         setEditingName(false)
-        setSkipTransition(true)
-        if (direction === 'left') setCurrentIndex(i => Math.min(i + 1, messages.length - 1))
-        else setCurrentIndex(i => Math.max(i - 1, 0))
-        requestAnimationFrame(() => { requestAnimationFrame(() => setSkipTransition(false)) })
+        if (goingForward) {
+          // Going forward: next card is already underneath, appear instantly
+          setSkipTransition(true)
+          setCurrentIndex(i => Math.min(i + 1, messages.length - 1))
+          setIsAnimating(false)
+          requestAnimationFrame(() => { requestAnimationFrame(() => setSkipTransition(false)) })
+        } else {
+          // Going backward: previous card flies in from the left
+          setSkipTransition(true)
+          setEnterFrom('left')
+          setCurrentIndex(i => Math.max(i - 1, 0))
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              setSkipTransition(false)
+              setEnterFrom(null)
+              setIsAnimating(false)
+            })
+          })
+        }
       }, 350)
     } else {
       setDragX(0)
@@ -144,29 +160,30 @@ export default function MessageCardStack({
       setExitDirection(null)
       setDragX(0)
       setDragY(0)
-      setIsAnimating(false)
       setSkipTransition(true)
       setCurrentIndex(i => i + 1)
+      setIsAnimating(false)
       requestAnimationFrame(() => { requestAnimationFrame(() => setSkipTransition(false)) })
     }, 350)
   }
 
   const goPrev = () => {
     if (isAnimating || currentIndex <= 0) return
-    setExitDirection('right')
     setIsAnimating(true)
     setShowMenu(false)
     setShowTags(false)
     setEditingName(false)
-    setTimeout(() => {
-      setExitDirection(null)
-      setDragX(0)
-      setDragY(0)
-      setIsAnimating(false)
-      setSkipTransition(true)
-      setCurrentIndex(i => i - 1)
-      requestAnimationFrame(() => { requestAnimationFrame(() => setSkipTransition(false)) })
-    }, 350)
+    // Card flies in from the left onto the deck
+    setSkipTransition(true)
+    setEnterFrom('left')
+    setCurrentIndex(i => i - 1)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setSkipTransition(false)
+        setEnterFrom(null)
+        setTimeout(() => setIsAnimating(false), 350)
+      })
+    })
   }
 
   const formatDuration = (seconds: number) => {
@@ -312,10 +329,10 @@ export default function MessageCardStack({
       <div style={{ overflowX: 'hidden', padding: '12px 0 0' }}>
         <div className="relative flex items-center justify-center" style={{ minHeight: '500px', perspective: '1000px' }}>
           <div style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
-            {/* Pile cards with content - next 2 cards rendered underneath */}
-            {[2, 1].map(offset => {
+            {/* Pile cards with content - 2 cards on each side pre-rendered */}
+            {[2, 1, -1, -2].map(offset => {
               const idx = safeIndex + offset
-              if (idx >= messages.length) return null
+              if (idx < 0 || idx >= messages.length) return null
               const pileMsg = messages[idx]
               if (!pileMsg) return null
               const rot = getCardRotation(idx)
@@ -332,8 +349,8 @@ export default function MessageCardStack({
                     bottom: 0,
                     overflow: 'hidden',
                     transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y}px)`,
-                    zIndex: 10 - offset,
-                    opacity: 1 - offset * 0.05,
+                    zIndex: 10 - Math.abs(offset),
+                    opacity: 1 - Math.abs(offset) * 0.05,
                     transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
@@ -353,7 +370,11 @@ export default function MessageCardStack({
                   ? 'translateX(-120%) rotate(-15deg)'
                   : exitDirection === 'right'
                     ? 'translateX(120%) rotate(15deg)'
-                    : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05 + getCardRotation(safeIndex) * 0.3}deg)`,
+                    : enterFrom === 'left'
+                      ? 'translateX(-120%) rotate(-12deg)'
+                      : enterFrom === 'right'
+                        ? 'translateX(120%) rotate(12deg)'
+                        : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05 + getCardRotation(safeIndex) * 0.3}deg)`,
                 transition: (isDragging || skipTransition) ? 'none' : 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                 opacity: exitDirection ? 0 : 1,
                 touchAction: 'none',
