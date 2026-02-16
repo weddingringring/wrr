@@ -618,7 +618,7 @@ export default function CustomerDashboardPage() {
                 {title.names && (
                   <span className="block text-5xl sm:text-8xl leading-tight">{title.names}</span>
                 )}
-                <span className="block text-2xl sm:text-4xl mt-1" style={{ color: '#4a4a4a' }}>{title.subtitle}</span>
+                <span className="block font-serif text-2xl sm:text-4xl mt-1" style={{ color: '#4a4a4a' }}>{title.subtitle}</span>
               </h1>
             )
           })()}
