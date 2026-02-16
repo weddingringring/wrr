@@ -81,14 +81,14 @@ export default function MessageCardStack({
 
   const getCardRotation = useCallback((index: number) => {
     const seed = index * 2654435761
-    return ((seed % 700) - 350) / 100
+    return ((seed % 500) - 250) / 100 // ±2.5 degrees max
   }, [])
 
   const getCardOffset = useCallback((index: number) => {
     const seed = index * 1597334677
     return {
-      x: ((seed % 600) - 300) / 100,
-      y: ((seed % 400) - 200) / 100,
+      x: ((seed % 300) - 150) / 100, // ±1.5px max
+      y: ((seed % 200) - 100) / 100,  // ±1px max
     }
   }, [])
 
@@ -242,7 +242,7 @@ export default function MessageCardStack({
       <div style={{ overflow: 'hidden' }}>
         <div className="relative flex items-center justify-center" style={{ minHeight: '480px', perspective: '1000px' }}>
           {/* Pile behind */}
-          {[3, 2, 1].map(offset => {
+          {[2, 1].map(offset => {
             const idx = safeIndex + offset
             if (idx >= messages.length) return null
             const rot = getCardRotation(idx)
@@ -255,9 +255,9 @@ export default function MessageCardStack({
                   width: '100%',
                   maxWidth: '420px',
                   height: '460px',
-                  transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y + offset * 4}px) scale(${1 - offset * 0.02})`,
+                  transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y + offset * 2}px) scale(${1 - offset * 0.01})`,
                   zIndex: 10 - offset,
-                  opacity: 1 - offset * 0.15,
+                  opacity: 1 - offset * 0.08,
                   transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                 }}
               />
