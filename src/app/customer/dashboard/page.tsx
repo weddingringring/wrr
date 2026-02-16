@@ -488,6 +488,15 @@ export default function CustomerDashboardPage() {
     return p1
   }
 
+  const getGuestbookTitle = () => {
+    if (!event) return 'Guestbook'
+    const p1First = event.partner_1_first_name || event.partner_1_name?.split(' ')[0] || ''
+    const p2First = event.partner_2_first_name || event.partner_2_name?.split(' ')[0] || ''
+    const eventType = (event.event_type || 'event').charAt(0).toUpperCase() + (event.event_type || 'event').slice(1)
+    const names = p2First ? `${p1First} & ${p2First}` : p1First
+    return names ? `${names}'s ${eventType} Guestbook` : `${eventType} Guestbook`
+  }
+
   const activeMessageCount = messages.filter(m => !m.is_deleted).length
   const favCount = messages.filter(m => !m.is_deleted && isFavorited(m)).length
   const trashCount = messages.filter(m => m.is_deleted).length
@@ -593,9 +602,9 @@ export default function CustomerDashboardPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
-        <div className="mb-6">
-          <h1 className="font-serif text-3xl sm:text-4xl" style={{ color: '#1a1a1a' }}>
-            Your Messages
+        <div className="mb-6 text-center">
+          <h1 className="font-serif text-2xl sm:text-4xl" style={{ color: '#1a1a1a' }}>
+            {getGuestbookTitle()}
           </h1>
           <p className="text-sage-dark mt-1">
             {activeMessageCount} message{activeMessageCount !== 1 ? 's' : ''} from your special day
