@@ -120,6 +120,20 @@ export default function CustomerDashboardPage() {
     return res.json()
   }
 
+  // Set Safari status bar color to match page background
+  useEffect(() => {
+    let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null
+    if (!meta) {
+      meta = document.createElement('meta')
+      meta.name = 'theme-color'
+      document.head.appendChild(meta)
+    }
+    meta.setAttribute('content', '#FFEFEF')
+    return () => {
+      if (meta) meta.setAttribute('content', '#ffffff')
+    }
+  }, [])
+
   useEffect(() => {
     if (typeof Audio !== 'undefined') {
       audioRef.current = new Audio()
