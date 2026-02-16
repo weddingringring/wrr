@@ -75,14 +75,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to upload photo' }, { status: 500 })
     }
 
-    // 5. Get public URL and update message record
-    const { data: urlData } = supabaseAdmin.storage
-      .from('message-photos')
-      .getPublicUrl(fileName)
-
+    // 5. Store file path (not public URL) and update message record
     const { error: updateError } = await supabaseAdmin
       .from('messages')
-      .update({ guest_photo_url: urlData.publicUrl })
+      .update({ guest_photo_url: fileName })
       .eq('id', messageId)
 
     if (updateError) {
@@ -90,9 +86,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to update message' }, { status: 500 })
     }
 
+    // 6. Generate a signed URL for immediate display
+    const { data: signedData, error: signedError } = await supabaseAdmin.storage
+      .from('message-photos')
+      .createSignedUrl(fileName, 3600) // 1 hour
+
     return NextResponse.json({
       success: true,
-      guest_photo_url: urlData.publicUrl
+      guest_photo_url: fileName,
+      signed_url: signedError ? null : signedData.signedUrl
     })
 
   } catch (error: any) {
