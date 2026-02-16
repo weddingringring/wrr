@@ -23,11 +23,10 @@ interface Message {
   recorded_at: string
   is_favorite: boolean
   is_favorited: boolean
-  guest_name: string | null
   caller_name: string | null
   notes: string | null
   tags: string[] | null
-  photo_url: string | null
+  guest_photo_url: string | null
   is_deleted: boolean
 }
 
@@ -235,7 +234,7 @@ export default function CustomerDashboardPage() {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(m =>
-        (m.guest_name?.toLowerCase().includes(query)) ||
+        (m.caller_name?.toLowerCase().includes(query)) ||
         (m.caller_name?.toLowerCase().includes(query)) ||
         (m.notes?.toLowerCase().includes(query)) ||
         (m.caller_number?.includes(query))
@@ -332,10 +331,10 @@ export default function CustomerDashboardPage() {
     }
 
     try {
-      await updateMessage(messageId, { guest_name: editNameValue.trim() })
+      await updateMessage(messageId, { caller_name: editNameValue.trim() })
 
       setMessages(messages.map(m =>
-        m.id === messageId ? { ...m, guest_name: editNameValue.trim() } : m
+        m.id === messageId ? { ...m, caller_name: editNameValue.trim() } : m
       ))
       setEditingName(null)
     } catch (error) {
@@ -394,10 +393,10 @@ export default function CustomerDashboardPage() {
         .from('message-photos')
         .getPublicUrl(fileName)
 
-      await updateMessage(messageId, { photo_url: urlData.publicUrl })
+      await updateMessage(messageId, { guest_photo_url: urlData.publicUrl })
 
       setMessages(messages.map(m =>
-        m.id === messageId ? { ...m, photo_url: urlData.publicUrl } : m
+        m.id === messageId ? { ...m, guest_photo_url: urlData.publicUrl } : m
       ))
     } catch (error) {
       console.error('Error uploading photo:', error)
@@ -451,7 +450,7 @@ export default function CustomerDashboardPage() {
     if (activeMessages.length === 0) return
 
     for (const msg of activeMessages) {
-      await handleDownload(msg.recording_url, msg.guest_name || msg.caller_name)
+      await handleDownload(msg.recording_url, msg.caller_name)
     }
   }
 
@@ -464,7 +463,7 @@ export default function CustomerDashboardPage() {
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  const getDisplayName = (m: Message) => m.guest_name || m.caller_name || null
+  const getDisplayName = (m: Message) => m.caller_name || null
 
   const getTimestamp = (m: Message) => m.recorded_at || m.created_at
 
@@ -793,10 +792,10 @@ export default function CustomerDashboardPage() {
                   style={{ border: '1px solid #e8ece9' }}
                 >
                   {/* Photo area */}
-                  {message.photo_url ? (
+                  {message.guest_photo_url ? (
                     <div className="relative h-40 overflow-hidden">
                       <img
-                        src={message.photo_url}
+                        src={message.guest_photo_url}
                         alt={name || 'Guest photo'}
                         className="w-full h-full object-cover"
                       />
@@ -907,7 +906,7 @@ export default function CustomerDashboardPage() {
                                   style={{ color: '#6E7D71' }}
                                 >
                                   <ImageIcon size={14} />
-                                  {message.photo_url ? 'Change photo' : 'Add photo'}
+                                  {message.guest_photo_url ? 'Change photo' : 'Add photo'}
                                 </button>
                                 <button
                                   onClick={() => {
