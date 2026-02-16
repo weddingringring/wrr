@@ -241,51 +241,48 @@ export default function MessageCardStack({
 
       <div style={{ overflow: 'hidden' }}>
         <div className="relative flex items-center justify-center" style={{ minHeight: '480px', perspective: '1000px' }}>
-          {/* Pile behind */}
-          {[2, 1].map(offset => {
-            const idx = safeIndex + offset
-            if (idx >= messages.length) return null
-            const rot = getCardRotation(idx)
-            const off = getCardOffset(idx)
-            return (
-              <div
-                key={`pile-${offset}`}
-                className="absolute parchment-card card-pile rounded-xl"
-                style={{
-                  width: '100%',
-                  maxWidth: '420px',
-                  height: '460px',
-                  transform: `rotate(${rot}deg) translate(${off.x}px, ${offset * 1}px) scale(${1 - offset * 0.005})`,
-                  zIndex: 10 - offset,
-                  opacity: 1 - offset * 0.08,
-                  transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-              />
-            )
-          })}
+          <div className="relative w-full" style={{ maxWidth: '420px' }}>
+            {/* Pile behind */}
+            {[2, 1].map(offset => {
+              const idx = safeIndex + offset
+              if (idx >= messages.length) return null
+              const rot = getCardRotation(idx)
+              const off = getCardOffset(idx)
+              return (
+                <div
+                  key={`pile-${offset}`}
+                  className="absolute inset-0 parchment-card card-pile rounded-xl"
+                  style={{
+                    transform: `rotate(${rot}deg) translate(${off.x}px, ${offset * 1}px) scale(${1 - offset * 0.005})`,
+                    zIndex: 10 - offset,
+                    opacity: 1 - offset * 0.08,
+                    transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+                  }}
+                />
+              )
+            })}
 
-          {/* Active card */}
-          <div
-            className="relative parchment-card rounded-xl select-none"
-            style={{
-              width: '100%',
-              maxWidth: '420px',
-              zIndex: 20,
-              transform: exitDirection === 'left'
-                ? 'translateX(-120%) rotate(-15deg)'
-                : exitDirection === 'right'
-                  ? 'translateX(120%) rotate(15deg)'
-                  : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05}deg)`,
-              transition: isDragging ? 'none' : 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-              opacity: exitDirection ? 0 : 1,
-              touchAction: 'none',
-              cursor: editingName || showMenu || showTags ? 'default' : 'grab',
-            }}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
-          >
+            {/* Active card */}
+            <div
+              className="relative parchment-card rounded-xl select-none"
+              style={{
+                width: '100%',
+                zIndex: 20,
+                transform: exitDirection === 'left'
+                  ? 'translateX(-120%) rotate(-15deg)'
+                  : exitDirection === 'right'
+                    ? 'translateX(120%) rotate(15deg)'
+                    : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05}deg)`,
+                transition: isDragging ? 'none' : 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+                opacity: exitDirection ? 0 : 1,
+                touchAction: 'none',
+                cursor: editingName || showMenu || showTags ? 'default' : 'grab',
+              }}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+            >
             <div className="relative z-10 p-5">
               {/* Photo area - 4:3 with printed photo frame */}
               <div className="mb-4">
@@ -568,6 +565,7 @@ export default function MessageCardStack({
                 </div>
               )}
             </div>
+          </div>
           </div>
         </div>
 
