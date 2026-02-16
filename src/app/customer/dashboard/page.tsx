@@ -515,18 +515,52 @@ export default function CustomerDashboardPage() {
       />
 
       {/* Header */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e8ece9' }} className="shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
+      <header style={{ background: '#FFEFEF' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+          {/* Mobile: icons top-right, logo centered below */}
+          <div className="sm:hidden">
+            <div className="flex justify-end gap-2 mb-2">
+              <Link
+                href="/customer/settings"
+                className="p-2 rounded-lg hover:bg-white/50 transition"
+                title="Settings"
+              >
+                <Settings size={18} style={{ color: '#8B9B8E' }} />
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="p-2 rounded-lg hover:bg-white/50 transition"
+                title="Sign out"
+              >
+                <LogOut size={18} style={{ color: '#8B9B8E' }} />
+              </button>
+            </div>
+            <div className="flex justify-center">
+              {venue?.logo_url ? (
+                <img 
+                  src={venue.logo_url} 
+                  alt={venue.name || 'Venue'}
+                  className="h-14 w-auto object-contain"
+                />
+              ) : venue?.name ? (
+                <span className="text-base font-medium" style={{ color: '#3D5A4C' }}>
+                  {venue.name}
+                </span>
+              ) : null}
+            </div>
+          </div>
+
+          {/* Desktop: logo left, icons right */}
+          <div className="hidden sm:flex justify-between items-center">
             <div className="flex items-center gap-3">
               {venue?.logo_url ? (
                 <img 
                   src={venue.logo_url} 
                   alt={venue.name || 'Venue'}
-                  className="h-10 w-auto object-contain"
+                  className="h-14 w-auto object-contain"
                 />
               ) : venue?.name ? (
-                <span className="text-sm font-medium" style={{ color: '#3D5A4C' }}>
+                <span className="text-base font-medium" style={{ color: '#3D5A4C' }}>
                   {venue.name}
                 </span>
               ) : null}
@@ -534,23 +568,23 @@ export default function CustomerDashboardPage() {
 
             <div className="flex items-center gap-4">
               {getEventDisplayName() && (
-                <span className="text-sm font-medium hidden sm:inline" style={{ color: '#3D5A4C' }}>
+                <span className="text-sm font-medium" style={{ color: '#3D5A4C' }}>
                   {getEventDisplayName()}
                 </span>
               )}
               <Link
                 href="/customer/settings"
-                className="p-2 rounded-lg hover:bg-sage-light/20 transition"
+                className="p-2 rounded-lg hover:bg-white/50 transition"
                 title="Settings"
               >
-                <Settings size={20} className="text-sage-dark" />
+                <Settings size={20} style={{ color: '#8B9B8E' }} />
               </Link>
               <button
                 onClick={handleSignOut}
-                className="p-2 rounded-lg hover:bg-sage-light/20 transition"
+                className="p-2 rounded-lg hover:bg-white/50 transition"
                 title="Sign out"
               >
-                <LogOut size={20} className="text-sage-dark" />
+                <LogOut size={20} style={{ color: '#8B9B8E' }} />
               </button>
             </div>
           </div>
