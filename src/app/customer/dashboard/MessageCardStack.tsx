@@ -222,7 +222,7 @@ export default function MessageCardStack({
         .card-play:active { transform: scale(0.96); }
       `}</style>
 
-      <div>
+      <div style={{ overflow: 'hidden' }}>
         {/* Card Stack */}
         <div className="relative flex items-center justify-center" style={{ minHeight: '380px', perspective: '1000px' }}>
           {/* Pile behind */}
