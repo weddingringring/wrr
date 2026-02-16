@@ -43,7 +43,7 @@ export default function CustomerDashboardPage() {
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'favorites' | 'trash'>('all')
-  const [viewMode, setViewMode] = useState<'tiles' | 'cards'>('tiles')
+  const [viewMode, setViewMode] = useState<'tiles' | 'cards'>('cards')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'longest' | 'shortest'>('newest')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
@@ -372,14 +372,18 @@ export default function CustomerDashboardPage() {
   }
 
   const handleToggleFavorite = async (messageId: string, currentStatus: boolean) => {
+    // Optimistic update - show change immediately
+    setMessages(prev => prev.map(m =>
+      m.id === messageId ? { ...m, is_favorite: !currentStatus, is_favorited: !currentStatus } : m
+    ))
     try {
       await updateMessage(messageId, { is_favorite: !currentStatus })
-
-      setMessages(messages.map(m =>
-        m.id === messageId ? { ...m, is_favorite: !currentStatus, is_favorited: !currentStatus } : m
-      ))
     } catch (error) {
       console.error('Error toggling favorite:', error)
+      // Revert on failure
+      setMessages(prev => prev.map(m =>
+        m.id === messageId ? { ...m, is_favorite: currentStatus, is_favorited: currentStatus } : m
+      ))
     }
   }
 
@@ -1136,307 +1140,271 @@ export default function CustomerDashboardPage() {
             photoSignedUrls={photoSignedUrls}
           />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredMessages.map((message) => {
-              const name = getDisplayName(message)
-              const duration = getDuration(message)
-              const timestamp = getTimestamp(message)
-              const fav = isFavorited(message)
-              const progress = playbackProgress[message.id] || 0
-              const isPlaying = currentlyPlaying === message.id
+          <>
+            <style>{`
+              .parchment-tile {
+                background: linear-gradient(145deg, #FFFEF7 0%, #FBF8F0 25%, #F8F4E8 50%, #FBF7ED 75%, #FFFDF5 100%);
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.07);
+                position: relative;
+              }
+              .parchment-tile::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: inherit;
+                background-image:
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65 0.2' numOctaves='4' seed='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.02 0.4' numOctaves='2' seed='8' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+                opacity: 0.03;
+                mix-blend-mode: multiply;
+                pointer-events: none;
+              }
+              .parchment-tile::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: inherit;
+                border: 1px solid rgba(180, 165, 140, 0.25);
+                pointer-events: none;
+              }
+              .tile-photo-frame {
+                background: white;
+                padding: 5px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 3px 10px rgba(0,0,0,0.06);
+                border-radius: 3px;
+              }
+              .tile-card-name { font-family: 'Oooh Baby', cursive; color: #1a1a1a; }
+            `}</style>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+              {filteredMessages.map((message, index) => {
+                const name = getDisplayName(message)
+                const duration = getDuration(message)
+                const timestamp = getTimestamp(message)
+                const fav = isFavorited(message)
+                const progress = playbackProgress[message.id] || 0
+                const isPlaying = currentlyPlaying === message.id
+                const seed = index * 2654435761
+                const rotation = ((seed % 1000) - 500) / 100
+                const photoUrl = message.guest_photo_url
+                  ? (message.guest_photo_url.startsWith('http') ? message.guest_photo_url : photoSignedUrls[message.id])
+                  : null
 
-              return (
-                <div
-                  key={message.id}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden transition-all hover:shadow-md group flex flex-col"
-                  style={{ border: '1px solid #e8ece9' }}
-                >
-                  {/* Photo area - always shown */}
-                  <div className="relative h-40 overflow-hidden flex-shrink-0">
-                    {(message.guest_photo_url && (photoSignedUrls[message.id] || message.guest_photo_url.startsWith('http'))) ? (
-                      <>
-                        <img
-                          src={photoSignedUrls[message.id] || message.guest_photo_url}
-                          alt={name || 'Guest photo'}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0" style={{
-                          background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%)'
-                        }}></div>
-                      </>
-                    ) : (
-                      <button
-                        onClick={() => { if (filter !== 'trash') { photoMessageRef.current = message.id; photoInputRef.current?.click() } }}
-                        className="w-full h-full flex flex-col items-center justify-center gap-2 transition-colors"
-                        style={{ background: '#f5f0e8' }}
-                      >
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(61,90,76,0.1)' }}>
-                          <ImageIcon size={22} style={{ color: '#8B9B8E' }} />
-                        </div>
-                        <span className="text-xs font-medium" style={{ color: '#8B9B8E' }}>Tap to add photo</span>
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="p-4 flex flex-col flex-1">
-                    {/* Top: Name + menu */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1 min-w-0">
-                        {editingName === message.id ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={editNameValue}
-                              onChange={(e) => setEditNameValue(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleUpdateGuestName(message.id)
-                                if (e.key === 'Escape') setEditingName(null)
-                              }}
-                              className="font-serif text-xl sm:text-2xl font-light w-full px-2 py-1 rounded border focus:outline-none focus:ring-2"
-                              style={{ borderColor: '#e8ece9', color: '#1a1a1a' }}
-                              autoFocus
-                            />
-                            <button
-                              onClick={() => handleUpdateGuestName(message.id)}
-                              className="p-1 rounded hover:bg-sage-light/20 flex-shrink-0"
-                            >
-                              <Check size={14} style={{ color: '#3D5A4C' }} />
-                            </button>
-                            <button
-                              onClick={() => setEditingName(null)}
-                              className="p-1 rounded hover:bg-sage-light/20 flex-shrink-0"
-                            >
-                              <X size={14} className="text-sage-dark" />
-                            </button>
+                return (
+                  <div
+                    key={message.id}
+                    className="parchment-tile rounded-xl"
+                    style={{
+                      transform: `rotate(${rotation}deg)`,
+                      transition: 'transform 0.3s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'rotate(0deg) scale(1.02)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = `rotate(${rotation}deg)`)}
+                  >
+                    <div className="relative z-10 p-4">
+                      {/* Photo */}
+                      <div className="mb-3">
+                        {photoUrl ? (
+                          <div className="tile-photo-frame">
+                            <div style={{ aspectRatio: '4/3', overflow: 'hidden', borderRadius: '2px' }}>
+                              <img src={photoUrl} alt={name || 'Guest'} className="w-full h-full object-cover" />
+                            </div>
                           </div>
                         ) : (
                           <button
-                            onClick={() => {
-                              if (filter !== 'trash') {
-                                setEditingName(message.id)
-                                setEditNameValue(name || '')
-                              }
-                            }}
-                            className="text-left group/name w-full"
+                            onClick={() => { if (filter !== 'trash') { photoMessageRef.current = message.id; photoInputRef.current?.click() } }}
+                            className="w-full"
                           >
-                            <p className="font-serif font-light text-xl sm:text-2xl truncate" style={{ color: '#4a4a4a' }}>
-                              {name || (
-                                <span className="text-sage italic text-sm flex items-center gap-1">
-                                  <User size={14} />
-                                  Tap to add name
-                                </span>
-                              )}
-                            </p>
+                            <div className="tile-photo-frame">
+                              <div
+                                className="flex flex-col items-center justify-center gap-2"
+                                style={{ aspectRatio: '4/3', background: '#f0ece4', borderRadius: '2px' }}
+                              >
+                                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.05)' }}>
+                                  <ImageIcon size={20} style={{ color: '#999' }} />
+                                </div>
+                                <span className="text-xs" style={{ color: '#999' }}>Tap to add photo</span>
+                              </div>
+                            </div>
                           </button>
                         )}
-
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <p className="text-xs text-sage-dark flex items-center gap-1">
-                            <Clock size={12} />
-                            {new Date(timestamp).toLocaleDateString('en-GB', {
-                              day: 'numeric', month: 'short'
-                            })}
-                          </p>
-                          <span className="text-sage-light">&middot;</span>
-                          <p className="text-xs text-sage-dark">
-                            {formatDuration(duration)}
-                          </p>
-                        </div>
                       </div>
 
-                      {/* Action menu */}
-                      {filter !== 'trash' && (
-                        <div className="relative flex-shrink-0">
-                          <button
-                            onClick={() => setActiveMenu(activeMenu === message.id ? null : message.id)}
-                            className="p-1.5 rounded-lg hover:bg-sage-light/20 transition opacity-0 group-hover:opacity-100 focus:opacity-100"
-                          >
-                            <MoreHorizontal size={16} className="text-sage-dark" />
-                          </button>
-                          {activeMenu === message.id && (
-                            <>
-                              <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)}></div>
-                              <div
-                                className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20"
-                                style={{ border: '1px solid #e8ece9', minWidth: '160px' }}
-                              >
-                                <button
-                                  onClick={() => { photoMessageRef.current = message.id; photoInputRef.current?.click(); setActiveMenu(null) }}
-                                  className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
-                                  style={{ color: '#6E7D71' }}
-                                >
-                                  <ImageIcon size={14} />
-                                  {message.guest_photo_url ? 'Change photo' : 'Add photo'}
-                                </button>
-                                <button
-                                  onClick={() => { setTagMenuOpen(tagMenuOpen === message.id ? null : message.id); setActiveMenu(null) }}
-                                  className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
-                                  style={{ color: '#6E7D71' }}
-                                >
-                                  <Tag size={14} />
-                                  Edit tags
-                                </button>
-                                <button
-                                  onClick={() => { handleShare(message.recording_url, name); setActiveMenu(null) }}
-                                  className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
-                                  style={{ color: '#6E7D71' }}
-                                >
-                                  <Share2 size={14} />
-                                  Share
-                                </button>
-                                <div style={{ borderTop: '1px solid #e8ece9', margin: '4px 0' }}></div>
-                                <button
-                                  onClick={() => handleSoftDelete(message.id)}
-                                  className="w-full text-left px-4 py-2 text-sm hover:bg-rose-light/20 transition flex items-center gap-2"
-                                  style={{ color: '#C08585' }}
-                                >
-                                  <Trash2 size={14} />
-                                  Delete
-                                </button>
-                              </div>
-                            </>
+                      {/* Name */}
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex-1 min-w-0">
+                          {editingName === message.id ? (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={editNameValue}
+                                onChange={(e) => setEditNameValue(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleUpdateGuestName(message.id)
+                                  if (e.key === 'Escape') setEditingName(null)
+                                }}
+                                className="text-xl px-2 py-1 rounded border focus:outline-none focus:ring-2 w-full"
+                                style={{ fontFamily: "'Oooh Baby', cursive", borderColor: '#ddd', color: '#1a1a1a' }}
+                                autoFocus
+                              />
+                              <button onClick={() => handleUpdateGuestName(message.id)} className="p-1 rounded hover:bg-black/5">
+                                <Check size={14} style={{ color: '#333' }} />
+                              </button>
+                              <button onClick={() => setEditingName(null)} className="p-1 rounded hover:bg-black/5">
+                                <X size={14} style={{ color: '#999' }} />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => { if (filter !== 'trash') { setEditingName(message.id); setEditNameValue(name || '') } }}
+                              className="text-left w-full"
+                            >
+                              <p className="tile-card-name text-xl sm:text-2xl truncate">
+                                {name || (
+                                  <span className="italic text-base flex items-center gap-1" style={{ fontFamily: 'inherit', color: '#aaa' }}>
+                                    <User size={14} /> Tap to add name
+                                  </span>
+                                )}
+                              </p>
+                            </button>
                           )}
                         </div>
-                      )}
-                    </div>
 
-                    {/* Play button + progress bar */}
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => handlePlay(message.id, message.recording_url)}
-                        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
-                        style={{ background: isPlaying ? '#D4A5A5' : '#3D5A4C', color: 'white' }}
-                      >
-                        {isPlaying ? <Pause size={18} /> : <Play size={18} style={{ marginLeft: '2px' }} />}
-                      </button>
-                      <div className="flex-1">
-                        <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: '#e8ece9' }}>
-                          <div
-                            className="h-full rounded-full transition-all"
-                            style={{ width: `${progress}%`, background: isPlaying ? '#D4A5A5' : '#3D5A4C' }}
-                          ></div>
-                        </div>
-                      </div>
-                      <span className="text-xs font-mono text-sage-dark flex-shrink-0">
-                        {formatDuration(duration)}
-                      </span>
-                    </div>
-
-                    {/* Notes */}
-                    {message.notes && (
-                      <p className="mt-3 text-xs px-3 py-2 rounded-lg" style={{ background: '#f5f0e8', color: '#6E7D71' }}>
-                        {message.notes}
-                      </p>
-                    )}
-
-                    {/* Spacer pushes actions to bottom */}
-                    <div className="flex-1" />
-
-                    {/* Bottom actions */}
-                    <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: '1px solid #f0f0f0' }}>
-                      {filter === 'trash' ? (
-                        <button
-                          onClick={() => handleRestore(message.id)}
-                          className="flex items-center gap-1.5 text-xs font-medium transition"
-                          style={{ color: '#3D5A4C' }}
-                        >
-                          <Undo2 size={14} />
-                          Restore
-                        </button>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-hidden">
+                        {filter !== 'trash' && (
+                          <div className="relative flex-shrink-0">
                             <button
-                              onClick={() => handleToggleFavorite(message.id, fav)}
-                              className="flex-shrink-0 p-1 rounded-lg hover:bg-sage-light/20 transition"
+                              onClick={() => setActiveMenu(activeMenu === message.id ? null : message.id)}
+                              className="p-1.5 rounded-lg hover:bg-black/5 transition"
                             >
-                              <Heart size={16} fill={fav ? '#C08585' : 'none'} style={{ color: fav ? '#C08585' : '#8B9B8E' }} />
+                              <MoreHorizontal size={16} style={{ color: '#999' }} />
                             </button>
-                            <button
-                              onClick={() => setTagMenuOpen(tagMenuOpen === message.id ? null : message.id)}
-                              className="flex-shrink-0 p-1 rounded-lg hover:bg-sage-light/20 transition"
-                              title="Edit tags"
-                            >
-                              <Tag size={14} style={{ color: '#8B9B8E' }} />
-                            </button>
-                            {message.tags && message.tags.length > 0 && tagMenuOpen !== message.id && (
-                              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-                                {message.tags.map(tag => (
-                                  <span
-                                    key={tag}
-                                    className="px-2 py-0.5 rounded-full text-xs whitespace-nowrap flex-shrink-0"
-                                    style={{ background: '#f5f0e8', color: '#6E7D71' }}
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
+                            {activeMenu === message.id && (
+                              <>
+                                <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)}></div>
+                                <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20" style={{ border: '1px solid #e0e0e0', minWidth: '160px' }}>
+                                  <button onClick={() => { photoMessageRef.current = message.id; photoInputRef.current?.click(); setActiveMenu(null) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
+                                    <ImageIcon size={14} /> {message.guest_photo_url ? 'Change photo' : 'Add photo'}
+                                  </button>
+                                  <button onClick={() => { handleShare(message.recording_url, name); setActiveMenu(null) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
+                                    <Share2 size={14} /> Share
+                                  </button>
+                                  <div style={{ borderTop: '1px solid #eee', margin: '4px 0' }}></div>
+                                  <button onClick={() => handleSoftDelete(message.id)} className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 transition flex items-center gap-2" style={{ color: '#C08585' }}>
+                                    <Trash2 size={14} /> Delete
+                                  </button>
+                                </div>
+                              </>
                             )}
                           </div>
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            <button
-                              onClick={() => handleDownload(message.recording_url, name)}
-                              className="p-2 rounded-lg hover:bg-sage-light/20 transition"
-                              title="Download"
-                            >
-                              <Download size={16} className="text-sage-dark" />
-                            </button>
-                            <button
-                              onClick={() => handleShare(message.recording_url, name)}
-                              className="p-2 rounded-lg hover:bg-sage-light/20 transition"
-                              title="Share"
-                            >
-                              <Share2 size={16} className="text-sage-dark" />
-                            </button>
+                        )}
+                      </div>
+
+                      {/* Date + duration */}
+                      <div className="flex items-center gap-2 mb-3 text-xs" style={{ color: '#777' }}>
+                        <span>{new Date(timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+                        <span style={{ color: '#ccc' }}>&middot;</span>
+                        <span className="flex items-center gap-1">
+                          <Clock size={12} style={{ color: '#999' }} /> {formatDuration(duration)}
+                        </span>
+                      </div>
+
+                      {/* Play + progress */}
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => handlePlay(message.id, message.recording_url)}
+                          className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                          style={{
+                            background: isPlaying ? '#D4A5A5' : 'linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%)',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                          }}
+                        >
+                          {isPlaying ? <Pause size={16} fill="white" stroke="white" /> : <Play size={16} fill="white" stroke="white" style={{ marginLeft: '2px' }} />}
+                        </button>
+                        <div className="flex-1">
+                          <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,0.08)' }}>
+                            <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: isPlaying ? '#D4A5A5' : '#333' }}></div>
                           </div>
-                        </>
+                        </div>
+                        <span className="text-xs font-mono" style={{ color: '#999' }}>{formatDuration(duration)}</span>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="my-3" style={{ height: '1px', background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.06) 20%, rgba(0,0,0,0.06) 80%, transparent 100%)' }} />
+
+                      {/* Bottom bar */}
+                      <div className="flex items-center justify-between">
+                        {filter === 'trash' ? (
+                          <button onClick={() => handleRestore(message.id)} className="flex items-center gap-1.5 text-xs font-medium" style={{ color: '#333' }}>
+                            <Undo2 size={14} /> Restore
+                          </button>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-hidden">
+                              <button onClick={() => handleToggleFavorite(message.id, fav)} className="flex-shrink-0 p-1 rounded-lg hover:bg-black/5 transition">
+                                <Heart size={16} fill={fav ? '#C08585' : 'none'} stroke={fav ? '#C08585' : '#bbb'} strokeWidth={1.5} />
+                              </button>
+                              <button onClick={() => setTagMenuOpen(tagMenuOpen === message.id ? null : message.id)} className="flex-shrink-0 p-1 rounded-lg hover:bg-black/5 transition" title="Edit tags">
+                                <Tag size={14} style={{ color: '#999' }} />
+                              </button>
+                              {message.tags && message.tags.length > 0 && tagMenuOpen !== message.id && (
+                                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                                  {message.tags.map(tag => (
+                                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0" style={{ background: 'rgba(0,0,0,0.05)', color: '#666', border: '1px solid rgba(0,0,0,0.08)' }}>
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              <button onClick={() => handleDownload(message.recording_url, name)} className="p-1.5 rounded-lg hover:bg-black/5 transition" title="Download">
+                                <Download size={14} style={{ color: '#999' }} />
+                              </button>
+                              <button onClick={() => handleShare(message.recording_url, name)} className="p-1.5 rounded-lg hover:bg-black/5 transition" title="Share">
+                                <Share2 size={14} style={{ color: '#999' }} />
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Tag editor */}
+                      {tagMenuOpen === message.id && (
+                        <div className="mt-2 p-3 rounded-lg" style={{ background: 'rgba(0,0,0,0.04)' }}>
+                          <div className="flex flex-wrap gap-1.5">
+                            {AVAILABLE_TAGS.map(tag => (
+                              <button
+                                key={tag}
+                                onClick={() => handleToggleTag(message.id, tag)}
+                                className="px-2.5 py-1 rounded-full text-xs font-medium transition"
+                                style={{
+                                  background: (message.tags || []).includes(tag) ? '#333' : 'white',
+                                  color: (message.tags || []).includes(tag) ? 'white' : '#666',
+                                  border: '1px solid',
+                                  borderColor: (message.tags || []).includes(tag) ? '#333' : '#ddd'
+                                }}
+                              >
+                                {tag}
+                              </button>
+                            ))}
+                          </div>
+                          <button onClick={() => setTagMenuOpen(null)} className="mt-2 text-xs font-medium" style={{ color: '#333' }}>Done</button>
+                        </div>
+                      )}
+
+                      {/* Photo uploading */}
+                      {photoUploading === message.id && (
+                        <div className="mt-2 flex items-center gap-2 text-xs" style={{ color: '#999' }}>
+                          <div className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                          Uploading photo...
+                        </div>
                       )}
                     </div>
-
-                    {/* Tag editor (shown below bottom bar when tag icon tapped) */}
-                    {tagMenuOpen === message.id && (
-                      <div className="mt-2 p-3 rounded-lg" style={{ background: '#f5f0e8' }}>
-                        <div className="flex flex-wrap gap-1.5">
-                          {AVAILABLE_TAGS.map(tag => (
-                            <button
-                              key={tag}
-                              onClick={() => handleToggleTag(message.id, tag)}
-                              className="px-2.5 py-1 rounded-full text-xs font-medium transition"
-                              style={{
-                                background: (message.tags || []).includes(tag) ? '#3D5A4C' : 'white',
-                                color: (message.tags || []).includes(tag) ? 'white' : '#6E7D71',
-                                border: '1px solid',
-                                borderColor: (message.tags || []).includes(tag) ? '#3D5A4C' : '#e8ece9'
-                              }}
-                            >
-                              {tag}
-                            </button>
-                          ))}
-                        </div>
-                        <button
-                          onClick={() => setTagMenuOpen(null)}
-                          className="mt-2 text-xs font-medium transition"
-                          style={{ color: '#3D5A4C' }}
-                        >
-                          Done
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Photo uploading indicator */}
-                    {photoUploading === message.id && (
-                      <div className="mt-2 flex items-center gap-2 text-xs text-sage-dark">
-                        <div className="w-3 h-3 border-2 border-deep-green border-t-transparent rounded-full animate-spin"></div>
-                        Uploading photo...
-                      </div>
-                    )}
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
+                )
+              })}
+            </div>
+          </>
+        )}v>
 
       {/* Footer */}
       <footer className="mt-16 py-10 border-t border-sage-light/30">
