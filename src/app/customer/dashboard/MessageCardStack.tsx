@@ -240,8 +240,8 @@ export default function MessageCardStack({
         .card-play:active { transform: scale(0.96); }
       `}</style>
 
-      <div style={{ overflow: 'hidden' }}>
-        <div className="relative flex items-center justify-center" style={{ minHeight: '480px', perspective: '1000px' }}>
+      <div style={{ overflowX: 'hidden', padding: '12px 0 0' }}>
+        <div className="relative flex items-center justify-center" style={{ minHeight: '500px', perspective: '1000px' }}>
           <div className="relative w-full" style={{ maxWidth: '420px' }}>
             {/* Pile behind */}
             {[3, 2, 1].map(offset => {
