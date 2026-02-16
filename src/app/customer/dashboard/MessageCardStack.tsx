@@ -1,7 +1,11 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
-import { Heart, Play, Pause, SkipBack, SkipForward, Phone, Clock } from 'lucide-react'
+import { useState, useRef, useCallback } from 'react'
+import {
+  Heart, Play, Pause, SkipBack, SkipForward, Clock,
+  Download, Share2, Trash2, Undo2, Tag, MoreHorizontal, User,
+  Check, X, Image as ImageIcon
+} from 'lucide-react'
 
 interface Message {
   id: string
@@ -20,87 +24,117 @@ interface Message {
   is_deleted: boolean
 }
 
+const AVAILABLE_TAGS = [
+  'Family', 'Friends', 'Funny', 'Emotional', 'Heartfelt',
+  'Speech', 'Kids', 'Musical', 'Surprise'
+]
+
 interface MessageCardStackProps {
   messages: Message[]
   onPlay: (messageId: string, recordingUrl: string) => void
+  onToggleFavorite: (messageId: string, currentStatus: boolean) => void
+  onSoftDelete: (messageId: string) => void
+  onRestore: (messageId: string) => void
+  onUpdateName: (messageId: string, name: string) => void
+  onToggleTag: (messageId: string, tag: string) => void
+  onDownload: (recordingUrl: string, name: string | null) => void
+  onShare: (recordingUrl: string, name: string | null) => void
+  onPhotoUpload: (messageId: string) => void
   currentlyPlaying: string | null
+  playbackProgress: Record<string, number>
+  filter: string
 }
 
-export default function MessageCardStack({ messages, onPlay, currentlyPlaying }: MessageCardStackProps) {
+export default function MessageCardStack({
+  messages,
+  onPlay,
+  onToggleFavorite,
+  onSoftDelete,
+  onRestore,
+  onUpdateName,
+  onToggleTag,
+  onDownload,
+  onShare,
+  onPhotoUpload,
+  currentlyPlaying,
+  playbackProgress,
+  filter,
+}: MessageCardStackProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [dragX, setDragX] = useState(0)
   const [dragY, setDragY] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [exitDirection, setExitDirection] = useState<'left' | 'right' | null>(null)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [editingName, setEditingName] = useState(false)
+  const [editNameValue, setEditNameValue] = useState('')
+  const [showMenu, setShowMenu] = useState(false)
+  const [showTags, setShowTags] = useState(false)
   const startPos = useRef({ x: 0, y: 0 })
-  const cardRef = useRef<HTMLDivElement>(null)
 
-  // Filter out deleted messages
-  const activeMessages = messages.filter(m => !m.is_deleted)
+  // Clamp index
+  const safeIndex = Math.min(currentIndex, Math.max(0, messages.length - 1))
+  if (safeIndex !== currentIndex && messages.length > 0) {
+    setCurrentIndex(safeIndex)
+  }
 
-  // Seeded random for consistent card rotations
   const getCardRotation = useCallback((index: number) => {
     const seed = index * 2654435761
-    return ((seed % 700) - 350) / 100 // -3.5 to 3.5 degrees
+    return ((seed % 700) - 350) / 100
   }, [])
 
   const getCardOffset = useCallback((index: number) => {
     const seed = index * 1597334677
     return {
-      x: ((seed % 600) - 300) / 100,  // -3 to 3px
-      y: ((seed % 400) - 200) / 100,  // -2 to 2px
+      x: ((seed % 600) - 300) / 100,
+      y: ((seed % 400) - 200) / 100,
     }
   }, [])
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (isAnimating) return
+    if (isAnimating || editingName || showMenu || showTags) return
     setIsDragging(true)
     startPos.current = { x: e.clientX, y: e.clientY }
-    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+    ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
   }
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging) return
-    const dx = e.clientX - startPos.current.x
-    const dy = (e.clientY - startPos.current.y) * 0.3
-    setDragX(dx)
-    setDragY(dy)
+    setDragX(e.clientX - startPos.current.x)
+    setDragY((e.clientY - startPos.current.y) * 0.3)
   }
 
   const handlePointerUp = () => {
     if (!isDragging) return
     setIsDragging(false)
-
-    const threshold = 100
-    if (Math.abs(dragX) > threshold) {
-      // Fling card away
+    if (Math.abs(dragX) > 100) {
       const direction = dragX > 0 ? 'right' : 'left'
       setExitDirection(direction)
       setIsAnimating(true)
-
       setTimeout(() => {
         setExitDirection(null)
         setDragX(0)
         setDragY(0)
         setIsAnimating(false)
-        if (direction === 'left') {
-          setCurrentIndex(i => Math.min(i + 1, activeMessages.length - 1))
-        } else {
-          setCurrentIndex(i => Math.max(i - 1, 0))
-        }
+        setShowMenu(false)
+        setShowTags(false)
+        setEditingName(false)
+        if (direction === 'left') setCurrentIndex(i => Math.min(i + 1, messages.length - 1))
+        else setCurrentIndex(i => Math.max(i - 1, 0))
       }, 350)
     } else {
-      // Snap back
       setDragX(0)
       setDragY(0)
     }
   }
 
   const goNext = () => {
-    if (isAnimating || currentIndex >= activeMessages.length - 1) return
+    if (isAnimating || currentIndex >= messages.length - 1) return
     setExitDirection('left')
     setIsAnimating(true)
+    setShowMenu(false)
+    setShowTags(false)
+    setEditingName(false)
     setTimeout(() => {
       setExitDirection(null)
       setDragX(0)
@@ -114,6 +148,9 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
     if (isAnimating || currentIndex <= 0) return
     setExitDirection('right')
     setIsAnimating(true)
+    setShowMenu(false)
+    setShowTags(false)
+    setEditingName(false)
     setTimeout(() => {
       setExitDirection(null)
       setDragX(0)
@@ -130,51 +167,31 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
   }
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+    return new Date(dateStr).toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'long', year: 'numeric'
     })
   }
 
-  if (activeMessages.length === 0) return null
+  if (messages.length === 0) return null
 
-  // Show up to 4 cards in the stack
-  const visibleCards = activeMessages.slice(
-    Math.max(0, currentIndex - 1),
-    currentIndex + 4
-  )
+  const msg = messages[safeIndex]
+  if (!msg) return null
+
+  const fav = msg.is_favorite || msg.is_favorited || false
+  const duration = msg.duration_seconds || msg.duration || 0
+  const progress = playbackProgress[msg.id] || 0
+  const isPlaying = currentlyPlaying === msg.id
 
   return (
     <>
-      {/* Google Font */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href="https://fonts.googleapis.com/css2?family=Oooh+Baby&family=Caveat:wght@400;500&display=swap" rel="stylesheet" />
 
       <style>{`
-        @keyframes cardEntrance {
-          from { opacity: 0; transform: scale(0.9) translateY(20px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .card-stack-container {
-          animation: cardEntrance 0.6s ease-out;
-        }
         .ivory-card {
-          background: linear-gradient(
-            145deg,
-            #FFFEF7 0%,
-            #FBF8F0 25%,
-            #F8F4E8 50%,
-            #FBF7ED 75%,
-            #FFFDF5 100%
-          );
-          box-shadow:
-            0 1px 2px rgba(0,0,0,0.04),
-            0 4px 8px rgba(0,0,0,0.04),
-            0 8px 24px rgba(0,0,0,0.06),
-            inset 0 0 60px rgba(255,252,240,0.5);
+          background: linear-gradient(145deg, #FFFEF7 0%, #FBF8F0 25%, #F8F4E8 50%, #FBF7ED 75%, #FFFDF5 100%);
+          box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06), inset 0 0 60px rgba(255,252,240,0.5);
         }
         .ivory-card::before {
           content: '';
@@ -194,71 +211,35 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
           border: 1px solid rgba(200, 185, 155, 0.3);
           pointer-events: none;
         }
-        .card-shadow-pile {
-          box-shadow:
-            0 2px 4px rgba(0,0,0,0.02),
-            0 4px 12px rgba(0,0,0,0.04),
-            0 1px 0 rgba(200,185,155,0.15);
+        .card-pile {
+          box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.04), 0 1px 0 rgba(200,185,155,0.15);
         }
-        .name-handwritten {
-          font-family: 'Oooh Baby', cursive;
-          color: #1a1a1a;
-        }
-        .detail-handwritten {
-          font-family: 'Caveat', cursive;
-          color: #5a6b5e;
-        }
-        .play-ring {
-          transition: all 0.2s ease;
-        }
-        .play-ring:hover {
-          transform: scale(1.08);
-          box-shadow: 0 4px 20px rgba(61,90,76,0.25);
-        }
-        .play-ring:active {
-          transform: scale(0.96);
-        }
-        .card-counter {
-          font-family: 'Caveat', cursive;
-        }
+        .card-name { font-family: 'Oooh Baby', cursive; color: #1a1a1a; }
+        .card-detail { font-family: 'Caveat', cursive; color: #5a6b5e; }
+        .card-counter { font-family: 'Caveat', cursive; }
+        .card-play { transition: all 0.2s ease; }
+        .card-play:hover { transform: scale(1.08); box-shadow: 0 4px 20px rgba(61,90,76,0.25); }
+        .card-play:active { transform: scale(0.96); }
       `}</style>
 
-      <div className="card-stack-container rounded-2xl p-6 sm:p-8" style={{
-        background: 'linear-gradient(180deg, #F2DEDE 0%, #EACECE 100%)',
-        border: '1px solid rgba(200, 165, 165, 0.35)',
-      }}>
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="font-serif text-xl" style={{ color: '#3D5A4C' }}>Messages</h2>
-            <p className="text-sm" style={{ color: '#8B9B8E' }}>{activeMessages.length} voice message{activeMessages.length !== 1 ? 's' : ''}</p>
-          </div>
-          <div className="card-counter text-lg" style={{ color: '#8B9B8E' }}>
-            {currentIndex + 1} / {activeMessages.length}
-          </div>
-        </div>
-
-        {/* Card Stack Area */}
-        <div className="relative flex items-center justify-center" style={{ minHeight: '340px', perspective: '1000px' }}>
-
-          {/* Background pile cards (behind current) */}
+      <div>
+        {/* Card Stack */}
+        <div className="relative flex items-center justify-center" style={{ minHeight: '380px', perspective: '1000px' }}>
+          {/* Pile behind */}
           {[3, 2, 1].map(offset => {
-            const idx = currentIndex + offset
-            if (idx >= activeMessages.length) return null
+            const idx = safeIndex + offset
+            if (idx >= messages.length) return null
             const rot = getCardRotation(idx)
             const off = getCardOffset(idx)
-            const scale = 1 - offset * 0.02
-            const yShift = offset * 4
-
             return (
               <div
                 key={`pile-${offset}`}
-                className="absolute ivory-card card-shadow-pile rounded-xl"
+                className="absolute ivory-card card-pile rounded-xl"
                 style={{
                   width: '100%',
-                  maxWidth: '380px',
-                  height: '280px',
-                  transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y + yShift}px) scale(${scale})`,
+                  maxWidth: '420px',
+                  height: '360px',
+                  transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y + offset * 4}px) scale(${1 - offset * 0.02})`,
                   zIndex: 10 - offset,
                   opacity: 1 - offset * 0.15,
                   transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -267,181 +248,306 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
             )
           })}
 
-          {/* Active (top) card */}
-          {activeMessages[currentIndex] && (
-            <div
-              ref={cardRef}
-              className="relative ivory-card rounded-xl cursor-grab active:cursor-grabbing select-none"
-              style={{
-                width: '100%',
-                maxWidth: '380px',
-                minHeight: '280px',
-                zIndex: 20,
-                transform: exitDirection === 'left'
-                  ? `translateX(-120%) rotate(-15deg)`
-                  : exitDirection === 'right'
-                    ? `translateX(120%) rotate(15deg)`
-                    : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05}deg)`,
-                transition: isDragging ? 'none' : 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-                opacity: exitDirection ? 0 : 1,
-                touchAction: 'none',
-              }}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerUp}
-            >
-              <div className="relative z-10 p-7 flex flex-col h-full" style={{ minHeight: '280px' }}>
-                {/* Favorite indicator */}
-                {(activeMessages[currentIndex].is_favorite || activeMessages[currentIndex].is_favorited) && (
-                  <div className="absolute top-4 right-5">
-                    <Heart size={18} fill="#C08585" stroke="#C08585" />
+          {/* Active card */}
+          <div
+            className="relative ivory-card rounded-xl select-none"
+            style={{
+              width: '100%',
+              maxWidth: '420px',
+              zIndex: 20,
+              transform: exitDirection === 'left'
+                ? 'translateX(-120%) rotate(-15deg)'
+                : exitDirection === 'right'
+                  ? 'translateX(120%) rotate(15deg)'
+                  : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05}deg)`,
+              transition: isDragging ? 'none' : 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+              opacity: exitDirection ? 0 : 1,
+              touchAction: 'none',
+              cursor: editingName || showMenu || showTags ? 'default' : 'grab',
+            }}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+          >
+            <div className="relative z-10 p-6">
+              {/* Top row: favourite + menu */}
+              <div className="flex items-center justify-between mb-1">
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleFavorite(msg.id, fav) }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="p-1 transition"
+                >
+                  <Heart size={20} fill={fav ? '#C08585' : 'none'} stroke={fav ? '#C08585' : '#c4c4c4'} strokeWidth={1.5} />
+                </button>
+
+                {filter === 'trash' ? (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onRestore(msg.id) }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition"
+                    style={{ color: '#3D5A4C', background: 'rgba(61,90,76,0.08)' }}
+                  >
+                    <Undo2 size={14} />
+                    Restore
+                  </button>
+                ) : (
+                  <div className="relative">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); setShowTags(false) }}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      className="p-1.5 rounded-lg hover:bg-black/5 transition"
+                    >
+                      <MoreHorizontal size={18} style={{ color: '#999' }} />
+                    </button>
+                    {showMenu && (
+                      <>
+                        <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)}></div>
+                        <div
+                          className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20"
+                          style={{ border: '1px solid #e8ece9', minWidth: '160px' }}
+                        >
+                          <button
+                            onClick={() => { onPhotoUpload(msg.id); setShowMenu(false) }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
+                            style={{ color: '#6E7D71' }}
+                          >
+                            <ImageIcon size={14} />
+                            {msg.guest_photo_url ? 'Change photo' : 'Add photo'}
+                          </button>
+                          <button
+                            onClick={() => { setShowTags(true); setShowMenu(false) }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
+                            style={{ color: '#6E7D71' }}
+                          >
+                            <Tag size={14} />
+                            Edit tags
+                          </button>
+                          <button
+                            onClick={() => { onShare(msg.recording_url, msg.caller_name); setShowMenu(false) }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
+                            style={{ color: '#6E7D71' }}
+                          >
+                            <Share2 size={14} />
+                            Share
+                          </button>
+                          <div style={{ borderTop: '1px solid #e8ece9', margin: '4px 0' }}></div>
+                          <button
+                            onClick={() => { onSoftDelete(msg.id); setShowMenu(false) }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-rose-light/20 transition flex items-center gap-2"
+                            style={{ color: '#C08585' }}
+                          >
+                            <Trash2 size={14} />
+                            Delete
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
+              </div>
 
-                <div className="flex gap-5">
-                  {/* Photo */}
-                  {activeMessages[currentIndex].guest_photo_url && (
-                    <div className="flex-shrink-0">
-                      <div
-                        className="rounded-lg overflow-hidden"
-                        style={{
-                          width: '80px',
-                          height: '80px',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                          border: '2px solid rgba(255,252,240,0.8)',
+              {/* Photo + Name + Date */}
+              <div className="flex gap-5 mb-2">
+                {msg.guest_photo_url && (
+                  <div className="flex-shrink-0">
+                    <div
+                      className="rounded-lg overflow-hidden"
+                      style={{
+                        width: '80px', height: '80px',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                        border: '2px solid rgba(255,252,240,0.8)',
+                      }}
+                    >
+                      <img src={msg.guest_photo_url} alt={msg.caller_name || 'Guest'} className="w-full h-full object-cover" />
+                    </div>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  {editingName ? (
+                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+                      <input
+                        type="text"
+                        value={editNameValue}
+                        onChange={(e) => setEditNameValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && editNameValue.trim()) {
+                            onUpdateName(msg.id, editNameValue.trim())
+                            setEditingName(false)
+                          }
+                          if (e.key === 'Escape') setEditingName(false)
                         }}
+                        className="text-2xl px-2 py-1 rounded border focus:outline-none focus:ring-2 w-full"
+                        style={{ fontFamily: "'Oooh Baby', cursive", borderColor: '#e8ece9', color: '#1a1a1a' }}
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => { if (editNameValue.trim()) { onUpdateName(msg.id, editNameValue.trim()); setEditingName(false) } }}
+                        className="p-1 rounded hover:bg-sage-light/20"
                       >
-                        <img
-                          src={activeMessages[currentIndex].guest_photo_url}
-                          alt={activeMessages[currentIndex].caller_name || 'Guest'}
-                          className="w-full h-full object-cover"
-                        />
+                        <Check size={14} style={{ color: '#3D5A4C' }} />
+                      </button>
+                      <button onClick={() => setEditingName(false)} className="p-1 rounded hover:bg-sage-light/20">
+                        <X size={14} style={{ color: '#999' }} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (filter !== 'trash') {
+                          setEditNameValue(msg.caller_name || '')
+                          setEditingName(true)
+                        }
+                      }}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      className="text-left w-full"
+                    >
+                      <div className="card-name text-2xl sm:text-3xl leading-tight truncate">
+                        {msg.caller_name || (
+                          <span className="text-sage italic text-lg flex items-center gap-1" style={{ fontFamily: 'inherit' }}>
+                            <User size={16} />
+                            Tap to add name
+                          </span>
+                        )}
                       </div>
-                    </div>
+                    </button>
                   )}
-
-                  <div className="flex-1 min-w-0">
-                    {/* Name */}
-                    <div className="name-handwritten text-2xl sm:text-3xl mb-1 leading-tight pr-8">
-                      {activeMessages[currentIndex].caller_name || 'Unknown guest'}
-                    </div>
-
-                    {/* Date */}
-                    <div className="detail-handwritten text-lg mb-2">
-                      {formatDate(activeMessages[currentIndex].recorded_at || activeMessages[currentIndex].created_at)}
-                    </div>
+                  <div className="card-detail text-lg mt-0.5">
+                    {formatDate(msg.recorded_at || msg.created_at)}
                   </div>
                 </div>
+              </div>
 
-                {/* Decorative line */}
-                <div className="mt-5 mb-6" style={{
-                  height: '1px',
-                  background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,135,0.4) 20%, rgba(180,165,135,0.4) 80%, transparent 100%)',
-                }} />
+              {/* Divider */}
+              <div className="my-4" style={{
+                height: '1px',
+                background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,135,0.4) 20%, rgba(180,165,135,0.4) 80%, transparent 100%)',
+              }} />
 
-                {/* Duration & Phone */}
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="flex items-center gap-1.5 detail-handwritten text-lg">
-                    <Clock size={15} strokeWidth={1.5} style={{ color: '#8B9B8E' }} />
-                    {formatDuration(activeMessages[currentIndex].duration_seconds || activeMessages[currentIndex].duration || 0)}
-                  </div>
-                  <div className="flex items-center gap-1.5 detail-handwritten text-lg">
-                    <Phone size={15} strokeWidth={1.5} style={{ color: '#8B9B8E' }} />
-                    {activeMessages[currentIndex].caller_number || 'Unknown'}
-                  </div>
-                </div>
-
-                {/* Tags */}
-                {activeMessages[currentIndex].tags && activeMessages[currentIndex].tags!.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {activeMessages[currentIndex].tags!.map(tag => (
-                      <span
+              {/* Tags (inline edit or display) */}
+              {showTags ? (
+                <div className="mb-4 p-3 rounded-lg" style={{ background: 'rgba(245,240,232,0.7)' }} onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+                  <div className="flex flex-wrap gap-1.5">
+                    {AVAILABLE_TAGS.map(tag => (
+                      <button
                         key={tag}
-                        className="detail-handwritten text-base px-3 py-0.5 rounded-full"
+                        onClick={() => onToggleTag(msg.id, tag)}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium transition"
                         style={{
-                          background: 'rgba(61,90,76,0.08)',
-                          color: '#3D5A4C',
-                          border: '1px solid rgba(61,90,76,0.12)',
+                          background: (msg.tags || []).includes(tag) ? '#3D5A4C' : 'white',
+                          color: (msg.tags || []).includes(tag) ? 'white' : '#6E7D71',
+                          border: '1px solid',
+                          borderColor: (msg.tags || []).includes(tag) ? '#3D5A4C' : '#e8ece9'
                         }}
                       >
                         {tag}
-                      </span>
+                      </button>
                     ))}
                   </div>
-                )}
-
-                {/* Spacer */}
-                <div className="flex-1" />
-
-                {/* Play button */}
-                <div className="flex items-center justify-center">
-                  <button
-                    className="play-ring flex items-center justify-center rounded-full"
-                    style={{
-                      width: '56px',
-                      height: '56px',
-                      background: 'linear-gradient(135deg, #3D5A4C 0%, #4a6d5b 100%)',
-                      boxShadow: '0 2px 12px rgba(61,90,76,0.2)',
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onPlay(activeMessages[currentIndex].id, activeMessages[currentIndex].recording_url)
-                    }}
-                    onPointerDown={(e) => e.stopPropagation()}
-                  >
-                    {currentlyPlaying === activeMessages[currentIndex].id ? (
-                      <Pause size={22} fill="white" stroke="white" />
-                    ) : (
-                      <Play size={22} fill="white" stroke="white" style={{ marginLeft: '2px' }} />
-                    )}
+                  <button onClick={() => setShowTags(false)} className="mt-2 text-xs font-medium" style={{ color: '#3D5A4C' }}>
+                    Done
                   </button>
                 </div>
+              ) : msg.tags && msg.tags.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {msg.tags.map(tag => (
+                    <span key={tag} className="card-detail text-sm px-3 py-0.5 rounded-full" style={{ background: 'rgba(61,90,76,0.06)', border: '1px solid rgba(61,90,76,0.1)' }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+
+              {/* Duration */}
+              <div className="flex items-center gap-1.5 card-detail text-lg mb-4">
+                <Clock size={15} strokeWidth={1.5} style={{ color: '#8B9B8E' }} />
+                {formatDuration(duration)}
+              </div>
+
+              {/* Notes */}
+              {msg.notes && (
+                <p className="card-detail text-base mb-4 px-3 py-2 rounded-lg" style={{ background: 'rgba(245,240,232,0.5)' }}>
+                  {msg.notes}
+                </p>
+              )}
+
+              {/* Play + progress */}
+              <div className="flex items-center gap-3">
+                <button
+                  className="card-play flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
+                  style={{
+                    background: isPlaying ? '#D4A5A5' : 'linear-gradient(135deg, #3D5A4C 0%, #4a6d5b 100%)',
+                    boxShadow: '0 2px 12px rgba(61,90,76,0.2)',
+                  }}
+                  onClick={(e) => { e.stopPropagation(); onPlay(msg.id, msg.recording_url) }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
+                  {isPlaying ? <Pause size={20} fill="white" stroke="white" /> : <Play size={20} fill="white" stroke="white" style={{ marginLeft: '2px' }} />}
+                </button>
+                <div className="flex-1">
+                  <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(200,185,155,0.25)' }}>
+                    <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: isPlaying ? '#D4A5A5' : '#3D5A4C' }}></div>
+                  </div>
+                </div>
+                <span className="text-xs font-mono" style={{ color: '#8B9B8E' }}>{formatDuration(duration)}</span>
+              </div>
+
+              {/* Bottom actions */}
+              <div className="flex items-center justify-end gap-1 mt-4 pt-3" style={{ borderTop: '1px solid rgba(200,185,155,0.2)' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onDownload(msg.recording_url, msg.caller_name) }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="p-2 rounded-lg hover:bg-black/5 transition"
+                  title="Download"
+                >
+                  <Download size={16} style={{ color: '#999' }} />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onShare(msg.recording_url, msg.caller_name) }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="p-2 rounded-lg hover:bg-black/5 transition"
+                  title="Share"
+                >
+                  <Share2 size={16} style={{ color: '#999' }} />
+                </button>
               </div>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-center gap-6 mt-6">
+        <div className="flex items-center justify-center gap-6 mt-5">
           <button
             onClick={goPrev}
-            disabled={currentIndex === 0 || isAnimating}
+            disabled={currentIndex <= 0 || isAnimating}
             className="p-2.5 rounded-full transition-all"
             style={{
-              background: currentIndex === 0 ? 'transparent' : 'rgba(61,90,76,0.08)',
-              color: currentIndex === 0 ? '#c4c4c4' : '#3D5A4C',
-              opacity: currentIndex === 0 ? 0.4 : 1,
+              background: currentIndex <= 0 ? 'transparent' : 'rgba(61,90,76,0.08)',
+              color: currentIndex <= 0 ? '#c4c4c4' : '#3D5A4C',
+              opacity: currentIndex <= 0 ? 0.4 : 1,
             }}
           >
             <SkipBack size={20} />
           </button>
 
-          {/* Dot indicators (show max 7) */}
           <div className="flex items-center gap-1.5">
-            {activeMessages.map((_, i) => {
-              // Only show dots near current
-              const dist = Math.abs(i - currentIndex)
-              if (dist > 3 && i !== 0 && i !== activeMessages.length - 1) return null
-              if (dist === 3 && i !== 0 && i !== activeMessages.length - 1) {
+            {messages.map((_, i) => {
+              const dist = Math.abs(i - safeIndex)
+              if (dist > 3 && i !== 0 && i !== messages.length - 1) return null
+              if (dist === 3 && i !== 0 && i !== messages.length - 1) {
                 return <span key={i} className="text-xs" style={{ color: '#c4c4c4' }}>·</span>
               }
-
               return (
                 <div
                   key={i}
-                  className="rounded-full transition-all duration-300"
+                  className="rounded-full transition-all duration-300 cursor-pointer"
                   style={{
-                    width: i === currentIndex ? '20px' : '6px',
+                    width: i === safeIndex ? '20px' : '6px',
                     height: '6px',
-                    background: i === currentIndex
-                      ? '#3D5A4C'
-                      : 'rgba(61,90,76,0.2)',
-                    cursor: 'pointer',
+                    background: i === safeIndex ? '#3D5A4C' : 'rgba(61,90,76,0.2)',
                   }}
-                  onClick={() => {
-                    if (!isAnimating) setCurrentIndex(i)
-                  }}
+                  onClick={() => { if (!isAnimating) { setCurrentIndex(i); setShowMenu(false); setShowTags(false); setEditingName(false) } }}
                 />
               )
             })}
@@ -449,20 +555,19 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
 
           <button
             onClick={goNext}
-            disabled={currentIndex >= activeMessages.length - 1 || isAnimating}
+            disabled={currentIndex >= messages.length - 1 || isAnimating}
             className="p-2.5 rounded-full transition-all"
             style={{
-              background: currentIndex >= activeMessages.length - 1 ? 'transparent' : 'rgba(61,90,76,0.08)',
-              color: currentIndex >= activeMessages.length - 1 ? '#c4c4c4' : '#3D5A4C',
-              opacity: currentIndex >= activeMessages.length - 1 ? 0.4 : 1,
+              background: currentIndex >= messages.length - 1 ? 'transparent' : 'rgba(61,90,76,0.08)',
+              color: currentIndex >= messages.length - 1 ? '#c4c4c4' : '#3D5A4C',
+              opacity: currentIndex >= messages.length - 1 ? 0.4 : 1,
             }}
           >
             <SkipForward size={20} />
           </button>
         </div>
 
-        {/* Swipe hint */}
-        <p className="text-center mt-3 text-xs" style={{ color: '#b0a898' }}>
+        <p className="text-center mt-2 text-xs" style={{ color: '#b0a898' }}>
           Swipe or use arrows to browse
         </p>
       </div>
