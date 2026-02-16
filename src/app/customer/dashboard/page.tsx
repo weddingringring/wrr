@@ -514,6 +514,11 @@ export default function CustomerDashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ background: '#FFEFEF' }}>
+      {/* Google Font for title */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=Oooh+Baby&display=swap" rel="stylesheet" />
+
       {/* Hidden file input for photo upload */}
       <input
         ref={photoInputRef}
@@ -603,7 +608,7 @@ export default function CustomerDashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-6 text-center">
-          <h1 className="font-serif text-2xl sm:text-4xl" style={{ color: '#1a1a1a' }}>
+          <h1 className="text-4xl sm:text-6xl" style={{ fontFamily: "'Oooh Baby', cursive", color: '#1a1a1a' }}>
             {getGuestbookTitle()}
           </h1>
           <p className="text-sage-dark mt-1">
