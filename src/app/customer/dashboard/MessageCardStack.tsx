@@ -81,15 +81,15 @@ export default function MessageCardStack({
 
   const getCardRotation = useCallback((index: number) => {
     const seed = index * 2654435761
-    return ((seed % 1000) - 500) / 100 // ±5 degrees
+    return ((seed % 1000) - 500) / 100
   }, [])
 
   const getCardOffset = useCallback((index: number) => {
     const seed = index * 1597334677
     const seed2 = index * 2246822519
     return {
-      x: ((seed % 1200) - 600) / 100,  // ±6px
-      y: ((seed2 % 800) - 400) / 100,  // ±4px
+      x: ((seed % 1200) - 600) / 100,
+      y: ((seed2 % 800) - 400) / 100,
     }
   }, [])
 
@@ -174,10 +174,77 @@ export default function MessageCardStack({
     })
   }
 
-  const getPhotoUrl = (msg: Message): string | null => {
-    if (!msg.guest_photo_url) return null
-    if (msg.guest_photo_url.startsWith('http')) return msg.guest_photo_url
-    return photoSignedUrls[msg.id] || null
+  const getPhotoUrl = (m: Message): string | null => {
+    if (!m.guest_photo_url) return null
+    if (m.guest_photo_url.startsWith('http')) return m.guest_photo_url
+    return photoSignedUrls[m.id] || null
+  }
+
+  // Static card content for pile cards (no interactivity)
+  const renderStaticContent = (m: Message) => {
+    const photo = getPhotoUrl(m)
+    const dur = m.duration_seconds || m.duration || 0
+    const f = m.is_favorite || m.is_favorited || false
+    return (
+      <div className="relative z-10 p-5">
+        <div className="mb-4">
+          {photo ? (
+            <div className="photo-frame">
+              <div style={{ aspectRatio: '4/3', overflow: 'hidden', borderRadius: '2px' }}>
+                <img src={photo} alt={m.caller_name || 'Guest'} className="w-full h-full object-cover" />
+              </div>
+            </div>
+          ) : (
+            <div className="photo-frame">
+              <div className="flex flex-col items-center justify-center gap-2" style={{ aspectRatio: '4/3', background: '#f0ece4', borderRadius: '2px' }}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.05)' }}>
+                  <ImageIcon size={22} style={{ color: '#999' }} />
+                </div>
+                <span className="text-xs font-medium" style={{ color: '#999' }}>Tap to add photo</span>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="card-name text-2xl sm:text-3xl leading-tight truncate mb-1">
+          {m.caller_name || <span className="italic text-lg" style={{ fontFamily: 'inherit', color: '#aaa' }}>Unknown guest</span>}
+        </div>
+        <div className="flex items-center gap-2 mb-3 text-sm" style={{ color: '#777' }}>
+          <span>{formatDate(m.recorded_at || m.created_at)}</span>
+          <span style={{ color: '#ccc' }}>&middot;</span>
+          <span className="flex items-center gap-1">
+            <Clock size={13} strokeWidth={1.5} style={{ color: '#999' }} />
+            {formatDuration(dur)}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%)' }}>
+            <Play size={20} fill="white" stroke="white" style={{ marginLeft: '2px' }} />
+          </div>
+          <div className="flex-1">
+            <div className="w-full h-1.5 rounded-full" style={{ background: 'rgba(0,0,0,0.08)' }}></div>
+          </div>
+          <span className="text-xs font-mono" style={{ color: '#999' }}>{formatDuration(dur)}</span>
+        </div>
+        <div className="my-3" style={{ height: '1px', background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.08) 20%, rgba(0,0,0,0.08) 80%, transparent 100%)' }} />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <div className="p-1"><Heart size={18} fill={f ? '#C08585' : 'none'} stroke={f ? '#C08585' : '#bbb'} strokeWidth={1.5} /></div>
+            <div className="p-1"><Tag size={15} style={{ color: '#999' }} /></div>
+            {m.tags && m.tags.length > 0 && (
+              <div className="flex items-center gap-1 overflow-hidden">
+                {m.tags.map(tag => (
+                  <span key={tag} className="text-xs px-2.5 py-0.5 rounded-full whitespace-nowrap" style={{ background: 'rgba(0,0,0,0.05)', color: '#666', border: '1px solid rgba(0,0,0,0.08)' }}>{tag}</span>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="p-2"><Download size={16} style={{ color: '#999' }} /></div>
+            <div className="p-2"><Share2 size={16} style={{ color: '#999' }} /></div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (messages.length === 0) return null
@@ -203,7 +270,6 @@ export default function MessageCardStack({
           box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.07), inset 0 0 60px rgba(255,252,240,0.5);
           position: relative;
         }
-        /* Laid paper fibre texture */
         .parchment-card::before {
           content: '';
           position: absolute;
@@ -216,7 +282,6 @@ export default function MessageCardStack({
           mix-blend-mode: multiply;
           pointer-events: none;
         }
-        /* Subtle edge border */
         .parchment-card::after {
           content: '';
           position: absolute;
@@ -224,9 +289,6 @@ export default function MessageCardStack({
           border-radius: inherit;
           border: 1px solid rgba(180, 165, 140, 0.25);
           pointer-events: none;
-        }
-        .card-pile {
-          box-shadow: 0 2px 4px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.05), 0 1px 0 rgba(180,165,140,0.15);
         }
         .card-name { font-family: 'Oooh Baby', cursive; color: #1a1a1a; }
         .photo-frame {
@@ -243,23 +305,27 @@ export default function MessageCardStack({
       <div style={{ overflowX: 'hidden', padding: '12px 0 0' }}>
         <div className="relative flex items-center justify-center" style={{ minHeight: '500px', perspective: '1000px' }}>
           <div className="relative w-full" style={{ maxWidth: '420px' }}>
-            {/* Pile behind */}
-            {[3, 2, 1].map(offset => {
+            {/* Pile cards with content - next 2 cards rendered underneath */}
+            {[2, 1].map(offset => {
               const idx = safeIndex + offset
               if (idx >= messages.length) return null
+              const pileMsg = messages[idx]
+              if (!pileMsg) return null
               const rot = getCardRotation(idx)
               const off = getCardOffset(idx)
               return (
                 <div
-                  key={`pile-${offset}`}
-                  className="absolute inset-0 parchment-card card-pile rounded-xl"
+                  key={`pile-${pileMsg.id}`}
+                  className="absolute inset-0 parchment-card rounded-xl overflow-hidden"
                   style={{
                     transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y}px)`,
                     zIndex: 10 - offset,
                     opacity: 1 - offset * 0.05,
                     transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
-                />
+                >
+                  {renderStaticContent(pileMsg)}
+                </div>
               )
             })}
 
@@ -285,16 +351,12 @@ export default function MessageCardStack({
               onPointerCancel={handlePointerUp}
             >
             <div className="relative z-10 p-5">
-              {/* Photo area - 4:3 with printed photo frame */}
+              {/* Photo area */}
               <div className="mb-4">
                 {photoUrl ? (
                   <div className="photo-frame">
                     <div style={{ aspectRatio: '4/3', overflow: 'hidden', borderRadius: '2px' }}>
-                      <img
-                        src={photoUrl}
-                        alt={msg.caller_name || 'Guest'}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={photoUrl} alt={msg.caller_name || 'Guest'} className="w-full h-full object-cover" />
                     </div>
                   </div>
                 ) : (
@@ -304,10 +366,7 @@ export default function MessageCardStack({
                     className="w-full transition-colors"
                   >
                     <div className="photo-frame">
-                      <div
-                        className="flex flex-col items-center justify-center gap-2"
-                        style={{ aspectRatio: '4/3', background: '#f0ece4', borderRadius: '2px' }}
-                      >
+                      <div className="flex flex-col items-center justify-center gap-2" style={{ aspectRatio: '4/3', background: '#f0ece4', borderRadius: '2px' }}>
                         <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.05)' }}>
                           <ImageIcon size={22} style={{ color: '#999' }} />
                         </div>
@@ -328,20 +387,14 @@ export default function MessageCardStack({
                         value={editNameValue}
                         onChange={(e) => setEditNameValue(e.target.value)}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter' && editNameValue.trim()) {
-                            onUpdateName(msg.id, editNameValue.trim())
-                            setEditingName(false)
-                          }
+                          if (e.key === 'Enter' && editNameValue.trim()) { onUpdateName(msg.id, editNameValue.trim()); setEditingName(false) }
                           if (e.key === 'Escape') setEditingName(false)
                         }}
                         className="text-2xl px-2 py-1 rounded border focus:outline-none focus:ring-2 w-full"
                         style={{ fontFamily: "'Oooh Baby', cursive", borderColor: '#ddd', color: '#1a1a1a' }}
                         autoFocus
                       />
-                      <button
-                        onClick={() => { if (editNameValue.trim()) { onUpdateName(msg.id, editNameValue.trim()); setEditingName(false) } }}
-                        className="p-1 rounded hover:bg-black/5"
-                      >
+                      <button onClick={() => { if (editNameValue.trim()) { onUpdateName(msg.id, editNameValue.trim()); setEditingName(false) } }} className="p-1 rounded hover:bg-black/5">
                         <Check size={14} style={{ color: '#333' }} />
                       </button>
                       <button onClick={() => setEditingName(false)} className="p-1 rounded hover:bg-black/5">
@@ -350,21 +403,14 @@ export default function MessageCardStack({
                     </div>
                   ) : (
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (filter !== 'trash') {
-                          setEditNameValue(msg.caller_name || '')
-                          setEditingName(true)
-                        }
-                      }}
+                      onClick={(e) => { e.stopPropagation(); if (filter !== 'trash') { setEditNameValue(msg.caller_name || ''); setEditingName(true) } }}
                       onPointerDown={(e) => e.stopPropagation()}
                       className="text-left w-full"
                     >
                       <div className="card-name text-2xl sm:text-3xl leading-tight truncate">
                         {msg.caller_name || (
                           <span className="italic text-lg flex items-center gap-1" style={{ fontFamily: 'inherit', color: '#aaa' }}>
-                            <User size={16} />
-                            Tap to add name
+                            <User size={16} /> Tap to add name
                           </span>
                         )}
                       </div>
@@ -373,55 +419,27 @@ export default function MessageCardStack({
                 </div>
 
                 {filter === 'trash' ? (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onRestore(msg.id) }}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition flex-shrink-0"
-                    style={{ color: '#333', background: 'rgba(0,0,0,0.06)' }}
-                  >
-                    <Undo2 size={14} />
-                    Restore
+                  <button onClick={(e) => { e.stopPropagation(); onRestore(msg.id) }} onPointerDown={(e) => e.stopPropagation()} className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition flex-shrink-0" style={{ color: '#333', background: 'rgba(0,0,0,0.06)' }}>
+                    <Undo2 size={14} /> Restore
                   </button>
                 ) : (
                   <div className="relative flex-shrink-0">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); setShowTags(false) }}
-                      onPointerDown={(e) => e.stopPropagation()}
-                      className="p-1.5 rounded-lg hover:bg-black/5 transition"
-                    >
+                    <button onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); setShowTags(false) }} onPointerDown={(e) => e.stopPropagation()} className="p-1.5 rounded-lg hover:bg-black/5 transition">
                       <MoreHorizontal size={18} style={{ color: '#999' }} />
                     </button>
                     {showMenu && (
                       <>
                         <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)}></div>
-                        <div
-                          className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20"
-                          style={{ border: '1px solid #e0e0e0', minWidth: '160px' }}
-                        >
-                          <button
-                            onClick={() => { onPhotoUpload(msg.id); setShowMenu(false) }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2"
-                            style={{ color: '#555' }}
-                          >
-                            <ImageIcon size={14} />
-                            {msg.guest_photo_url ? 'Change photo' : 'Add photo'}
+                        <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20" style={{ border: '1px solid #e0e0e0', minWidth: '160px' }}>
+                          <button onClick={() => { onPhotoUpload(msg.id); setShowMenu(false) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
+                            <ImageIcon size={14} /> {msg.guest_photo_url ? 'Change photo' : 'Add photo'}
                           </button>
-                          <button
-                            onClick={() => { onShare(msg.recording_url, msg.caller_name); setShowMenu(false) }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2"
-                            style={{ color: '#555' }}
-                          >
-                            <Share2 size={14} />
-                            Share
+                          <button onClick={() => { onShare(msg.recording_url, msg.caller_name); setShowMenu(false) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
+                            <Share2 size={14} /> Share
                           </button>
                           <div style={{ borderTop: '1px solid #eee', margin: '4px 0' }}></div>
-                          <button
-                            onClick={() => { onSoftDelete(msg.id); setShowMenu(false) }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 transition flex items-center gap-2"
-                            style={{ color: '#C08585' }}
-                          >
-                            <Trash2 size={14} />
-                            Delete
+                          <button onClick={() => { onSoftDelete(msg.id); setShowMenu(false) }} className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 transition flex items-center gap-2" style={{ color: '#C08585' }}>
+                            <Trash2 size={14} /> Delete
                           </button>
                         </div>
                       </>
@@ -442,19 +460,14 @@ export default function MessageCardStack({
 
               {/* Notes */}
               {msg.notes && (
-                <p className="text-sm mb-3 px-3 py-2 rounded-lg" style={{ background: 'rgba(0,0,0,0.03)', color: '#666' }}>
-                  {msg.notes}
-                </p>
+                <p className="text-sm mb-3 px-3 py-2 rounded-lg" style={{ background: 'rgba(0,0,0,0.03)', color: '#666' }}>{msg.notes}</p>
               )}
 
               {/* Play + progress */}
               <div className="flex items-center gap-3">
                 <button
                   className="card-play flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
-                  style={{
-                    background: isPlaying ? '#D4A5A5' : 'linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%)',
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
-                  }}
+                  style={{ background: isPlaying ? '#D4A5A5' : 'linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%)', boxShadow: '0 2px 12px rgba(0,0,0,0.15)' }}
                   onClick={(e) => { e.stopPropagation(); onPlay(msg.id, msg.recording_url) }}
                   onPointerDown={(e) => e.stopPropagation()}
                 >
@@ -469,70 +482,36 @@ export default function MessageCardStack({
               </div>
 
               {/* Divider */}
-              <div className="my-3" style={{
-                height: '1px',
-                background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.08) 20%, rgba(0,0,0,0.08) 80%, transparent 100%)',
-              }} />
+              <div className="my-3" style={{ height: '1px', background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.08) 20%, rgba(0,0,0,0.08) 80%, transparent 100%)' }} />
 
-              {/* Bottom bar: heart + tag icon + tags | download + share */}
+              {/* Bottom bar */}
               <div className="flex items-center justify-between">
                 {filter === 'trash' ? (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onRestore(msg.id) }}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    className="flex items-center gap-1.5 text-xs font-medium transition"
-                    style={{ color: '#333' }}
-                  >
-                    <Undo2 size={14} />
-                    Restore
+                  <button onClick={(e) => { e.stopPropagation(); onRestore(msg.id) }} onPointerDown={(e) => e.stopPropagation()} className="flex items-center gap-1.5 text-xs font-medium transition" style={{ color: '#333' }}>
+                    <Undo2 size={14} /> Restore
                   </button>
                 ) : (
                   <>
                     <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-hidden">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onToggleFavorite(msg.id, fav) }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        className="flex-shrink-0 p-1 rounded-lg hover:bg-black/5 transition"
-                      >
+                      <button onClick={(e) => { e.stopPropagation(); onToggleFavorite(msg.id, fav) }} onPointerDown={(e) => e.stopPropagation()} className="flex-shrink-0 p-1 rounded-lg hover:bg-black/5 transition">
                         <Heart size={18} fill={fav ? '#C08585' : 'none'} stroke={fav ? '#C08585' : '#bbb'} strokeWidth={1.5} />
                       </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setShowTags(!showTags); setShowMenu(false) }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        className="flex-shrink-0 p-1 rounded-lg hover:bg-black/5 transition"
-                        title="Edit tags"
-                      >
+                      <button onClick={(e) => { e.stopPropagation(); setShowTags(!showTags); setShowMenu(false) }} onPointerDown={(e) => e.stopPropagation()} className="flex-shrink-0 p-1 rounded-lg hover:bg-black/5 transition" title="Edit tags">
                         <Tag size={15} style={{ color: '#999' }} />
                       </button>
                       {msg.tags && msg.tags.length > 0 && !showTags && (
                         <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
                           {msg.tags.map(tag => (
-                            <span
-                              key={tag}
-                              className="text-xs px-2.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0"
-                              style={{ background: 'rgba(0,0,0,0.05)', color: '#666', border: '1px solid rgba(0,0,0,0.08)' }}
-                            >
-                              {tag}
-                            </span>
+                            <span key={tag} className="text-xs px-2.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0" style={{ background: 'rgba(0,0,0,0.05)', color: '#666', border: '1px solid rgba(0,0,0,0.08)' }}>{tag}</span>
                           ))}
                         </div>
                       )}
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onDownload(msg.recording_url, msg.caller_name) }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        className="p-2 rounded-lg hover:bg-black/5 transition"
-                        title="Download"
-                      >
+                      <button onClick={(e) => { e.stopPropagation(); onDownload(msg.recording_url, msg.caller_name) }} onPointerDown={(e) => e.stopPropagation()} className="p-2 rounded-lg hover:bg-black/5 transition" title="Download">
                         <Download size={16} style={{ color: '#999' }} />
                       </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onShare(msg.recording_url, msg.caller_name) }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        className="p-2 rounded-lg hover:bg-black/5 transition"
-                        title="Share"
-                      >
+                      <button onClick={(e) => { e.stopPropagation(); onShare(msg.recording_url, msg.caller_name) }} onPointerDown={(e) => e.stopPropagation()} className="p-2 rounded-lg hover:bg-black/5 transition" title="Share">
                         <Share2 size={16} style={{ color: '#999' }} />
                       </button>
                     </div>
@@ -545,24 +524,12 @@ export default function MessageCardStack({
                 <div className="mt-2 p-3 rounded-lg" style={{ background: 'rgba(0,0,0,0.04)' }} onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
                   <div className="flex flex-wrap gap-1.5">
                     {AVAILABLE_TAGS.map(tag => (
-                      <button
-                        key={tag}
-                        onClick={() => onToggleTag(msg.id, tag)}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium transition"
-                        style={{
-                          background: (msg.tags || []).includes(tag) ? '#333' : 'white',
-                          color: (msg.tags || []).includes(tag) ? 'white' : '#666',
-                          border: '1px solid',
-                          borderColor: (msg.tags || []).includes(tag) ? '#333' : '#ddd'
-                        }}
-                      >
-                        {tag}
-                      </button>
+                      <button key={tag} onClick={() => onToggleTag(msg.id, tag)} className="px-2.5 py-1 rounded-full text-xs font-medium transition"
+                        style={{ background: (msg.tags || []).includes(tag) ? '#333' : 'white', color: (msg.tags || []).includes(tag) ? 'white' : '#666', border: '1px solid', borderColor: (msg.tags || []).includes(tag) ? '#333' : '#ddd' }}
+                      >{tag}</button>
                     ))}
                   </div>
-                  <button onClick={() => setShowTags(false)} className="mt-2 text-xs font-medium" style={{ color: '#333' }}>
-                    Done
-                  </button>
+                  <button onClick={() => setShowTags(false)} className="mt-2 text-xs font-medium" style={{ color: '#333' }}>Done</button>
                 </div>
               )}
             </div>
@@ -576,11 +543,7 @@ export default function MessageCardStack({
             onClick={goPrev}
             disabled={currentIndex <= 0 || isAnimating}
             className="p-2.5 rounded-full transition-all"
-            style={{
-              background: currentIndex <= 0 ? 'transparent' : 'rgba(0,0,0,0.06)',
-              color: currentIndex <= 0 ? '#ccc' : '#333',
-              opacity: currentIndex <= 0 ? 0.4 : 1,
-            }}
+            style={{ background: currentIndex <= 0 ? 'transparent' : 'rgba(0,0,0,0.06)', color: currentIndex <= 0 ? '#ccc' : '#333', opacity: currentIndex <= 0 ? 0.4 : 1 }}
           >
             <SkipBack size={20} />
           </button>
@@ -596,11 +559,7 @@ export default function MessageCardStack({
                 <div
                   key={i}
                   className="rounded-full transition-all duration-300 cursor-pointer"
-                  style={{
-                    width: i === safeIndex ? '20px' : '6px',
-                    height: '6px',
-                    background: i === safeIndex ? '#333' : 'rgba(0,0,0,0.15)',
-                  }}
+                  style={{ width: i === safeIndex ? '20px' : '6px', height: '6px', background: i === safeIndex ? '#333' : 'rgba(0,0,0,0.15)' }}
                   onClick={() => { if (!isAnimating) { setCurrentIndex(i); setShowMenu(false); setShowTags(false); setEditingName(false) } }}
                 />
               )
@@ -611,11 +570,7 @@ export default function MessageCardStack({
             onClick={goNext}
             disabled={currentIndex >= messages.length - 1 || isAnimating}
             className="p-2.5 rounded-full transition-all"
-            style={{
-              background: currentIndex >= messages.length - 1 ? 'transparent' : 'rgba(0,0,0,0.06)',
-              color: currentIndex >= messages.length - 1 ? '#ccc' : '#333',
-              opacity: currentIndex >= messages.length - 1 ? 0.4 : 1,
-            }}
+            style={{ background: currentIndex >= messages.length - 1 ? 'transparent' : 'rgba(0,0,0,0.06)', color: currentIndex >= messages.length - 1 ? '#ccc' : '#333', opacity: currentIndex >= messages.length - 1 ? 0.4 : 1 }}
           >
             <SkipForward size={20} />
           </button>
