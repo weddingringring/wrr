@@ -81,14 +81,15 @@ export default function MessageCardStack({
 
   const getCardRotation = useCallback((index: number) => {
     const seed = index * 2654435761
-    return ((seed % 200) - 100) / 100 // ±1 degree max
+    return ((seed % 1000) - 500) / 100 // ±5 degrees
   }, [])
 
   const getCardOffset = useCallback((index: number) => {
     const seed = index * 1597334677
+    const seed2 = index * 2246822519
     return {
-      x: ((seed % 100) - 50) / 100, // ±0.5px
-      y: 0,
+      x: ((seed % 1200) - 600) / 100,  // ±6px
+      y: ((seed2 % 800) - 400) / 100,  // ±4px
     }
   }, [])
 
@@ -243,7 +244,7 @@ export default function MessageCardStack({
         <div className="relative flex items-center justify-center" style={{ minHeight: '480px', perspective: '1000px' }}>
           <div className="relative w-full" style={{ maxWidth: '420px' }}>
             {/* Pile behind */}
-            {[2, 1].map(offset => {
+            {[3, 2, 1].map(offset => {
               const idx = safeIndex + offset
               if (idx >= messages.length) return null
               const rot = getCardRotation(idx)
@@ -253,9 +254,9 @@ export default function MessageCardStack({
                   key={`pile-${offset}`}
                   className="absolute inset-0 parchment-card card-pile rounded-xl"
                   style={{
-                    transform: `rotate(${rot}deg) translate(${off.x}px, ${offset * 1}px) scale(${1 - offset * 0.005})`,
+                    transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y}px)`,
                     zIndex: 10 - offset,
-                    opacity: 1 - offset * 0.08,
+                    opacity: 1 - offset * 0.05,
                     transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 />
@@ -272,7 +273,7 @@ export default function MessageCardStack({
                   ? 'translateX(-120%) rotate(-15deg)'
                   : exitDirection === 'right'
                     ? 'translateX(120%) rotate(15deg)'
-                    : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05}deg)`,
+                    : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05 + getCardRotation(safeIndex) * 0.3}deg)`,
                 transition: isDragging ? 'none' : 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                 opacity: exitDirection ? 0 : 1,
                 touchAction: 'none',
