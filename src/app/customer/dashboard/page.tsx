@@ -494,7 +494,10 @@ export default function CustomerDashboardPage() {
     const p2First = event.partner_2_first_name || event.partner_2_name?.split(' ')[0] || ''
     const eventType = (event.event_type || 'event').charAt(0).toUpperCase() + (event.event_type || 'event').slice(1)
     const names = p2First ? `${p1First} & ${p2First}` : p1First
-    return names ? `${names}'s ${eventType} Guestbook` : `${eventType} Guestbook`
+    return {
+      names: names ? `${names}'s` : '',
+      subtitle: `${eventType} Guestbook`,
+    }
   }
 
   const activeMessageCount = messages.filter(m => !m.is_deleted).length
@@ -608,10 +611,18 @@ export default function CustomerDashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-6 text-center">
-          <h1 className="text-4xl sm:text-6xl" style={{ fontFamily: "'Oooh Baby', cursive", color: '#1a1a1a' }}>
-            {getGuestbookTitle()}
-          </h1>
-          <p className="text-sage-dark mt-1">
+          {(() => {
+            const title = getGuestbookTitle()
+            return (
+              <h1 style={{ fontFamily: "'Oooh Baby', cursive", color: '#1a1a1a' }}>
+                {title.names && (
+                  <span className="block text-5xl sm:text-8xl leading-tight">{title.names}</span>
+                )}
+                <span className="block text-2xl sm:text-4xl mt-1" style={{ color: '#4a4a4a' }}>{title.subtitle}</span>
+              </h1>
+            )
+          })()}
+          <p className="text-sage-dark mt-2">
             {activeMessageCount} message{activeMessageCount !== 1 ? 's' : ''} from your special day
           </p>
         </div>
