@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+
+async function getAuthUser() {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set() {},
+        remove() {},
+      },
+    }
+  )
+  return supabase.auth.getUser()
+}
 
 export async function POST(
   request: NextRequest,
@@ -9,14 +28,17 @@ export async function POST(
   try {
     const eventId = params.id
     
-    // Create Supabase client with user's session (respects RLS)
-    const supabase = await createClient()
-    
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    // Get authenticated user from cookies
+    const { data: { user }, error: authError } = await getAuthUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    
+    // Use service role for all DB operations
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
     
     const formData = await request.formData()
     const file = formData.get('greeting') as File
@@ -41,7 +63,7 @@ export async function POST(
     }
     
     // Get event to verify it exists and user owns it
-    const { data: event, error: eventError } = await supabase
+    const { data: event, error: eventError } = await supabaseAdmin
       .from('events')
       .select('id, customer_user_id, greeting_audio_url')
       .eq('id', eventId)
@@ -55,12 +77,6 @@ export async function POST(
     if (event.customer_user_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
-    
-    // Need service role for storage operations
-    const supabaseAdmin = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
     
     // Delete old greeting if exists
     if (event.greeting_audio_url) {
@@ -97,7 +113,7 @@ export async function POST(
       .getPublicUrl(fileName)
     
     // Update event with new greeting URL
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('events')
       .update({
         greeting_audio_url: urlData.publicUrl,
@@ -133,17 +149,20 @@ export async function DELETE(
   try {
     const eventId = params.id
     
-    // Create Supabase client with user's session (respects RLS)
-    const supabase = await createClient()
-    
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    // Get authenticated user from cookies
+    const { data: { user }, error: authError } = await getAuthUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
+    // Use service role for all DB operations
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+    
     // Get event
-    const { data: event, error: eventError } = await supabase
+    const { data: event, error: eventError } = await supabaseAdmin
       .from('events')
       .select('id, customer_user_id, greeting_audio_url')
       .eq('id', eventId)
@@ -158,12 +177,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
     
-    // Need service role for storage operations
-    const supabaseAdmin = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
-    
     // Delete file from storage if exists
     if (event.greeting_audio_url) {
       const urlParts = event.greeting_audio_url.split('/event-greetings/')
@@ -175,7 +188,7 @@ export async function DELETE(
     }
     
     // Remove greeting URL from event (revert to auto-generated)
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('events')
       .update({
         greeting_audio_url: null,
