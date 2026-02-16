@@ -748,16 +748,6 @@ export default function CustomerDashboardPage() {
               {/* View toggle */}
               <div className="flex items-center rounded-lg overflow-hidden" style={{ border: '1px solid #e8ece9' }}>
                 <button
-                  onClick={() => setViewMode('tiles')}
-                  className="p-2 transition"
-                  style={{
-                    background: viewMode === 'tiles' ? '#3D5A4C' : 'white',
-                    color: viewMode === 'tiles' ? 'white' : '#8B9B8E',
-                  }}
-                >
-                  <LayoutGrid size={16} strokeWidth={1.5} />
-                </button>
-                <button
                   onClick={() => setViewMode('cards')}
                   className="p-2 transition"
                   style={{
@@ -766,6 +756,16 @@ export default function CustomerDashboardPage() {
                   }}
                 >
                   <Layers size={16} strokeWidth={1.5} />
+                </button>
+                <button
+                  onClick={() => setViewMode('tiles')}
+                  className="p-2 transition"
+                  style={{
+                    background: viewMode === 'tiles' ? '#3D5A4C' : 'white',
+                    color: viewMode === 'tiles' ? 'white' : '#8B9B8E',
+                  }}
+                >
+                  <LayoutGrid size={16} strokeWidth={1.5} />
                 </button>
               </div>
 
@@ -943,20 +943,20 @@ export default function CustomerDashboardPage() {
                   {/* View toggle */}
                   <div className="flex items-center rounded-lg overflow-hidden" style={{ border: '1px solid #e8ece9' }}>
                     <button
-                      onClick={() => setViewMode('tiles')}
-                      className="p-2 transition"
-                      style={{ background: viewMode === 'tiles' ? '#3D5A4C' : 'white', color: viewMode === 'tiles' ? 'white' : '#8B9B8E' }}
-                      title="Grid view"
-                    >
-                      <LayoutGrid size={16} strokeWidth={1.5} />
-                    </button>
-                    <button
                       onClick={() => setViewMode('cards')}
                       className="p-2 transition"
                       style={{ background: viewMode === 'cards' ? '#3D5A4C' : 'white', color: viewMode === 'cards' ? 'white' : '#8B9B8E' }}
                       title="Card view"
                     >
                       <Layers size={16} strokeWidth={1.5} />
+                    </button>
+                    <button
+                      onClick={() => setViewMode('tiles')}
+                      className="p-2 transition"
+                      style={{ background: viewMode === 'tiles' ? '#3D5A4C' : 'white', color: viewMode === 'tiles' ? 'white' : '#8B9B8E' }}
+                      title="Grid view"
+                    >
+                      <LayoutGrid size={16} strokeWidth={1.5} />
                     </button>
                   </div>
 
