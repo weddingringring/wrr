@@ -351,7 +351,6 @@ export default function MessageCardStack({
                     transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y}px)`,
                     zIndex: 10 - Math.abs(offset),
                     opacity: 1 - Math.abs(offset) * 0.05,
-                    transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
                   {renderStaticContent(pileMsg)}
@@ -374,9 +373,9 @@ export default function MessageCardStack({
                       ? 'translateX(-120%) rotate(-12deg)'
                       : enterFrom === 'right'
                         ? 'translateX(120%) rotate(12deg)'
-                        : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05 + getCardRotation(safeIndex) * 0.3}deg)`,
+                        : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05 + getCardRotation(safeIndex)}deg)`,
                 transition: (isDragging || skipTransition) ? 'none' : 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-                opacity: exitDirection ? 0 : 1,
+                opacity: 1,
                 touchAction: 'none',
                 cursor: editingName || showMenu || showTags ? 'default' : 'grab',
               }}
