@@ -98,6 +98,24 @@ export default function CustomerDashboardPage() {
     }
   }
 
+  // Helper to update messages via API (bypasses RLS)
+  const updateMessage = async (messageId: string, updates: Record<string, any>) => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/customer/messages', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || ''}`
+      },
+      body: JSON.stringify({ messageId, updates })
+    })
+    if (!res.ok) {
+      const data = await res.json()
+      throw new Error(data.error || 'Failed to update message')
+    }
+    return res.json()
+  }
+
   useEffect(() => {
     if (typeof Audio !== 'undefined') {
       audioRef.current = new Audio()
@@ -272,12 +290,7 @@ export default function CustomerDashboardPage() {
 
   const handleToggleFavorite = async (messageId: string, currentStatus: boolean) => {
     try {
-      const { error } = await supabase
-        .from('messages')
-        .update({ is_favorite: !currentStatus })
-        .eq('id', messageId)
-
-      if (error) throw error
+      await updateMessage(messageId, { is_favorite: !currentStatus })
 
       setMessages(messages.map(m =>
         m.id === messageId ? { ...m, is_favorite: !currentStatus, is_favorited: !currentStatus } : m
@@ -289,12 +302,7 @@ export default function CustomerDashboardPage() {
 
   const handleSoftDelete = async (messageId: string) => {
     try {
-      const { error } = await supabase
-        .from('messages')
-        .update({ is_deleted: true })
-        .eq('id', messageId)
-
-      if (error) throw error
+      await updateMessage(messageId, { is_deleted: true, deleted_at: new Date().toISOString() })
 
       setMessages(messages.map(m =>
         m.id === messageId ? { ...m, is_deleted: true } : m
@@ -307,12 +315,7 @@ export default function CustomerDashboardPage() {
 
   const handleRestore = async (messageId: string) => {
     try {
-      const { error } = await supabase
-        .from('messages')
-        .update({ is_deleted: false })
-        .eq('id', messageId)
-
-      if (error) throw error
+      await updateMessage(messageId, { is_deleted: false, deleted_at: null })
 
       setMessages(messages.map(m =>
         m.id === messageId ? { ...m, is_deleted: false } : m
@@ -329,12 +332,7 @@ export default function CustomerDashboardPage() {
     }
 
     try {
-      const { error } = await supabase
-        .from('messages')
-        .update({ guest_name: editNameValue.trim() })
-        .eq('id', messageId)
-
-      if (error) throw error
+      await updateMessage(messageId, { guest_name: editNameValue.trim() })
 
       setMessages(messages.map(m =>
         m.id === messageId ? { ...m, guest_name: editNameValue.trim() } : m
@@ -355,12 +353,7 @@ export default function CustomerDashboardPage() {
       : [...currentTags, tag]
 
     try {
-      const { error } = await supabase
-        .from('messages')
-        .update({ tags: newTags })
-        .eq('id', messageId)
-
-      if (error) throw error
+      await updateMessage(messageId, { tags: newTags })
 
       setMessages(messages.map(m =>
         m.id === messageId ? { ...m, tags: newTags } : m
@@ -401,12 +394,7 @@ export default function CustomerDashboardPage() {
         .from('message-photos')
         .getPublicUrl(fileName)
 
-      const { error: updateError } = await supabase
-        .from('messages')
-        .update({ photo_url: urlData.publicUrl })
-        .eq('id', messageId)
-
-      if (updateError) throw updateError
+      await updateMessage(messageId, { photo_url: urlData.publicUrl })
 
       setMessages(messages.map(m =>
         m.id === messageId ? { ...m, photo_url: urlData.publicUrl } : m
