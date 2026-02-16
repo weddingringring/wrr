@@ -304,7 +304,7 @@ export default function MessageCardStack({
 
       <div style={{ overflowX: 'hidden', padding: '12px 0 0' }}>
         <div className="relative flex items-center justify-center" style={{ minHeight: '500px', perspective: '1000px' }}>
-          <div className="relative w-full" style={{ maxWidth: '420px' }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
             {/* Pile cards with content - next 2 cards rendered underneath */}
             {[2, 1].map(offset => {
               const idx = safeIndex + offset
@@ -316,8 +316,14 @@ export default function MessageCardStack({
               return (
                 <div
                   key={`pile-${pileMsg.id}`}
-                  className="absolute inset-0 parchment-card rounded-xl overflow-hidden"
+                  className="parchment-card rounded-xl"
                   style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    overflow: 'hidden',
                     transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y}px)`,
                     zIndex: 10 - offset,
                     opacity: 1 - offset * 0.05,
@@ -331,8 +337,9 @@ export default function MessageCardStack({
 
             {/* Active card */}
             <div
-              className="relative parchment-card rounded-xl select-none"
+              className="parchment-card rounded-xl select-none"
               style={{
+                position: 'relative',
                 width: '100%',
                 zIndex: 20,
                 transform: exitDirection === 'left'
