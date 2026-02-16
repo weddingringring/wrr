@@ -110,6 +110,32 @@ export async function POST(request: NextRequest) {
       ? `${partner2FirstName} ${partner2LastName}`.trim() 
       : null
 
+    // Auto-generate greeting text using first names only
+    let greetingText = ''
+    if (eventTypeFinal === 'wedding') {
+      const names = partner2FirstName 
+        ? `${partner1FirstName} and ${partner2FirstName}`
+        : partner1FirstName
+      greetingText = `Welcome to ${names}'s wedding. Please leave a message after the beep.`
+    } else if (eventTypeFinal === 'birthday') {
+      const ageStr = age ? `${age}th ` : ''
+      greetingText = `Welcome to ${partner1FirstName}'s ${ageStr}birthday. Please leave a message after the beep.`
+    } else if (eventTypeFinal === 'anniversary') {
+      const yearsStr = yearsTogether ? `${yearsTogether} year ` : ''
+      const names = partner2FirstName
+        ? `${partner1FirstName} and ${partner2FirstName}`
+        : partner1FirstName
+      greetingText = `Welcome to ${names}'s ${yearsStr}anniversary. Please leave a message after the beep.`
+    } else if (eventTypeFinal === 'christening') {
+      greetingText = `Welcome to ${partner1FirstName}'s christening. Please leave a message after the beep.`
+    } else if (eventTypeFinal === 'corporate') {
+      const company = companyName ? `${companyName} ` : ''
+      greetingText = `Welcome to ${company}event. Please leave a message after the beep.`
+    } else {
+      const eventName = eventTypeOther || eventTypeFinal
+      greetingText = `Welcome to ${partner1FirstName}'s ${eventName}. Please leave a message after the beep.`
+    }
+
     // Create event
     const { data: eventData, error: eventError } = await supabaseAdmin
       .from('events')
@@ -131,6 +157,7 @@ export async function POST(request: NextRequest) {
         expected_guest_count: expectedGuestCount ? parseInt(expectedGuestCount) : null,
         special_requirements: specialRequirements || null,
         notes: notes || null,
+        greeting_text: greetingText,
         status: 'active'
       })
       .select()
@@ -189,7 +216,7 @@ export async function POST(request: NextRequest) {
         partner_2_last_name: partner2LastName || null,
         event_type: eventTypeFinal,
         event_date: eventDate,
-        greeting_text: '',
+        greeting_text: greetingText,
         customer: {
           id: authData.user.id,
           first_name: partner1FirstName,
