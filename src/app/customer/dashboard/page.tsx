@@ -50,6 +50,8 @@ export default function CustomerDashboardPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [showSortMenu, setShowSortMenu] = useState(false)
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const [desktopSearchOpen, setDesktopSearchOpen] = useState(false)
+  const [desktopSearchOpen, setDesktopSearchOpen] = useState(false)
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
   const [playbackProgress, setPlaybackProgress] = useState<Record<string, number>>({})
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -493,7 +495,7 @@ export default function CustomerDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#FFEFEF' }}>
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-deep-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-sage-dark">Loading your messages...</p>
@@ -503,7 +505,7 @@ export default function CustomerDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen" style={{ background: '#FFEFEF' }}>
       {/* Hidden file input for photo upload */}
       <input
         ref={photoInputRef}
@@ -850,25 +852,42 @@ export default function CustomerDashboardPage() {
                       Download All
                     </button>
                   )}
-                </div>
-              </div>
 
-              {/* Desktop search */}
-              <div className="mt-3 relative">
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
-                <input
-                  type="text"
-                  placeholder="Search by name or notes..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-10 py-2.5 rounded-lg text-sm border focus:outline-none focus:ring-2 transition"
-                  style={{ borderColor: '#e8ece9', color: '#1a1a1a' }}
-                />
-                {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <X size={16} className="text-sage" />
-                  </button>
-                )}
+                  {/* Inline search */}
+                  <div className="relative flex items-center">
+                    {desktopSearchOpen ? (
+                      <div className="flex items-center gap-1.5 border rounded-lg px-3 py-1.5 transition-all" style={{ borderColor: '#3D5A4C', minWidth: '220px' }}>
+                        <Search size={15} style={{ color: '#8B9B8E', flexShrink: 0 }} />
+                        <input
+                          type="text"
+                          placeholder="Search..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="text-sm focus:outline-none bg-transparent w-full"
+                          style={{ color: '#1a1a1a' }}
+                          autoFocus
+                        />
+                        <button
+                          onClick={() => { setSearchQuery(''); setDesktopSearchOpen(false) }}
+                          className="flex-shrink-0"
+                        >
+                          <X size={14} style={{ color: '#8B9B8E' }} />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setDesktopSearchOpen(true)}
+                        className="relative p-2 rounded-lg border transition hover:bg-sage-light/10"
+                        style={{ borderColor: searchQuery ? '#3D5A4C' : '#e8ece9', color: searchQuery ? '#3D5A4C' : '#6E7D71' }}
+                      >
+                        <Search size={16} />
+                        {searchQuery && (
+                          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full" style={{ background: '#D4A5A5' }} />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Desktop tags */}
