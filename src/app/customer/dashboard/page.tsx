@@ -404,23 +404,24 @@ export default function CustomerDashboardPage() {
     setPhotoUploading(messageId)
 
     try {
-      const ext = file.name.split('.').pop()
-      const fileName = `${messageId}.${ext}`
+      const { data: { session } } = await supabase.auth.getSession()
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('messageId', messageId)
 
-      const { error: uploadError } = await supabase.storage
-        .from('message-photos')
-        .upload(fileName, file, { upsert: true })
+      const res = await fetch('/api/messages/upload-photo', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session?.access_token}`
+        },
+        body: formData
+      })
 
-      if (uploadError) throw uploadError
-
-      const { data: urlData } = supabase.storage
-        .from('message-photos')
-        .getPublicUrl(fileName)
-
-      await updateMessage(messageId, { guest_photo_url: urlData.publicUrl })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Upload failed')
 
       setMessages(messages.map(m =>
-        m.id === messageId ? { ...m, guest_photo_url: urlData.publicUrl } : m
+        m.id === messageId ? { ...m, guest_photo_url: result.guest_photo_url } : m
       ))
     } catch (error) {
       console.error('Error uploading photo:', error)
