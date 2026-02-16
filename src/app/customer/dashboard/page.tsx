@@ -1086,19 +1086,32 @@ export default function CustomerDashboardPage() {
                   className="bg-white rounded-xl shadow-sm overflow-hidden transition-all hover:shadow-md group flex flex-col"
                   style={{ border: '1px solid #e8ece9' }}
                 >
-                  {/* Photo area */}
-                  {message.guest_photo_url ? (
-                    <div className="relative h-40 overflow-hidden flex-shrink-0">
-                      <img
-                        src={message.guest_photo_url}
-                        alt={name || 'Guest photo'}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0" style={{
-                        background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%)'
-                      }}></div>
-                    </div>
-                  ) : null}
+                  {/* Photo area - always shown */}
+                  <div className="relative h-40 overflow-hidden flex-shrink-0">
+                    {message.guest_photo_url ? (
+                      <>
+                        <img
+                          src={message.guest_photo_url}
+                          alt={name || 'Guest photo'}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0" style={{
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%)'
+                        }}></div>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => { if (filter !== 'trash') { photoMessageRef.current = message.id; photoInputRef.current?.click() } }}
+                        className="w-full h-full flex flex-col items-center justify-center gap-2 transition-colors"
+                        style={{ background: '#f5f0e8' }}
+                      >
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(61,90,76,0.1)' }}>
+                          <ImageIcon size={22} style={{ color: '#8B9B8E' }} />
+                        </div>
+                        <span className="text-xs font-medium" style={{ color: '#8B9B8E' }}>Tap to add photo</span>
+                      </button>
+                    )}
+                  </div>
 
                   <div className="p-4 flex flex-col flex-1">
                     {/* Top: Name + menu */}
@@ -1222,36 +1235,6 @@ export default function CustomerDashboardPage() {
                       )}
                     </div>
 
-                    {/* Tag menu (inline) */}
-                    {tagMenuOpen === message.id && (
-                      <div className="mb-3 p-3 rounded-lg" style={{ background: '#f5f0e8' }}>
-                        <div className="flex flex-wrap gap-1.5">
-                          {AVAILABLE_TAGS.map(tag => (
-                            <button
-                              key={tag}
-                              onClick={() => handleToggleTag(message.id, tag)}
-                              className="px-2.5 py-1 rounded-full text-xs font-medium transition"
-                              style={{
-                                background: (message.tags || []).includes(tag) ? '#3D5A4C' : 'white',
-                                color: (message.tags || []).includes(tag) ? 'white' : '#6E7D71',
-                                border: '1px solid',
-                                borderColor: (message.tags || []).includes(tag) ? '#3D5A4C' : '#e8ece9'
-                              }}
-                            >
-                              {tag}
-                            </button>
-                          ))}
-                        </div>
-                        <button
-                          onClick={() => setTagMenuOpen(null)}
-                          className="mt-2 text-xs font-medium transition"
-                          style={{ color: '#3D5A4C' }}
-                        >
-                          Done
-                        </button>
-                      </div>
-                    )}
-
                     {/* Play button + progress bar */}
                     <div className="flex items-center gap-3">
                       <button
@@ -1281,23 +1264,8 @@ export default function CustomerDashboardPage() {
                       </p>
                     )}
 
-                    {/* Spacer pushes tags and actions to bottom */}
+                    {/* Spacer pushes actions to bottom */}
                     <div className="flex-1" />
-
-                    {/* Tags display (at bottom) */}
-                    {message.tags && message.tags.length > 0 && tagMenuOpen !== message.id && (
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {message.tags.map(tag => (
-                          <span
-                            key={tag}
-                            className="px-2 py-0.5 rounded-full text-xs"
-                            style={{ background: '#f5f0e8', color: '#6E7D71' }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
 
                     {/* Bottom actions */}
                     <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: '1px solid #f0f0f0' }}>
@@ -1312,14 +1280,35 @@ export default function CustomerDashboardPage() {
                         </button>
                       ) : (
                         <>
-                          <button
-                            onClick={() => handleToggleFavorite(message.id, fav)}
-                            className="flex items-center gap-1.5 text-xs font-medium transition"
-                            style={{ color: fav ? '#C08585' : '#8B9B8E' }}
-                          >
-                            <Heart size={16} fill={fav ? '#C08585' : 'none'} />
-                          </button>
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-hidden">
+                            <button
+                              onClick={() => handleToggleFavorite(message.id, fav)}
+                              className="flex-shrink-0 p-1 rounded-lg hover:bg-sage-light/20 transition"
+                            >
+                              <Heart size={16} fill={fav ? '#C08585' : 'none'} style={{ color: fav ? '#C08585' : '#8B9B8E' }} />
+                            </button>
+                            <button
+                              onClick={() => setTagMenuOpen(tagMenuOpen === message.id ? null : message.id)}
+                              className="flex-shrink-0 p-1 rounded-lg hover:bg-sage-light/20 transition"
+                              title="Edit tags"
+                            >
+                              <Tag size={14} style={{ color: '#8B9B8E' }} />
+                            </button>
+                            {message.tags && message.tags.length > 0 && tagMenuOpen !== message.id && (
+                              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                                {message.tags.map(tag => (
+                                  <span
+                                    key={tag}
+                                    className="px-2 py-0.5 rounded-full text-xs whitespace-nowrap flex-shrink-0"
+                                    style={{ background: '#f5f0e8', color: '#6E7D71' }}
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
                             <button
                               onClick={() => handleDownload(message.recording_url, name)}
                               className="p-2 rounded-lg hover:bg-sage-light/20 transition"
@@ -1338,6 +1327,36 @@ export default function CustomerDashboardPage() {
                         </>
                       )}
                     </div>
+
+                    {/* Tag editor (shown below bottom bar when tag icon tapped) */}
+                    {tagMenuOpen === message.id && (
+                      <div className="mt-2 p-3 rounded-lg" style={{ background: '#f5f0e8' }}>
+                        <div className="flex flex-wrap gap-1.5">
+                          {AVAILABLE_TAGS.map(tag => (
+                            <button
+                              key={tag}
+                              onClick={() => handleToggleTag(message.id, tag)}
+                              className="px-2.5 py-1 rounded-full text-xs font-medium transition"
+                              style={{
+                                background: (message.tags || []).includes(tag) ? '#3D5A4C' : 'white',
+                                color: (message.tags || []).includes(tag) ? 'white' : '#6E7D71',
+                                border: '1px solid',
+                                borderColor: (message.tags || []).includes(tag) ? '#3D5A4C' : '#e8ece9'
+                              }}
+                            >
+                              {tag}
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setTagMenuOpen(null)}
+                          className="mt-2 text-xs font-medium transition"
+                          style={{ color: '#3D5A4C' }}
+                        >
+                          Done
+                        </button>
+                      </div>
+                    )}
 
                     {/* Photo uploading indicator */}
                     {photoUploading === message.id && (
