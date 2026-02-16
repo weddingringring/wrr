@@ -11,7 +11,8 @@ import {
   Filter, X, Trash2, Tag, Clock, Phone, User,
   Star, Music, ChevronDown, MoreHorizontal,
   Image as ImageIcon, Upload, Check, Undo2,
-  Archive, Settings, LogOut, MessageCircle
+  Archive, Settings, LogOut, MessageCircle,
+  LayoutGrid, Layers
 } from 'lucide-react'
 
 interface Message {
@@ -42,6 +43,7 @@ export default function CustomerDashboardPage() {
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'favorites' | 'trash'>('all')
+  const [viewMode, setViewMode] = useState<'tiles' | 'cards'>('tiles')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'longest' | 'shortest'>('newest')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
@@ -236,9 +238,7 @@ export default function CustomerDashboardPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(m =>
         (m.caller_name?.toLowerCase().includes(query)) ||
-        (m.caller_name?.toLowerCase().includes(query)) ||
-        (m.notes?.toLowerCase().includes(query)) ||
-        (m.caller_number?.includes(query))
+        (m.notes?.toLowerCase().includes(query))
       )
     }
 
@@ -578,17 +578,6 @@ export default function CustomerDashboardPage() {
           </div>
         )}
 
-        {/* Card Stack Browser */}
-        {messages.filter(m => !m.is_deleted).length > 0 && (
-          <div className="mb-6">
-            <MessageCardStack
-              messages={messages}
-              onPlay={handlePlay}
-              currentlyPlaying={currentlyPlaying}
-            />
-          </div>
-        )}
-
         {/* Filter Bar */}
         <div className="bg-white rounded-xl shadow-sm mb-6" style={{ border: '1px solid #e8ece9' }}>
           <div className="p-4">
@@ -631,6 +620,32 @@ export default function CustomerDashboardPage() {
               </div>
 
               <div className="flex items-center gap-2">
+                {/* View toggle */}
+                <div className="flex items-center rounded-lg overflow-hidden" style={{ border: '1px solid #e8ece9' }}>
+                  <button
+                    onClick={() => setViewMode('tiles')}
+                    className="p-2 transition"
+                    style={{
+                      background: viewMode === 'tiles' ? '#3D5A4C' : 'white',
+                      color: viewMode === 'tiles' ? 'white' : '#8B9B8E',
+                    }}
+                    title="Grid view"
+                  >
+                    <LayoutGrid size={16} strokeWidth={1.5} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('cards')}
+                    className="p-2 transition"
+                    style={{
+                      background: viewMode === 'cards' ? '#3D5A4C' : 'white',
+                      color: viewMode === 'cards' ? 'white' : '#8B9B8E',
+                    }}
+                    title="Card view"
+                  >
+                    <Layers size={16} strokeWidth={1.5} />
+                  </button>
+                </div>
+
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm border transition"
@@ -698,7 +713,7 @@ export default function CustomerDashboardPage() {
               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
               <input
                 type="text"
-                placeholder="Search by name, notes, or phone number..."
+                placeholder="Search by name or notes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-10 py-2.5 rounded-lg text-sm border focus:outline-none focus:ring-2 transition"
@@ -754,7 +769,7 @@ export default function CustomerDashboardPage() {
           </div>
         </div>
 
-        {/* Messages Grid */}
+        {/* Messages Display */}
         {filteredMessages.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm p-12 text-center" style={{ border: '1px solid #e8ece9' }}>
             <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: '#f5f0e8' }}>
@@ -787,6 +802,29 @@ export default function CustomerDashboardPage() {
               }
             </p>
           </div>
+        ) : viewMode === 'cards' ? (
+          <MessageCardStack
+            messages={filteredMessages}
+            onPlay={handlePlay}
+            onToggleFavorite={handleToggleFavorite}
+            onSoftDelete={handleSoftDelete}
+            onRestore={handleRestore}
+            onUpdateName={(messageId, name) => {
+              updateMessage(messageId, { caller_name: name }).then(() => {
+                setMessages(msgs => msgs.map(m => m.id === messageId ? { ...m, caller_name: name } : m))
+              })
+            }}
+            onToggleTag={handleToggleTag}
+            onDownload={handleDownload}
+            onShare={handleShare}
+            onPhotoUpload={(messageId) => {
+              photoMessageRef.current = messageId
+              photoInputRef.current?.click()
+            }}
+            currentlyPlaying={currentlyPlaying}
+            playbackProgress={playbackProgress}
+            filter={filter}
+          />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredMessages.map((message) => {
@@ -880,15 +918,6 @@ export default function CustomerDashboardPage() {
                           <p className="text-xs text-sage-dark">
                             {formatDuration(duration)}
                           </p>
-                          {message.caller_number && (
-                            <>
-                              <span className="text-sage-light">&middot;</span>
-                              <p className="text-xs text-sage-dark flex items-center gap-1">
-                                <Phone size={10} />
-                                {message.caller_number.slice(-4)}
-                              </p>
-                            </>
-                          )}
                         </div>
                       </div>
 
