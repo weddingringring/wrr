@@ -93,17 +93,18 @@ export async function POST(request: Request) {
 
     const userId = authData.user.id
 
-    // 2. Create profile
+    // 2. Update profile (trigger on_auth_user_created auto-creates a basic profile,
+    //    so we upsert to fill in the full details)
     const { error: profileError } = await adminClient
       .from('profiles')
-      .insert({
+      .upsert({
         id: userId,
         email: ownerEmail,
         first_name: ownerFirstName,
         last_name: ownerLastName,
         phone: ownerPhone,
         role: 'venue'
-      })
+      }, { onConflict: 'id' })
 
     if (profileError) {
       // Rollback: delete auth user
