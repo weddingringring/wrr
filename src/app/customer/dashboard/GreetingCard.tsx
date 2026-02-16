@@ -47,11 +47,17 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
     setSuccess(null)
 
     try {
+      // Get auth token to pass to API
+      const { data: { session } } = await supabase.auth.getSession()
+      
       const formData = new FormData()
       formData.append('greeting', file)
 
       const response = await fetch(`/api/events/${eventId}/greeting`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session?.access_token || ''}`
+        },
         body: formData,
       })
 
@@ -83,8 +89,13 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
     setError(null)
 
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
       const response = await fetch(`/api/events/${eventId}/greeting`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session?.access_token || ''}`
+        },
       })
 
       if (!response.ok) {
