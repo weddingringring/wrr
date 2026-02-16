@@ -819,8 +819,8 @@ export default function CustomerDashboardPage() {
                                 if (e.key === 'Enter') handleUpdateGuestName(message.id)
                                 if (e.key === 'Escape') setEditingName(null)
                               }}
-                              className="text-3xl px-2 py-1 rounded border focus:outline-none focus:ring-2" style={{ fontFamily: "'Beth Ellen', cursive" }}
-                              style={{ borderColor: '#e8ece9', color: '#1a1a1a' }}
+                              className="text-3xl px-2 py-1 rounded border focus:outline-none focus:ring-2"
+                              style={{ fontFamily: "'Beth Ellen', cursive", borderColor: '#e8ece9', color: '#1a1a1a' }}
                               autoFocus
                             />
                             <button
