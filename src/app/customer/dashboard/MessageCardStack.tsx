@@ -151,7 +151,7 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
       {/* Google Font */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Beth+Ellen&family=Caveat:wght@400;500&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Ohhh+Baby&family=Caveat:wght@400;500&display=swap" rel="stylesheet" />
 
       <style>{`
         @keyframes cardEntrance {
@@ -201,8 +201,8 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
             0 1px 0 rgba(200,185,155,0.15);
         }
         .name-handwritten {
-          font-family: 'Beth Ellen', cursive;
-          color: #3D5A4C;
+          font-family: 'Ohhh Baby', cursive;
+          color: #1a1a1a;
         }
         .detail-handwritten {
           font-family: 'Caveat', cursive;
@@ -224,8 +224,8 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
       `}</style>
 
       <div className="card-stack-container rounded-2xl p-6 sm:p-8" style={{
-        background: 'linear-gradient(180deg, #f5f0e6 0%, #ede7d9 100%)',
-        border: '1px solid rgba(200, 185, 155, 0.3)',
+        background: 'linear-gradient(180deg, #F2DEDE 0%, #EACECE 100%)',
+        border: '1px solid rgba(200, 165, 165, 0.35)',
       }}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -299,18 +299,43 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
                   </div>
                 )}
 
-                {/* Name */}
-                <div className="name-handwritten text-2xl sm:text-3xl mb-1 leading-tight pr-8">
-                  {activeMessages[currentIndex].caller_name || 'Unknown guest'}
-                </div>
+                <div className="flex gap-5">
+                  {/* Photo */}
+                  {activeMessages[currentIndex].guest_photo_url && (
+                    <div className="flex-shrink-0">
+                      <div
+                        className="rounded-lg overflow-hidden"
+                        style={{
+                          width: '80px',
+                          height: '80px',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                          border: '2px solid rgba(255,252,240,0.8)',
+                        }}
+                      >
+                        <img
+                          src={activeMessages[currentIndex].guest_photo_url}
+                          alt={activeMessages[currentIndex].caller_name || 'Guest'}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
 
-                {/* Date */}
-                <div className="detail-handwritten text-lg mb-6">
-                  {formatDate(activeMessages[currentIndex].recorded_at || activeMessages[currentIndex].created_at)}
+                  <div className="flex-1 min-w-0">
+                    {/* Name */}
+                    <div className="name-handwritten text-2xl sm:text-3xl mb-1 leading-tight pr-8">
+                      {activeMessages[currentIndex].caller_name || 'Unknown guest'}
+                    </div>
+
+                    {/* Date */}
+                    <div className="detail-handwritten text-lg mb-2">
+                      {formatDate(activeMessages[currentIndex].recorded_at || activeMessages[currentIndex].created_at)}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Decorative line */}
-                <div className="mb-6" style={{
+                <div className="mt-5 mb-6" style={{
                   height: '1px',
                   background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,135,0.4) 20%, rgba(180,165,135,0.4) 80%, transparent 100%)',
                 }} />
