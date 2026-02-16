@@ -51,6 +51,7 @@ export default function CustomerDashboardPage() {
   const [playbackProgress, setPlaybackProgress] = useState<Record<string, number>>({})
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [event, setEvent] = useState<any>(null)
+  const [venue, setVenue] = useState<any>(null)
   const [editingName, setEditingName] = useState<string | null>(null)
   const [editNameValue, setEditNameValue] = useState('')
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
@@ -141,7 +142,7 @@ export default function CustomerDashboardPage() {
 
     const { data: eventData } = await supabase
       .from('events')
-      .select('*, venue:venues(name, logo_url)')
+      .select('*')
       .eq('customer_user_id', user.id)
       .single()
 
@@ -152,6 +153,19 @@ export default function CustomerDashboardPage() {
     }
 
     setEvent(eventData)
+
+    // Fetch venue via API (service role key bypasses RLS)
+    if (eventData.venue_id) {
+      try {
+        const res = await fetch(`/api/customer/venue-info?venueId=${eventData.venue_id}`)
+        if (res.ok) {
+          const venueData = await res.json()
+          setVenue(venueData)
+        }
+      } catch (err) {
+        console.error('Failed to fetch venue info:', err)
+      }
+    }
   }
 
   const loadMessages = async () => {
@@ -161,7 +175,7 @@ export default function CustomerDashboardPage() {
 
       const { data: eventData } = await supabase
         .from('events')
-        .select('*, venue:venues(name, logo_url)')
+        .select('*')
         .eq('customer_user_id', user.id)
         .single()
 
@@ -515,15 +529,15 @@ export default function CustomerDashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              {event?.venue?.logo_url ? (
+              {venue?.logo_url ? (
                 <img 
-                  src={event.venue.logo_url} 
-                  alt={event.venue?.name || 'Venue'}
+                  src={venue.logo_url} 
+                  alt={venue.name || 'Venue'}
                   className="h-10 w-auto object-contain"
                 />
-              ) : event?.venue?.name ? (
+              ) : venue?.name ? (
                 <span className="text-sm font-medium" style={{ color: '#3D5A4C' }}>
-                  {event.venue.name}
+                  {venue.name}
                 </span>
               ) : null}
             </div>
@@ -1084,10 +1098,10 @@ export default function CustomerDashboardPage() {
       </div>
 
       {/* Footer */}
-      <footer className="mt-16 py-8 border-t border-sage-light/30">
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-xs text-sage-dark/60 tracking-wide">Powered by</span>
-          <img src="/logo.png" alt="WeddingRingRing" className="h-6 w-auto opacity-70" />
+      <footer className="mt-16 py-10 border-t border-sage-light/30">
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-sm text-sage-dark/70 tracking-wider uppercase font-light">Powered by</span>
+          <img src="/logo.png" alt="WeddingRingRing" className="h-10 w-auto" />
         </div>
       </footer>
 
