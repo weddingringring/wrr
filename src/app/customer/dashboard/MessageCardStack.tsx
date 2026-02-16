@@ -151,7 +151,7 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
       {/* Google Font */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Ohhh+Baby&family=Caveat:wght@400;500&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Oooh+Baby&family=Caveat:wght@400;500&display=swap" rel="stylesheet" />
 
       <style>{`
         @keyframes cardEntrance {
@@ -201,7 +201,7 @@ export default function MessageCardStack({ messages, onPlay, currentlyPlaying }:
             0 1px 0 rgba(200,185,155,0.15);
         }
         .name-handwritten {
-          font-family: 'Ohhh Baby', cursive;
+          font-family: 'Oooh Baby', cursive;
           color: #1a1a1a;
         }
         .detail-handwritten {
