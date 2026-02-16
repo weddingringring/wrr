@@ -568,7 +568,7 @@ export default function CustomerDashboardPage() {
 
         {/* Greeting Card */}
         {event && (
-          <div className="mb-8">
+          <div className="mb-6">
             <GreetingCard
               eventId={event.id}
               greetingAudioUrl={event.greeting_audio_url}
@@ -619,7 +619,7 @@ export default function CustomerDashboardPage() {
                 </button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {/* View toggle */}
                 <div className="flex items-center rounded-lg overflow-hidden" style={{ border: '1px solid #e8ece9' }}>
                   <button
@@ -838,12 +838,12 @@ export default function CustomerDashboardPage() {
               return (
                 <div
                   key={message.id}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden transition-all hover:shadow-md group"
+                  className="bg-white rounded-xl shadow-sm overflow-hidden transition-all hover:shadow-md group flex flex-col"
                   style={{ border: '1px solid #e8ece9' }}
                 >
                   {/* Photo area */}
                   {message.guest_photo_url ? (
-                    <div className="relative h-40 overflow-hidden">
+                    <div className="relative h-40 overflow-hidden flex-shrink-0">
                       <img
                         src={message.guest_photo_url}
                         alt={name || 'Guest photo'}
@@ -855,7 +855,7 @@ export default function CustomerDashboardPage() {
                     </div>
                   ) : null}
 
-                  <div className="p-4">
+                  <div className="p-4 flex flex-col flex-1">
                     {/* Top: Name + menu */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1 min-w-0">
@@ -869,19 +869,19 @@ export default function CustomerDashboardPage() {
                                 if (e.key === 'Enter') handleUpdateGuestName(message.id)
                                 if (e.key === 'Escape') setEditingName(null)
                               }}
-                              className="font-serif text-3xl font-light px-2 py-1 rounded border focus:outline-none focus:ring-2"
+                              className="font-serif text-xl sm:text-2xl font-light w-full px-2 py-1 rounded border focus:outline-none focus:ring-2"
                               style={{ borderColor: '#e8ece9', color: '#1a1a1a' }}
                               autoFocus
                             />
                             <button
                               onClick={() => handleUpdateGuestName(message.id)}
-                              className="p-1 rounded hover:bg-sage-light/20"
+                              className="p-1 rounded hover:bg-sage-light/20 flex-shrink-0"
                             >
                               <Check size={14} style={{ color: '#3D5A4C' }} />
                             </button>
                             <button
                               onClick={() => setEditingName(null)}
-                              className="p-1 rounded hover:bg-sage-light/20"
+                              className="p-1 rounded hover:bg-sage-light/20 flex-shrink-0"
                             >
                               <X size={14} className="text-sage-dark" />
                             </button>
@@ -894,11 +894,11 @@ export default function CustomerDashboardPage() {
                                 setEditNameValue(name || '')
                               }
                             }}
-                            className="text-left group/name"
+                            className="text-left group/name w-full"
                           >
-                            <p className="font-serif font-light text-3xl truncate" style={{ color: '#4a4a4a' }}>
+                            <p className="font-serif font-light text-xl sm:text-2xl truncate" style={{ color: '#4a4a4a' }}>
                               {name || (
-                                <span className="text-sage italic flex items-center gap-1">
+                                <span className="text-sage italic text-sm flex items-center gap-1">
                                   <User size={14} />
                                   Tap to add name
                                 </span>
@@ -923,7 +923,7 @@ export default function CustomerDashboardPage() {
 
                       {/* Action menu */}
                       {filter !== 'trash' && (
-                        <div className="relative">
+                        <div className="relative flex-shrink-0">
                           <button
                             onClick={() => setActiveMenu(activeMenu === message.id ? null : message.id)}
                             className="p-1.5 rounded-lg hover:bg-sage-light/20 transition opacity-0 group-hover:opacity-100 focus:opacity-100"
@@ -938,11 +938,7 @@ export default function CustomerDashboardPage() {
                                 style={{ border: '1px solid #e8ece9', minWidth: '160px' }}
                               >
                                 <button
-                                  onClick={() => {
-                                    photoMessageRef.current = message.id
-                                    photoInputRef.current?.click()
-                                    setActiveMenu(null)
-                                  }}
+                                  onClick={() => { photoMessageRef.current = message.id; photoInputRef.current?.click(); setActiveMenu(null) }}
                                   className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
                                   style={{ color: '#6E7D71' }}
                                 >
@@ -950,10 +946,7 @@ export default function CustomerDashboardPage() {
                                   {message.guest_photo_url ? 'Change photo' : 'Add photo'}
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    setTagMenuOpen(tagMenuOpen === message.id ? null : message.id)
-                                    setActiveMenu(null)
-                                  }}
+                                  onClick={() => { setTagMenuOpen(tagMenuOpen === message.id ? null : message.id); setActiveMenu(null) }}
                                   className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
                                   style={{ color: '#6E7D71' }}
                                 >
@@ -961,10 +954,7 @@ export default function CustomerDashboardPage() {
                                   Edit tags
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    handleShare(message.recording_url, name)
-                                    setActiveMenu(null)
-                                  }}
+                                  onClick={() => { handleShare(message.recording_url, name); setActiveMenu(null) }}
                                   className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
                                   style={{ color: '#6E7D71' }}
                                 >
@@ -1017,46 +1007,23 @@ export default function CustomerDashboardPage() {
                       </div>
                     )}
 
-                    {/* Tags display */}
-                    {message.tags && message.tags.length > 0 && tagMenuOpen !== message.id && (
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {message.tags.map(tag => (
-                          <span
-                            key={tag}
-                            className="px-2 py-0.5 rounded-full text-xs"
-                            style={{ background: '#f5f0e8', color: '#6E7D71' }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
                     {/* Play button + progress bar */}
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => handlePlay(message.id, message.recording_url)}
                         className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
-                        style={{
-                          background: isPlaying ? '#D4A5A5' : '#3D5A4C',
-                          color: 'white'
-                        }}
+                        style={{ background: isPlaying ? '#D4A5A5' : '#3D5A4C', color: 'white' }}
                       >
                         {isPlaying ? <Pause size={18} /> : <Play size={18} style={{ marginLeft: '2px' }} />}
                       </button>
-
                       <div className="flex-1">
                         <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: '#e8ece9' }}>
                           <div
                             className="h-full rounded-full transition-all"
-                            style={{
-                              width: `${progress}%`,
-                              background: isPlaying ? '#D4A5A5' : '#3D5A4C'
-                            }}
+                            style={{ width: `${progress}%`, background: isPlaying ? '#D4A5A5' : '#3D5A4C' }}
                           ></div>
                         </div>
                       </div>
-
                       <span className="text-xs font-mono text-sage-dark flex-shrink-0">
                         {formatDuration(duration)}
                       </span>
@@ -1067,6 +1034,24 @@ export default function CustomerDashboardPage() {
                       <p className="mt-3 text-xs px-3 py-2 rounded-lg" style={{ background: '#f5f0e8', color: '#6E7D71' }}>
                         {message.notes}
                       </p>
+                    )}
+
+                    {/* Spacer pushes tags and actions to bottom */}
+                    <div className="flex-1" />
+
+                    {/* Tags display (at bottom) */}
+                    {message.tags && message.tags.length > 0 && tagMenuOpen !== message.id && (
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {message.tags.map(tag => (
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 rounded-full text-xs"
+                            style={{ background: '#f5f0e8', color: '#6E7D71' }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     )}
 
                     {/* Bottom actions */}
@@ -1089,7 +1074,6 @@ export default function CustomerDashboardPage() {
                           >
                             <Heart size={16} fill={fav ? '#C08585' : 'none'} />
                           </button>
-
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => handleDownload(message.recording_url, name)}
