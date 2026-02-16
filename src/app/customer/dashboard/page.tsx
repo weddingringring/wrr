@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import GreetingCard from './GreetingCard'
 import MessageCardStack from './MessageCardStack'
+import JSZip from 'jszip'
 import {
   Play, Pause, Heart, Download, Share2, Search,
   Filter, X, Trash2, Tag, Clock, Phone, User,
@@ -537,12 +538,53 @@ export default function CustomerDashboardPage() {
     }
   }
 
+  const [zipProgress, setZipProgress] = useState<string | null>(null)
+
   const handleDownloadAll = async () => {
     const activeMessages = messages.filter(m => !m.is_deleted && m.recording_url)
     if (activeMessages.length === 0) return
 
-    for (const msg of activeMessages) {
-      await handleDownload(msg.recording_url, msg.caller_name)
+    try {
+      setZipProgress(`Preparing 0/${activeMessages.length}...`)
+      const zip = new JSZip()
+      const usedNames = new Set<string>()
+
+      for (let i = 0; i < activeMessages.length; i++) {
+        const msg = activeMessages[i]
+        setZipProgress(`Downloading ${i + 1}/${activeMessages.length}...`)
+        try {
+          const signedUrl = await getSignedUrl(msg.recording_url)
+          const response = await fetch(signedUrl)
+          const blob = await response.blob()
+          let baseName = (msg.caller_name || 'message').replace(/[^a-zA-Z0-9\s-]/g, '').trim()
+          let fileName = `${baseName}.mp3`
+          let counter = 1
+          while (usedNames.has(fileName)) {
+            fileName = `${baseName} (${counter}).mp3`
+            counter++
+          }
+          usedNames.add(fileName)
+          zip.file(fileName, blob)
+        } catch (err) {
+          console.error(`Failed to download message ${msg.id}:`, err)
+        }
+      }
+
+      setZipProgress('Creating ZIP file...')
+      const eventName = getEventDisplayName().replace(/[^a-zA-Z0-9\s&-]/g, '').trim() || 'messages'
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
+      const url = window.URL.createObjectURL(zipBlob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${eventName} - Voice Messages.zip`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      setZipProgress(null)
+    } catch (error) {
+      console.error('Error creating ZIP:', error)
+      setZipProgress(null)
     }
   }
 
@@ -728,8 +770,8 @@ export default function CustomerDashboardPage() {
           </p>
         </div>
 
-        {/* Greeting Card */}
-        {event && (
+        {/* Greeting Card - only shown when no messages yet */}
+        {event && activeMessageCount === 0 && (
           <div className="mb-6">
             <GreetingCard
               eventId={event.id}
@@ -867,11 +909,12 @@ export default function CustomerDashboardPage() {
                 {activeMessageCount > 0 && filter !== 'trash' && (
                   <button
                     onClick={handleDownloadAll}
+                    disabled={!!zipProgress}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition"
-                    style={{ background: '#D4A5A5', color: 'white' }}
+                    style={{ background: '#D4A5A5', color: 'white', opacity: zipProgress ? 0.7 : 1 }}
                   >
                     <Download size={13} />
-                    Download All
+                    {zipProgress || 'Download All'}
                   </button>
                 )}
               </div>
@@ -1004,11 +1047,12 @@ export default function CustomerDashboardPage() {
                   {activeMessageCount > 0 && filter !== 'trash' && (
                     <button
                       onClick={handleDownloadAll}
+                      disabled={!!zipProgress}
                       className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
-                      style={{ background: '#D4A5A5', color: 'white' }}
+                      style={{ background: '#D4A5A5', color: 'white', opacity: zipProgress ? 0.7 : 1 }}
                     >
                       <Download size={16} />
-                      Download All
+                      {zipProgress || 'Download All'}
                     </button>
                   )}
 
