@@ -510,13 +510,13 @@ export default function CustomerDashboardPage() {
   }
 
   const getGuestbookTitle = () => {
-    if (!event) return { names: '', subtitle: 'Guestbook' }
+    if (!event) return { p1: '', p2: '', subtitle: 'Guestbook' }
     const p1First = event.partner_1_first_name || event.partner_1_name?.split(' ')[0] || ''
     const p2First = event.partner_2_first_name || event.partner_2_name?.split(' ')[0] || ''
     const eventType = (event.event_type || 'event').charAt(0).toUpperCase() + (event.event_type || 'event').slice(1)
-    const names = p2First ? `${p1First} & ${p2First}` : p1First
     return {
-      names: names ? `${names}'s` : '',
+      p1: p1First,
+      p2: p2First,
       subtitle: `${eventType} Guestbook`,
     }
   }
@@ -631,8 +631,25 @@ export default function CustomerDashboardPage() {
             const title = getGuestbookTitle()
             return (
               <h1>
-                {title.names && (
-                  <span className="block text-7xl sm:text-8xl leading-tight" style={{ fontFamily: "'Florentea', cursive", color: '#1a1a1a' }}>{title.names}</span>
+                {title.p1 && (
+                  <span className="block leading-none" style={{ fontFamily: "'Florentea', cursive", color: '#1a1a1a' }}>
+                    {title.p2 ? (
+                      <>
+                        {/* Mobile: stacked layout */}
+                        <span className="sm:hidden">
+                          <span className="block text-7xl">{title.p1}</span>
+                          <span className="block text-xl my-0" style={{ lineHeight: '1.4' }}>&amp;</span>
+                          <span className="block text-7xl">{title.p2}&rsquo;s</span>
+                        </span>
+                        {/* Desktop: inline layout */}
+                        <span className="hidden sm:block text-8xl">
+                          {title.p1} <span className="text-2xl">&amp;</span> {title.p2}&rsquo;s
+                        </span>
+                      </>
+                    ) : (
+                      <span className="block text-7xl sm:text-8xl">{title.p1}&rsquo;s</span>
+                    )}
+                  </span>
                 )}
                 <span className="block font-serif text-2xl sm:text-4xl mt-4 sm:mt-5" style={{ color: '#4a4a4a' }}>{title.subtitle}</span>
               </h1>
