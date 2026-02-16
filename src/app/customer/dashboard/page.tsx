@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import GreetingCard from './GreetingCard'
+import MessageCardStack from './MessageCardStack'
 import {
   Play, Pause, Heart, Download, Share2, Search,
   Filter, X, Trash2, Tag, Clock, Phone, User,
@@ -577,6 +578,17 @@ export default function CustomerDashboardPage() {
           </div>
         )}
 
+        {/* Card Stack Browser */}
+        {messages.filter(m => !m.is_deleted).length > 0 && (
+          <div className="mb-6">
+            <MessageCardStack
+              messages={messages}
+              onPlay={handlePlay}
+              currentlyPlaying={currentlyPlaying}
+            />
+          </div>
+        )}
+
         {/* Filter Bar */}
         <div className="bg-white rounded-xl shadow-sm mb-6" style={{ border: '1px solid #e8ece9' }}>
           <div className="p-4">
@@ -819,8 +831,8 @@ export default function CustomerDashboardPage() {
                                 if (e.key === 'Enter') handleUpdateGuestName(message.id)
                                 if (e.key === 'Escape') setEditingName(null)
                               }}
-                              className="text-3xl px-2 py-1 rounded border focus:outline-none focus:ring-2"
-                              style={{ fontFamily: "'Beth Ellen', cursive", borderColor: '#e8ece9', color: '#1a1a1a' }}
+                              className="font-serif text-3xl font-light px-2 py-1 rounded border focus:outline-none focus:ring-2"
+                              style={{ borderColor: '#e8ece9', color: '#1a1a1a' }}
                               autoFocus
                             />
                             <button
@@ -846,7 +858,7 @@ export default function CustomerDashboardPage() {
                             }}
                             className="text-left group/name"
                           >
-                            <p className="text-3xl truncate" style={{ color: '#4a4a4a', fontFamily: "'Beth Ellen', cursive" }}>
+                            <p className="font-serif font-light text-3xl truncate" style={{ color: '#4a4a4a' }}>
                               {name || (
                                 <span className="text-sage italic flex items-center gap-1">
                                   <User size={14} />
