@@ -12,7 +12,7 @@ import {
   Star, Music, ChevronDown, MoreHorizontal,
   Image as ImageIcon, Upload, Check, Undo2,
   Archive, Settings, LogOut, MessageCircle,
-  LayoutGrid, Layers
+  LayoutGrid, Layers, SlidersHorizontal
 } from 'lucide-react'
 
 interface Message {
@@ -49,6 +49,7 @@ export default function CustomerDashboardPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
   const [showSortMenu, setShowSortMenu] = useState(false)
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
   const [playbackProgress, setPlaybackProgress] = useState<Record<string, number>>({})
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -579,193 +580,327 @@ export default function CustomerDashboardPage() {
         )}
 
         {/* Filter Bar */}
-        <div className="bg-white rounded-xl shadow-sm mb-6" style={{ border: '1px solid #e8ece9' }}>
-          <div className="p-4">
-            {/* Top row: filter tabs + actions */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="flex items-center gap-1 flex-wrap">
+        <div className="mb-6">
+          {/* Mobile: compact bar */}
+          <div className="flex sm:hidden items-center justify-between py-2">
+            <div className="flex items-center gap-3">
+              {/* View toggle */}
+              <div className="flex items-center rounded-lg overflow-hidden" style={{ border: '1px solid #e8ece9' }}>
                 <button
-                  onClick={() => setFilter('all')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
+                  onClick={() => setViewMode('tiles')}
+                  className="p-2 transition"
                   style={{
-                    background: filter === 'all' ? '#3D5A4C' : 'transparent',
-                    color: filter === 'all' ? 'white' : '#6E7D71'
+                    background: viewMode === 'tiles' ? '#3D5A4C' : 'white',
+                    color: viewMode === 'tiles' ? 'white' : '#8B9B8E',
                   }}
                 >
-                  <MessageCircle size={16} />
-                  All ({activeMessageCount})
+                  <LayoutGrid size={16} strokeWidth={1.5} />
                 </button>
                 <button
-                  onClick={() => setFilter('favorites')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
+                  onClick={() => setViewMode('cards')}
+                  className="p-2 transition"
                   style={{
-                    background: filter === 'favorites' ? '#3D5A4C' : 'transparent',
-                    color: filter === 'favorites' ? 'white' : '#6E7D71'
+                    background: viewMode === 'cards' ? '#3D5A4C' : 'white',
+                    color: viewMode === 'cards' ? 'white' : '#8B9B8E',
                   }}
                 >
-                  <Heart size={16} />
-                  Favourites ({favCount})
-                </button>
-                <button
-                  onClick={() => setFilter('trash')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
-                  style={{
-                    background: filter === 'trash' ? '#3D5A4C' : 'transparent',
-                    color: filter === 'trash' ? 'white' : '#6E7D71'
-                  }}
-                >
-                  <Trash2 size={16} />
-                  Bin ({trashCount})
+                  <Layers size={16} strokeWidth={1.5} />
                 </button>
               </div>
 
+              {/* Filter tab pills (compact) */}
+              <div className="flex items-center gap-0.5">
+                {(['all', 'favorites', 'trash'] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className="px-2.5 py-1 rounded-full text-xs font-medium transition"
+                    style={{
+                      background: filter === f ? '#3D5A4C' : 'transparent',
+                      color: filter === f ? 'white' : '#8B9B8E',
+                    }}
+                  >
+                    {f === 'all' ? `All (${activeMessageCount})` : f === 'favorites' ? `${favCount}` : `Bin`}
+                    {f === 'favorites' && <Heart size={10} className="inline ml-0.5 -mt-0.5" fill={filter === 'favorites' ? 'white' : 'none'} />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Filter expand button */}
+            <button
+              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              className="relative p-2 rounded-lg transition"
+              style={{ color: mobileFiltersOpen || selectedTags.length > 0 || searchQuery ? '#3D5A4C' : '#8B9B8E' }}
+            >
+              <SlidersHorizontal size={18} strokeWidth={1.5} />
+              {(selectedTags.length > 0 || searchQuery) && (
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full" style={{ background: '#D4A5A5' }} />
+              )}
+            </button>
+          </div>
+
+          {/* Mobile: expanded filters */}
+          {mobileFiltersOpen && (
+            <div className="sm:hidden py-3 space-y-3" style={{ borderTop: '1px solid #e8ece9' }}>
+              {/* Search */}
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
+                <input
+                  type="text"
+                  placeholder="Search by name or notes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-9 py-2 rounded-lg text-sm border focus:outline-none focus:ring-2 transition"
+                  style={{ borderColor: '#e8ece9', color: '#1a1a1a' }}
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <X size={14} className="text-sage" />
+                  </button>
+                )}
+              </div>
+
+              {/* Sort + Tags + Download row */}
               <div className="flex items-center gap-2 flex-wrap">
-                {/* View toggle */}
-                <div className="flex items-center rounded-lg overflow-hidden" style={{ border: '1px solid #e8ece9' }}>
-                  <button
-                    onClick={() => setViewMode('tiles')}
-                    className="p-2 transition"
-                    style={{
-                      background: viewMode === 'tiles' ? '#3D5A4C' : 'white',
-                      color: viewMode === 'tiles' ? 'white' : '#8B9B8E',
-                    }}
-                    title="Grid view"
-                  >
-                    <LayoutGrid size={16} strokeWidth={1.5} />
-                  </button>
-                  <button
-                    onClick={() => setViewMode('cards')}
-                    className="p-2 transition"
-                    style={{
-                      background: viewMode === 'cards' ? '#3D5A4C' : 'white',
-                      color: viewMode === 'cards' ? 'white' : '#8B9B8E',
-                    }}
-                    title="Card view"
-                  >
-                    <Layers size={16} strokeWidth={1.5} />
-                  </button>
-                </div>
-
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm border transition"
-                  style={{
-                    borderColor: showFilters || selectedTags.length > 0 ? '#3D5A4C' : '#e8ece9',
-                    color: showFilters || selectedTags.length > 0 ? '#3D5A4C' : '#6E7D71',
-                    background: selectedTags.length > 0 ? '#3D5A4C0D' : 'white'
-                  }}
-                >
-                  <Tag size={16} />
-                  Tags
-                  {selectedTags.length > 0 && (
-                    <span className="text-xs font-bold" style={{ color: '#3D5A4C' }}>
-                      {selectedTags.length}
-                    </span>
-                  )}
-                </button>
-
-                {/* Sort dropdown */}
                 <div className="relative">
                   <button
                     onClick={() => setShowSortMenu(!showSortMenu)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm border transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition"
                     style={{ borderColor: '#e8ece9', color: '#6E7D71' }}
                   >
-                    <Filter size={16} />
+                    <Filter size={13} />
                     {sortBy === 'newest' ? 'Newest' : sortBy === 'oldest' ? 'Oldest' : sortBy === 'longest' ? 'Longest' : 'Shortest'}
-                    <ChevronDown size={14} />
+                    <ChevronDown size={12} />
                   </button>
                   {showSortMenu && (
-                    <div
-                      className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20"
-                      style={{ border: '1px solid #e8ece9', minWidth: '140px' }}
-                    >
+                    <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20" style={{ border: '1px solid #e8ece9', minWidth: '120px' }}>
                       {(['newest', 'oldest', 'longest', 'shortest'] as const).map(opt => (
                         <button
                           key={opt}
                           onClick={() => { setSortBy(opt); setShowSortMenu(false) }}
-                          className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center justify-between"
+                          className="w-full text-left px-3 py-1.5 text-xs hover:bg-sage-light/20 transition flex items-center justify-between"
                           style={{ color: sortBy === opt ? '#3D5A4C' : '#6E7D71' }}
                         >
                           {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                          {sortBy === opt && <Check size={14} />}
+                          {sortBy === opt && <Check size={12} />}
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
 
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition"
+                  style={{
+                    borderColor: showFilters || selectedTags.length > 0 ? '#3D5A4C' : '#e8ece9',
+                    color: showFilters || selectedTags.length > 0 ? '#3D5A4C' : '#6E7D71',
+                  }}
+                >
+                  <Tag size={13} />
+                  Tags
+                  {selectedTags.length > 0 && <span className="font-bold">{selectedTags.length}</span>}
+                </button>
+
                 {activeMessageCount > 0 && filter !== 'trash' && (
                   <button
                     onClick={handleDownloadAll}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition"
                     style={{ background: '#D4A5A5', color: 'white' }}
                   >
-                    <Download size={16} />
-                    <span className="hidden sm:inline">Download All</span>
+                    <Download size={13} />
+                    Download All
                   </button>
                 )}
               </div>
-            </div>
 
-            {/* Search bar */}
-            <div className="mt-3 relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
-              <input
-                type="text"
-                placeholder="Search by name or notes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-10 py-2.5 rounded-lg text-sm border focus:outline-none focus:ring-2 transition"
-                style={{ borderColor: '#e8ece9', color: '#1a1a1a' }}
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  <X size={16} className="text-sage" />
-                </button>
+              {/* Tags (if open) */}
+              {showFilters && (
+                <div className="pt-2" style={{ borderTop: '1px solid #e8ece9' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-medium text-sage-dark uppercase tracking-wider">Filter by tag</p>
+                    {selectedTags.length > 0 && (
+                      <button onClick={() => setSelectedTags([])} className="text-xs text-sage-dark hover:text-deep-green transition">Clear all</button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {AVAILABLE_TAGS.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => {
+                          if (selectedTags.includes(tag)) setSelectedTags(selectedTags.filter(t => t !== tag))
+                          else setSelectedTags([...selectedTags, tag])
+                        }}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium transition"
+                        style={{
+                          background: selectedTags.includes(tag) ? '#3D5A4C' : '#f5f0e8',
+                          color: selectedTags.includes(tag) ? 'white' : '#6E7D71'
+                        }}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
+          )}
 
-            {/* Tags filter (expandable) */}
-            {showFilters && (
-              <div className="mt-3 pt-3" style={{ borderTop: '1px solid #e8ece9' }}>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-medium text-sage-dark uppercase tracking-wider">Filter by tag</p>
-                  {selectedTags.length > 0 && (
+          {/* Desktop: full filter bar (unchanged) */}
+          <div className="hidden sm:block bg-white rounded-xl shadow-sm" style={{ border: '1px solid #e8ece9' }}>
+            <div className="p-4">
+              <div className="flex flex-row justify-between items-center gap-4">
+                <div className="flex items-center gap-1 flex-wrap">
+                  <button
+                    onClick={() => setFilter('all')}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
+                    style={{ background: filter === 'all' ? '#3D5A4C' : 'transparent', color: filter === 'all' ? 'white' : '#6E7D71' }}
+                  >
+                    <MessageCircle size={16} />
+                    All ({activeMessageCount})
+                  </button>
+                  <button
+                    onClick={() => setFilter('favorites')}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
+                    style={{ background: filter === 'favorites' ? '#3D5A4C' : 'transparent', color: filter === 'favorites' ? 'white' : '#6E7D71' }}
+                  >
+                    <Heart size={16} />
+                    Favourites ({favCount})
+                  </button>
+                  <button
+                    onClick={() => setFilter('trash')}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
+                    style={{ background: filter === 'trash' ? '#3D5A4C' : 'transparent', color: filter === 'trash' ? 'white' : '#6E7D71' }}
+                  >
+                    <Trash2 size={16} />
+                    Bin ({trashCount})
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* View toggle */}
+                  <div className="flex items-center rounded-lg overflow-hidden" style={{ border: '1px solid #e8ece9' }}>
                     <button
-                      onClick={() => setSelectedTags([])}
-                      className="text-xs text-sage-dark hover:text-deep-green transition"
+                      onClick={() => setViewMode('tiles')}
+                      className="p-2 transition"
+                      style={{ background: viewMode === 'tiles' ? '#3D5A4C' : 'white', color: viewMode === 'tiles' ? 'white' : '#8B9B8E' }}
+                      title="Grid view"
                     >
-                      Clear all
+                      <LayoutGrid size={16} strokeWidth={1.5} />
+                    </button>
+                    <button
+                      onClick={() => setViewMode('cards')}
+                      className="p-2 transition"
+                      style={{ background: viewMode === 'cards' ? '#3D5A4C' : 'white', color: viewMode === 'cards' ? 'white' : '#8B9B8E' }}
+                      title="Card view"
+                    >
+                      <Layers size={16} strokeWidth={1.5} />
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm border transition"
+                    style={{
+                      borderColor: showFilters || selectedTags.length > 0 ? '#3D5A4C' : '#e8ece9',
+                      color: showFilters || selectedTags.length > 0 ? '#3D5A4C' : '#6E7D71',
+                      background: selectedTags.length > 0 ? '#3D5A4C0D' : 'white'
+                    }}
+                  >
+                    <Tag size={16} />
+                    Tags
+                    {selectedTags.length > 0 && <span className="text-xs font-bold" style={{ color: '#3D5A4C' }}>{selectedTags.length}</span>}
+                  </button>
+
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowSortMenu(!showSortMenu)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm border transition"
+                      style={{ borderColor: '#e8ece9', color: '#6E7D71' }}
+                    >
+                      <Filter size={16} />
+                      {sortBy === 'newest' ? 'Newest' : sortBy === 'oldest' ? 'Oldest' : sortBy === 'longest' ? 'Longest' : 'Shortest'}
+                      <ChevronDown size={14} />
+                    </button>
+                    {showSortMenu && (
+                      <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20" style={{ border: '1px solid #e8ece9', minWidth: '140px' }}>
+                        {(['newest', 'oldest', 'longest', 'shortest'] as const).map(opt => (
+                          <button
+                            key={opt}
+                            onClick={() => { setSortBy(opt); setShowSortMenu(false) }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center justify-between"
+                            style={{ color: sortBy === opt ? '#3D5A4C' : '#6E7D71' }}
+                          >
+                            {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                            {sortBy === opt && <Check size={14} />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {activeMessageCount > 0 && filter !== 'trash' && (
+                    <button
+                      onClick={handleDownloadAll}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
+                      style={{ background: '#D4A5A5', color: 'white' }}
+                    >
+                      <Download size={16} />
+                      Download All
                     </button>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {AVAILABLE_TAGS.map(tag => (
-                    <button
-                      key={tag}
-                      onClick={() => {
-                        if (selectedTags.includes(tag)) {
-                          setSelectedTags(selectedTags.filter(t => t !== tag))
-                        } else {
-                          setSelectedTags([...selectedTags, tag])
-                        }
-                      }}
-                      className="px-3 py-1.5 rounded-full text-xs font-medium transition"
-                      style={{
-                        background: selectedTags.includes(tag) ? '#3D5A4C' : '#f5f0e8',
-                        color: selectedTags.includes(tag) ? 'white' : '#6E7D71'
-                      }}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
               </div>
-            )}
+
+              {/* Desktop search */}
+              <div className="mt-3 relative">
+                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
+                <input
+                  type="text"
+                  placeholder="Search by name or notes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-10 py-2.5 rounded-lg text-sm border focus:outline-none focus:ring-2 transition"
+                  style={{ borderColor: '#e8ece9', color: '#1a1a1a' }}
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <X size={16} className="text-sage" />
+                  </button>
+                )}
+              </div>
+
+              {/* Desktop tags */}
+              {showFilters && (
+                <div className="mt-3 pt-3" style={{ borderTop: '1px solid #e8ece9' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-medium text-sage-dark uppercase tracking-wider">Filter by tag</p>
+                    {selectedTags.length > 0 && (
+                      <button onClick={() => setSelectedTags([])} className="text-xs text-sage-dark hover:text-deep-green transition">Clear all</button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {AVAILABLE_TAGS.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => {
+                          if (selectedTags.includes(tag)) setSelectedTags(selectedTags.filter(t => t !== tag))
+                          else setSelectedTags([...selectedTags, tag])
+                        }}
+                        className="px-3 py-1.5 rounded-full text-xs font-medium transition"
+                        style={{
+                          background: selectedTags.includes(tag) ? '#3D5A4C' : '#f5f0e8',
+                          color: selectedTags.includes(tag) ? 'white' : '#6E7D71'
+                        }}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
