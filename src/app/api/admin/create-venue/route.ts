@@ -13,6 +13,7 @@ export async function POST(request: Request) {
     // Verify user is admin
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
     const token = authHeader.replace('Bearer ', '')
     
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
@@ -22,8 +23,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
-    const { data: profile } = await supabase
+    // Use Service Role Key to check admin role (bypasses RLS)
+    const adminClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+
+    const { data: profile } = await adminClient
       .from('profiles')
       .select('role')
       .eq('id', user.id)
@@ -63,15 +71,6 @@ export async function POST(request: Request) {
         error: `Invalid country code. Must be one of: ${validCountryCodes.join(', ')}` 
       }, { status: 400 })
     }
-
-    // Use Service Role Key for admin operations
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-    const adminClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    })
 
     // Generate temporary password
     const tempPassword = Math.random().toString(36).slice(-12) + Math.random().toString(36).slice(-12)
