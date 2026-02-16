@@ -64,6 +64,43 @@ export default function CustomerDashboardPage() {
   const photoInputRef = useRef<HTMLInputElement>(null)
   const photoMessageRef = useRef<string | null>(null)
   const signedUrlCache = useRef<Record<string, { url: string; expires: number }>>({})
+  const photoUrlCache = useRef<Record<string, { url: string; expires: number }>>({})
+  const [photoSignedUrls, setPhotoSignedUrls] = useState<Record<string, string>>({})
+
+  // Get a signed URL for a photo (cached for 50 minutes)
+  const getPhotoSignedUrl = async (photoPath: string): Promise<string> => {
+    if (!photoPath) return ''
+
+    // If it's already a full URL (legacy data), return as-is
+    if (photoPath.startsWith('http')) return photoPath
+
+    const cached = photoUrlCache.current[photoPath]
+    if (cached && cached.expires > Date.now() + 10 * 60 * 1000) {
+      return cached.url
+    }
+
+    try {
+      const res = await fetch('/api/customer/signed-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recordingUrl: photoPath, bucket: 'message-photos' })
+      })
+
+      if (!res.ok) return ''
+
+      const data = await res.json()
+
+      photoUrlCache.current[photoPath] = {
+        url: data.signedUrl,
+        expires: Date.now() + 50 * 60 * 1000
+      }
+
+      return data.signedUrl
+    } catch (error) {
+      console.error('Error getting photo signed URL:', error)
+      return ''
+    }
+  }
 
   // Get a signed URL for a recording (cached for 50 minutes)
   const getSignedUrl = async (recordingUrl: string): Promise<string> => {
@@ -152,6 +189,29 @@ export default function CustomerDashboardPage() {
       audioRef.current?.pause()
     }
   }, [])
+
+  // Fetch signed URLs for message photos
+  useEffect(() => {
+    const messagesWithPhotos = messages.filter(m => m.guest_photo_url && !m.guest_photo_url.startsWith('http'))
+    if (messagesWithPhotos.length === 0) return
+
+    const fetchPhotoUrls = async () => {
+      const newUrls: Record<string, string> = { ...photoSignedUrls }
+      await Promise.all(
+        messagesWithPhotos.map(async (m) => {
+          const cached = photoUrlCache.current[m.guest_photo_url!]
+          if (cached && cached.expires > Date.now() + 10 * 60 * 1000) {
+            newUrls[m.id] = cached.url
+            return
+          }
+          const url = await getPhotoSignedUrl(m.guest_photo_url!)
+          if (url) newUrls[m.id] = url
+        })
+      )
+      setPhotoSignedUrls(newUrls)
+    }
+    fetchPhotoUrls()
+  }, [messages])
 
   useEffect(() => {
     filterAndSortMessages()
@@ -423,6 +483,9 @@ export default function CustomerDashboardPage() {
       setMessages(messages.map(m =>
         m.id === messageId ? { ...m, guest_photo_url: result.guest_photo_url } : m
       ))
+      if (result.signed_url) {
+        setPhotoSignedUrls(prev => ({ ...prev, [messageId]: result.signed_url }))
+      }
     } catch (error) {
       console.error('Error uploading photo:', error)
       alert('Failed to upload photo')
@@ -1089,10 +1152,10 @@ export default function CustomerDashboardPage() {
                 >
                   {/* Photo area - always shown */}
                   <div className="relative h-40 overflow-hidden flex-shrink-0">
-                    {message.guest_photo_url ? (
+                    {(message.guest_photo_url && (photoSignedUrls[message.id] || message.guest_photo_url.startsWith('http'))) ? (
                       <>
                         <img
-                          src={message.guest_photo_url}
+                          src={photoSignedUrls[message.id] || message.guest_photo_url}
                           alt={name || 'Guest photo'}
                           className="w-full h-full object-cover"
                         />
