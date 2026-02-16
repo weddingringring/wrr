@@ -141,7 +141,7 @@ export default function CustomerDashboardPage() {
 
     const { data: eventData } = await supabase
       .from('events')
-      .select('*, venue:venues(name)')
+      .select('*, venue:venues(name, logo_url)')
       .eq('customer_user_id', user.id)
       .single()
 
@@ -161,7 +161,7 @@ export default function CustomerDashboardPage() {
 
       const { data: eventData } = await supabase
         .from('events')
-        .select('*')
+        .select('*, venue:venues(name, logo_url)')
         .eq('customer_user_id', user.id)
         .single()
 
@@ -511,22 +511,29 @@ export default function CustomerDashboardPage() {
       />
 
       {/* Header */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e8ece9' }}>
+      <header style={{ background: 'white', borderBottom: '1px solid #e8ece9' }} className="shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <img src="/logo.svg" alt="WeddingRingRing" className="h-10" />
-              {getEventDisplayName() && (
-                <>
-                  <div style={{ width: '1px', height: '24px', background: '#d1d5db' }}></div>
-                  <p className="text-sm font-medium" style={{ color: '#3D5A4C' }}>
-                    {getEventDisplayName()}
-                  </p>
-                </>
-              )}
+              {event?.venue?.logo_url ? (
+                <img 
+                  src={event.venue.logo_url} 
+                  alt={event.venue?.name || 'Venue'}
+                  className="h-10 w-auto object-contain"
+                />
+              ) : event?.venue?.name ? (
+                <span className="text-sm font-medium" style={{ color: '#3D5A4C' }}>
+                  {event.venue.name}
+                </span>
+              ) : null}
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
+              {getEventDisplayName() && (
+                <span className="text-sm font-medium hidden sm:inline" style={{ color: '#3D5A4C' }}>
+                  {getEventDisplayName()}
+                </span>
+              )}
               <Link
                 href="/customer/settings"
                 className="p-2 rounded-lg hover:bg-sage-light/20 transition"
@@ -1075,6 +1082,14 @@ export default function CustomerDashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="mt-16 py-8 border-t border-sage-light/30">
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-xs text-sage-dark/60 tracking-wide">Powered by</span>
+          <img src="/logo.png" alt="WeddingRingRing" className="h-6 w-auto opacity-70" />
+        </div>
+      </footer>
 
       {/* Click outside to close menus */}
       {showSortMenu && (
