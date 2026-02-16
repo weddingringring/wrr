@@ -819,7 +819,7 @@ export default function CustomerDashboardPage() {
                                 if (e.key === 'Enter') handleUpdateGuestName(message.id)
                                 if (e.key === 'Escape') setEditingName(null)
                               }}
-                              className="font-serif text-3xl font-normal px-2 py-1 rounded border focus:outline-none focus:ring-2"
+                              className="font-serif text-3xl font-light px-2 py-1 rounded border focus:outline-none focus:ring-2"
                               style={{ borderColor: '#e8ece9', color: '#1a1a1a' }}
                               autoFocus
                             />
@@ -846,7 +846,7 @@ export default function CustomerDashboardPage() {
                             }}
                             className="text-left group/name"
                           >
-                            <p className="font-serif font-normal text-3xl truncate" style={{ color: '#1a1a1a' }}>
+                            <p className="font-serif font-light text-3xl truncate" style={{ color: '#4a4a4a' }}>
                               {name || (
                                 <span className="text-sage italic flex items-center gap-1">
                                   <User size={14} />
