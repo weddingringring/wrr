@@ -51,7 +51,6 @@ export default function CustomerDashboardPage() {
   const [showSortMenu, setShowSortMenu] = useState(false)
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false)
-  const [desktopSearchOpen, setDesktopSearchOpen] = useState(false)
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
   const [playbackProgress, setPlaybackProgress] = useState<Record<string, number>>({})
   const audioRef = useRef<HTMLAudioElement | null>(null)
