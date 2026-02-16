@@ -129,8 +129,15 @@ export default function CustomerDashboardPage() {
       document.head.appendChild(meta)
     }
     meta.setAttribute('content', '#FFEFEF')
+    // Override body/html background so Safari safe area matches
+    const prevBodyBg = document.body.style.background
+    const prevHtmlBg = document.documentElement.style.backgroundColor
+    document.body.style.background = '#FFEFEF'
+    document.documentElement.style.backgroundColor = '#FFEFEF'
     return () => {
       if (meta) meta.setAttribute('content', '#ffffff')
+      document.body.style.background = prevBodyBg
+      document.documentElement.style.backgroundColor = prevHtmlBg
     }
   }, [])
 
