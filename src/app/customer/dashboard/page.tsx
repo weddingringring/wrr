@@ -611,9 +611,9 @@ export default function CustomerDashboardPage() {
             return (
               <h1>
                 {title.names && (
-                  <span className="block text-5xl sm:text-8xl leading-tight" style={{ fontFamily: "'Florentea', cursive", color: '#1a1a1a' }}>{title.names}</span>
+                  <span className="block text-7xl sm:text-8xl leading-tight" style={{ fontFamily: "'Florentea', cursive", color: '#1a1a1a' }}>{title.names}</span>
                 )}
-                <span className="block font-serif text-2xl sm:text-4xl mt-1" style={{ color: '#4a4a4a' }}>{title.subtitle}</span>
+                <span className="block font-serif text-2xl sm:text-4xl mt-4 sm:mt-5" style={{ color: '#4a4a4a' }}>{title.subtitle}</span>
               </h1>
             )
           })()}
