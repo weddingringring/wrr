@@ -43,6 +43,7 @@ interface MessageCardStackProps {
   currentlyPlaying: string | null
   playbackProgress: Record<string, number>
   filter: string
+  photoSignedUrls: Record<string, string>
 }
 
 export default function MessageCardStack({
@@ -59,6 +60,7 @@ export default function MessageCardStack({
   currentlyPlaying,
   playbackProgress,
   filter,
+  photoSignedUrls,
 }: MessageCardStackProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [dragX, setDragX] = useState(0)
@@ -72,7 +74,6 @@ export default function MessageCardStack({
   const [showTags, setShowTags] = useState(false)
   const startPos = useRef({ x: 0, y: 0 })
 
-  // Clamp index
   const safeIndex = Math.min(currentIndex, Math.max(0, messages.length - 1))
   if (safeIndex !== currentIndex && messages.length > 0) {
     setCurrentIndex(safeIndex)
@@ -172,6 +173,12 @@ export default function MessageCardStack({
     })
   }
 
+  const getPhotoUrl = (msg: Message): string | null => {
+    if (!msg.guest_photo_url) return null
+    if (msg.guest_photo_url.startsWith('http')) return msg.guest_photo_url
+    return photoSignedUrls[msg.id] || null
+  }
+
   if (messages.length === 0) return null
 
   const msg = messages[safeIndex]
@@ -181,50 +188,59 @@ export default function MessageCardStack({
   const duration = msg.duration_seconds || msg.duration || 0
   const progress = playbackProgress[msg.id] || 0
   const isPlaying = currentlyPlaying === msg.id
+  const photoUrl = getPhotoUrl(msg)
 
   return (
     <>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Oooh+Baby&family=Caveat:wght@400;500&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Oooh+Baby&display=swap" rel="stylesheet" />
 
       <style>{`
-        .ivory-card {
+        .parchment-card {
           background: linear-gradient(145deg, #FFFEF7 0%, #FBF8F0 25%, #F8F4E8 50%, #FBF7ED 75%, #FFFDF5 100%);
-          box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06), inset 0 0 60px rgba(255,252,240,0.5);
+          box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.07), inset 0 0 60px rgba(255,252,240,0.5);
+          position: relative;
         }
-        .ivory-card::before {
+        /* Laid paper fibre texture */
+        .parchment-card::before {
           content: '';
           position: absolute;
           inset: 0;
           border-radius: inherit;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-          opacity: 0.025;
+          background-image:
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65 0.2' numOctaves='4' seed='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.02 0.4' numOctaves='2' seed='8' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+          opacity: 0.03;
           mix-blend-mode: multiply;
           pointer-events: none;
         }
-        .ivory-card::after {
+        /* Subtle edge border */
+        .parchment-card::after {
           content: '';
           position: absolute;
           inset: 0;
           border-radius: inherit;
-          border: 1px solid rgba(200, 185, 155, 0.3);
+          border: 1px solid rgba(180, 165, 140, 0.25);
           pointer-events: none;
         }
         .card-pile {
-          box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.04), 0 1px 0 rgba(200,185,155,0.15);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.05), 0 1px 0 rgba(180,165,140,0.15);
         }
         .card-name { font-family: 'Oooh Baby', cursive; color: #1a1a1a; }
-        .card-detail { font-family: 'Caveat', cursive; color: #5a6b5e; }
-        .card-counter { font-family: 'Caveat', cursive; }
+        .photo-frame {
+          background: white;
+          padding: 6px;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.1), 0 4px 14px rgba(0,0,0,0.07);
+          border-radius: 3px;
+        }
         .card-play { transition: all 0.2s ease; }
-        .card-play:hover { transform: scale(1.08); box-shadow: 0 4px 20px rgba(61,90,76,0.25); }
+        .card-play:hover { transform: scale(1.08); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
         .card-play:active { transform: scale(0.96); }
       `}</style>
 
       <div style={{ overflow: 'hidden' }}>
-        {/* Card Stack */}
-        <div className="relative flex items-center justify-center" style={{ minHeight: '380px', perspective: '1000px' }}>
+        <div className="relative flex items-center justify-center" style={{ minHeight: '480px', perspective: '1000px' }}>
           {/* Pile behind */}
           {[3, 2, 1].map(offset => {
             const idx = safeIndex + offset
@@ -234,11 +250,11 @@ export default function MessageCardStack({
             return (
               <div
                 key={`pile-${offset}`}
-                className="absolute ivory-card card-pile rounded-xl"
+                className="absolute parchment-card card-pile rounded-xl"
                 style={{
                   width: '100%',
                   maxWidth: '420px',
-                  height: '360px',
+                  height: '460px',
                   transform: `rotate(${rot}deg) translate(${off.x}px, ${off.y + offset * 4}px) scale(${1 - offset * 0.02})`,
                   zIndex: 10 - offset,
                   opacity: 1 - offset * 0.15,
@@ -250,7 +266,7 @@ export default function MessageCardStack({
 
           {/* Active card */}
           <div
-            className="relative ivory-card rounded-xl select-none"
+            className="relative parchment-card rounded-xl select-none"
             style={{
               width: '100%',
               maxWidth: '420px',
@@ -270,99 +286,42 @@ export default function MessageCardStack({
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
           >
-            <div className="relative z-10 p-6">
-              {/* Top row: favourite + menu */}
-              <div className="flex items-center justify-between mb-1">
-                <button
-                  onClick={(e) => { e.stopPropagation(); onToggleFavorite(msg.id, fav) }}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  className="p-1 transition"
-                >
-                  <Heart size={20} fill={fav ? '#C08585' : 'none'} stroke={fav ? '#C08585' : '#c4c4c4'} strokeWidth={1.5} />
-                </button>
-
-                {filter === 'trash' ? (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onRestore(msg.id) }}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition"
-                    style={{ color: '#3D5A4C', background: 'rgba(61,90,76,0.08)' }}
-                  >
-                    <Undo2 size={14} />
-                    Restore
-                  </button>
-                ) : (
-                  <div className="relative">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); setShowTags(false) }}
-                      onPointerDown={(e) => e.stopPropagation()}
-                      className="p-1.5 rounded-lg hover:bg-black/5 transition"
-                    >
-                      <MoreHorizontal size={18} style={{ color: '#999' }} />
-                    </button>
-                    {showMenu && (
-                      <>
-                        <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)}></div>
-                        <div
-                          className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20"
-                          style={{ border: '1px solid #e8ece9', minWidth: '160px' }}
-                        >
-                          <button
-                            onClick={() => { onPhotoUpload(msg.id); setShowMenu(false) }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
-                            style={{ color: '#6E7D71' }}
-                          >
-                            <ImageIcon size={14} />
-                            {msg.guest_photo_url ? 'Change photo' : 'Add photo'}
-                          </button>
-                          <button
-                            onClick={() => { setShowTags(true); setShowMenu(false) }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
-                            style={{ color: '#6E7D71' }}
-                          >
-                            <Tag size={14} />
-                            Edit tags
-                          </button>
-                          <button
-                            onClick={() => { onShare(msg.recording_url, msg.caller_name); setShowMenu(false) }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-sage-light/20 transition flex items-center gap-2"
-                            style={{ color: '#6E7D71' }}
-                          >
-                            <Share2 size={14} />
-                            Share
-                          </button>
-                          <div style={{ borderTop: '1px solid #e8ece9', margin: '4px 0' }}></div>
-                          <button
-                            onClick={() => { onSoftDelete(msg.id); setShowMenu(false) }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-rose-light/20 transition flex items-center gap-2"
-                            style={{ color: '#C08585' }}
-                          >
-                            <Trash2 size={14} />
-                            Delete
-                          </button>
-                        </div>
-                      </>
-                    )}
+            <div className="relative z-10 p-5">
+              {/* Photo area - 4:3 with printed photo frame */}
+              <div className="mb-4">
+                {photoUrl ? (
+                  <div className="photo-frame">
+                    <div style={{ aspectRatio: '4/3', overflow: 'hidden', borderRadius: '2px' }}>
+                      <img
+                        src={photoUrl}
+                        alt={msg.caller_name || 'Guest'}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
+                ) : (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); if (filter !== 'trash') onPhotoUpload(msg.id) }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="w-full transition-colors"
+                  >
+                    <div className="photo-frame">
+                      <div
+                        className="flex flex-col items-center justify-center gap-2"
+                        style={{ aspectRatio: '4/3', background: '#f0ece4', borderRadius: '2px' }}
+                      >
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.05)' }}>
+                          <ImageIcon size={22} style={{ color: '#999' }} />
+                        </div>
+                        <span className="text-xs font-medium" style={{ color: '#999' }}>Tap to add photo</span>
+                      </div>
+                    </div>
+                  </button>
                 )}
               </div>
 
-              {/* Photo + Name + Date */}
-              <div className="flex gap-5 mb-2">
-                {msg.guest_photo_url && (
-                  <div className="flex-shrink-0">
-                    <div
-                      className="rounded-lg overflow-hidden"
-                      style={{
-                        width: '80px', height: '80px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                        border: '2px solid rgba(255,252,240,0.8)',
-                      }}
-                    >
-                      <img src={msg.guest_photo_url} alt={msg.caller_name || 'Guest'} className="w-full h-full object-cover" />
-                    </div>
-                  </div>
-                )}
+              {/* Name + menu */}
+              <div className="flex items-start justify-between mb-1">
                 <div className="flex-1 min-w-0">
                   {editingName ? (
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
@@ -378,16 +337,16 @@ export default function MessageCardStack({
                           if (e.key === 'Escape') setEditingName(false)
                         }}
                         className="text-2xl px-2 py-1 rounded border focus:outline-none focus:ring-2 w-full"
-                        style={{ fontFamily: "'Oooh Baby', cursive", borderColor: '#e8ece9', color: '#1a1a1a' }}
+                        style={{ fontFamily: "'Oooh Baby', cursive", borderColor: '#ddd', color: '#1a1a1a' }}
                         autoFocus
                       />
                       <button
                         onClick={() => { if (editNameValue.trim()) { onUpdateName(msg.id, editNameValue.trim()); setEditingName(false) } }}
-                        className="p-1 rounded hover:bg-sage-light/20"
+                        className="p-1 rounded hover:bg-black/5"
                       >
-                        <Check size={14} style={{ color: '#3D5A4C' }} />
+                        <Check size={14} style={{ color: '#333' }} />
                       </button>
-                      <button onClick={() => setEditingName(false)} className="p-1 rounded hover:bg-sage-light/20">
+                      <button onClick={() => setEditingName(false)} className="p-1 rounded hover:bg-black/5">
                         <X size={14} style={{ color: '#999' }} />
                       </button>
                     </div>
@@ -405,7 +364,7 @@ export default function MessageCardStack({
                     >
                       <div className="card-name text-2xl sm:text-3xl leading-tight truncate">
                         {msg.caller_name || (
-                          <span className="text-sage italic text-lg flex items-center gap-1" style={{ fontFamily: 'inherit' }}>
+                          <span className="italic text-lg flex items-center gap-1" style={{ fontFamily: 'inherit', color: '#aaa' }}>
                             <User size={16} />
                             Tap to add name
                           </span>
@@ -413,61 +372,79 @@ export default function MessageCardStack({
                       </div>
                     </button>
                   )}
-                  <div className="card-detail text-lg mt-0.5">
-                    {formatDate(msg.recorded_at || msg.created_at)}
-                  </div>
                 </div>
+
+                {filter === 'trash' ? (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onRestore(msg.id) }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition flex-shrink-0"
+                    style={{ color: '#333', background: 'rgba(0,0,0,0.06)' }}
+                  >
+                    <Undo2 size={14} />
+                    Restore
+                  </button>
+                ) : (
+                  <div className="relative flex-shrink-0">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); setShowTags(false) }}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      className="p-1.5 rounded-lg hover:bg-black/5 transition"
+                    >
+                      <MoreHorizontal size={18} style={{ color: '#999' }} />
+                    </button>
+                    {showMenu && (
+                      <>
+                        <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)}></div>
+                        <div
+                          className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg py-1 z-20"
+                          style={{ border: '1px solid #e0e0e0', minWidth: '160px' }}
+                        >
+                          <button
+                            onClick={() => { onPhotoUpload(msg.id); setShowMenu(false) }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2"
+                            style={{ color: '#555' }}
+                          >
+                            <ImageIcon size={14} />
+                            {msg.guest_photo_url ? 'Change photo' : 'Add photo'}
+                          </button>
+                          <button
+                            onClick={() => { onShare(msg.recording_url, msg.caller_name); setShowMenu(false) }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2"
+                            style={{ color: '#555' }}
+                          >
+                            <Share2 size={14} />
+                            Share
+                          </button>
+                          <div style={{ borderTop: '1px solid #eee', margin: '4px 0' }}></div>
+                          <button
+                            onClick={() => { onSoftDelete(msg.id); setShowMenu(false) }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 transition flex items-center gap-2"
+                            style={{ color: '#C08585' }}
+                          >
+                            <Trash2 size={14} />
+                            Delete
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
 
-              {/* Divider */}
-              <div className="my-4" style={{
-                height: '1px',
-                background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,135,0.4) 20%, rgba(180,165,135,0.4) 80%, transparent 100%)',
-              }} />
-
-              {/* Tags (inline edit or display) */}
-              {showTags ? (
-                <div className="mb-4 p-3 rounded-lg" style={{ background: 'rgba(245,240,232,0.7)' }} onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
-                  <div className="flex flex-wrap gap-1.5">
-                    {AVAILABLE_TAGS.map(tag => (
-                      <button
-                        key={tag}
-                        onClick={() => onToggleTag(msg.id, tag)}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium transition"
-                        style={{
-                          background: (msg.tags || []).includes(tag) ? '#3D5A4C' : 'white',
-                          color: (msg.tags || []).includes(tag) ? 'white' : '#6E7D71',
-                          border: '1px solid',
-                          borderColor: (msg.tags || []).includes(tag) ? '#3D5A4C' : '#e8ece9'
-                        }}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                  <button onClick={() => setShowTags(false)} className="mt-2 text-xs font-medium" style={{ color: '#3D5A4C' }}>
-                    Done
-                  </button>
-                </div>
-              ) : msg.tags && msg.tags.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {msg.tags.map(tag => (
-                    <span key={tag} className="card-detail text-sm px-3 py-0.5 rounded-full" style={{ background: 'rgba(61,90,76,0.06)', border: '1px solid rgba(61,90,76,0.1)' }}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-
-              {/* Duration */}
-              <div className="flex items-center gap-1.5 card-detail text-lg mb-4">
-                <Clock size={15} strokeWidth={1.5} style={{ color: '#8B9B8E' }} />
-                {formatDuration(duration)}
+              {/* Date + duration */}
+              <div className="flex items-center gap-2 mb-3 text-sm" style={{ color: '#777' }}>
+                <span>{formatDate(msg.recorded_at || msg.created_at)}</span>
+                <span style={{ color: '#ccc' }}>&middot;</span>
+                <span className="flex items-center gap-1">
+                  <Clock size={13} strokeWidth={1.5} style={{ color: '#999' }} />
+                  {formatDuration(duration)}
+                </span>
               </div>
 
               {/* Notes */}
               {msg.notes && (
-                <p className="card-detail text-base mb-4 px-3 py-2 rounded-lg" style={{ background: 'rgba(245,240,232,0.5)' }}>
+                <p className="text-sm mb-3 px-3 py-2 rounded-lg" style={{ background: 'rgba(0,0,0,0.03)', color: '#666' }}>
                   {msg.notes}
                 </p>
               )}
@@ -477,8 +454,8 @@ export default function MessageCardStack({
                 <button
                   className="card-play flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
                   style={{
-                    background: isPlaying ? '#D4A5A5' : 'linear-gradient(135deg, #3D5A4C 0%, #4a6d5b 100%)',
-                    boxShadow: '0 2px 12px rgba(61,90,76,0.2)',
+                    background: isPlaying ? '#D4A5A5' : 'linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%)',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
                   }}
                   onClick={(e) => { e.stopPropagation(); onPlay(msg.id, msg.recording_url) }}
                   onPointerDown={(e) => e.stopPropagation()}
@@ -486,32 +463,110 @@ export default function MessageCardStack({
                   {isPlaying ? <Pause size={20} fill="white" stroke="white" /> : <Play size={20} fill="white" stroke="white" style={{ marginLeft: '2px' }} />}
                 </button>
                 <div className="flex-1">
-                  <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(200,185,155,0.25)' }}>
-                    <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: isPlaying ? '#D4A5A5' : '#3D5A4C' }}></div>
+                  <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,0.08)' }}>
+                    <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: isPlaying ? '#D4A5A5' : '#333' }}></div>
                   </div>
                 </div>
-                <span className="text-xs font-mono" style={{ color: '#8B9B8E' }}>{formatDuration(duration)}</span>
+                <span className="text-xs font-mono" style={{ color: '#999' }}>{formatDuration(duration)}</span>
               </div>
 
-              {/* Bottom actions */}
-              <div className="flex items-center justify-end gap-1 mt-4 pt-3" style={{ borderTop: '1px solid rgba(200,185,155,0.2)' }}>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onDownload(msg.recording_url, msg.caller_name) }}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  className="p-2 rounded-lg hover:bg-black/5 transition"
-                  title="Download"
-                >
-                  <Download size={16} style={{ color: '#999' }} />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onShare(msg.recording_url, msg.caller_name) }}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  className="p-2 rounded-lg hover:bg-black/5 transition"
-                  title="Share"
-                >
-                  <Share2 size={16} style={{ color: '#999' }} />
-                </button>
+              {/* Divider */}
+              <div className="my-3" style={{
+                height: '1px',
+                background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.08) 20%, rgba(0,0,0,0.08) 80%, transparent 100%)',
+              }} />
+
+              {/* Bottom bar: heart + tag icon + tags | download + share */}
+              <div className="flex items-center justify-between">
+                {filter === 'trash' ? (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onRestore(msg.id) }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 text-xs font-medium transition"
+                    style={{ color: '#333' }}
+                  >
+                    <Undo2 size={14} />
+                    Restore
+                  </button>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-hidden">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onToggleFavorite(msg.id, fav) }}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        className="flex-shrink-0 p-1 rounded-lg hover:bg-black/5 transition"
+                      >
+                        <Heart size={18} fill={fav ? '#C08585' : 'none'} stroke={fav ? '#C08585' : '#bbb'} strokeWidth={1.5} />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setShowTags(!showTags); setShowMenu(false) }}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        className="flex-shrink-0 p-1 rounded-lg hover:bg-black/5 transition"
+                        title="Edit tags"
+                      >
+                        <Tag size={15} style={{ color: '#999' }} />
+                      </button>
+                      {msg.tags && msg.tags.length > 0 && !showTags && (
+                        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                          {msg.tags.map(tag => (
+                            <span
+                              key={tag}
+                              className="text-xs px-2.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0"
+                              style={{ background: 'rgba(0,0,0,0.05)', color: '#666', border: '1px solid rgba(0,0,0,0.08)' }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDownload(msg.recording_url, msg.caller_name) }}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        className="p-2 rounded-lg hover:bg-black/5 transition"
+                        title="Download"
+                      >
+                        <Download size={16} style={{ color: '#999' }} />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onShare(msg.recording_url, msg.caller_name) }}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        className="p-2 rounded-lg hover:bg-black/5 transition"
+                        title="Share"
+                      >
+                        <Share2 size={16} style={{ color: '#999' }} />
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
+
+              {/* Tag editor */}
+              {showTags && (
+                <div className="mt-2 p-3 rounded-lg" style={{ background: 'rgba(0,0,0,0.04)' }} onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+                  <div className="flex flex-wrap gap-1.5">
+                    {AVAILABLE_TAGS.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => onToggleTag(msg.id, tag)}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium transition"
+                        style={{
+                          background: (msg.tags || []).includes(tag) ? '#333' : 'white',
+                          color: (msg.tags || []).includes(tag) ? 'white' : '#666',
+                          border: '1px solid',
+                          borderColor: (msg.tags || []).includes(tag) ? '#333' : '#ddd'
+                        }}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                  <button onClick={() => setShowTags(false)} className="mt-2 text-xs font-medium" style={{ color: '#333' }}>
+                    Done
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -523,8 +578,8 @@ export default function MessageCardStack({
             disabled={currentIndex <= 0 || isAnimating}
             className="p-2.5 rounded-full transition-all"
             style={{
-              background: currentIndex <= 0 ? 'transparent' : 'rgba(61,90,76,0.08)',
-              color: currentIndex <= 0 ? '#c4c4c4' : '#3D5A4C',
+              background: currentIndex <= 0 ? 'transparent' : 'rgba(0,0,0,0.06)',
+              color: currentIndex <= 0 ? '#ccc' : '#333',
               opacity: currentIndex <= 0 ? 0.4 : 1,
             }}
           >
@@ -536,7 +591,7 @@ export default function MessageCardStack({
               const dist = Math.abs(i - safeIndex)
               if (dist > 3 && i !== 0 && i !== messages.length - 1) return null
               if (dist === 3 && i !== 0 && i !== messages.length - 1) {
-                return <span key={i} className="text-xs" style={{ color: '#c4c4c4' }}>·</span>
+                return <span key={i} className="text-xs" style={{ color: '#ccc' }}>·</span>
               }
               return (
                 <div
@@ -545,7 +600,7 @@ export default function MessageCardStack({
                   style={{
                     width: i === safeIndex ? '20px' : '6px',
                     height: '6px',
-                    background: i === safeIndex ? '#3D5A4C' : 'rgba(61,90,76,0.2)',
+                    background: i === safeIndex ? '#333' : 'rgba(0,0,0,0.15)',
                   }}
                   onClick={() => { if (!isAnimating) { setCurrentIndex(i); setShowMenu(false); setShowTags(false); setEditingName(false) } }}
                 />
@@ -558,8 +613,8 @@ export default function MessageCardStack({
             disabled={currentIndex >= messages.length - 1 || isAnimating}
             className="p-2.5 rounded-full transition-all"
             style={{
-              background: currentIndex >= messages.length - 1 ? 'transparent' : 'rgba(61,90,76,0.08)',
-              color: currentIndex >= messages.length - 1 ? '#c4c4c4' : '#3D5A4C',
+              background: currentIndex >= messages.length - 1 ? 'transparent' : 'rgba(0,0,0,0.06)',
+              color: currentIndex >= messages.length - 1 ? '#ccc' : '#333',
               opacity: currentIndex >= messages.length - 1 ? 0.4 : 1,
             }}
           >
