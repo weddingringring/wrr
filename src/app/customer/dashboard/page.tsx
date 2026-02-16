@@ -1184,7 +1184,7 @@ export default function CustomerDashboardPage() {
                 const progress = playbackProgress[message.id] || 0
                 const isPlaying = currentlyPlaying === message.id
                 const seed = index * 2654435761
-                const rotation = ((seed % 1000) - 500) / 100
+                const rotation = ((seed % 600) - 300) / 100
                 const photoUrl = message.guest_photo_url
                   ? (message.guest_photo_url.startsWith('http') ? message.guest_photo_url : photoSignedUrls[message.id])
                   : null
