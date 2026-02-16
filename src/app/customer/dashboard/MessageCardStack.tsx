@@ -72,6 +72,7 @@ export default function MessageCardStack({
   const [editNameValue, setEditNameValue] = useState('')
   const [showMenu, setShowMenu] = useState(false)
   const [showTags, setShowTags] = useState(false)
+  const [skipTransition, setSkipTransition] = useState(false)
   const startPos = useRef({ x: 0, y: 0 })
 
   const safeIndex = Math.min(currentIndex, Math.max(0, messages.length - 1))
@@ -121,8 +122,10 @@ export default function MessageCardStack({
         setShowMenu(false)
         setShowTags(false)
         setEditingName(false)
+        setSkipTransition(true)
         if (direction === 'left') setCurrentIndex(i => Math.min(i + 1, messages.length - 1))
         else setCurrentIndex(i => Math.max(i - 1, 0))
+        requestAnimationFrame(() => { requestAnimationFrame(() => setSkipTransition(false)) })
       }, 350)
     } else {
       setDragX(0)
@@ -142,7 +145,9 @@ export default function MessageCardStack({
       setDragX(0)
       setDragY(0)
       setIsAnimating(false)
+      setSkipTransition(true)
       setCurrentIndex(i => i + 1)
+      requestAnimationFrame(() => { requestAnimationFrame(() => setSkipTransition(false)) })
     }, 350)
   }
 
@@ -158,7 +163,9 @@ export default function MessageCardStack({
       setDragX(0)
       setDragY(0)
       setIsAnimating(false)
+      setSkipTransition(true)
       setCurrentIndex(i => i - 1)
+      requestAnimationFrame(() => { requestAnimationFrame(() => setSkipTransition(false)) })
     }, 350)
   }
 
@@ -347,7 +354,7 @@ export default function MessageCardStack({
                   : exitDirection === 'right'
                     ? 'translateX(120%) rotate(15deg)'
                     : `translateX(${dragX}px) translateY(${dragY}px) rotate(${dragX * 0.05 + getCardRotation(safeIndex) * 0.3}deg)`,
-                transition: isDragging ? 'none' : 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: (isDragging || skipTransition) ? 'none' : 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                 opacity: exitDirection ? 0 : 1,
                 touchAction: 'none',
                 cursor: editingName || showMenu || showTags ? 'default' : 'grab',
