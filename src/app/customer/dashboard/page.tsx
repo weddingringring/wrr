@@ -517,11 +517,6 @@ export default function CustomerDashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ background: '#FFEFEF' }}>
-      {/* Google Font for title */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Oooh+Baby&display=swap" rel="stylesheet" />
-
       {/* Hidden file input for photo upload */}
       <input
         ref={photoInputRef}
@@ -614,9 +609,9 @@ export default function CustomerDashboardPage() {
           {(() => {
             const title = getGuestbookTitle()
             return (
-              <h1 style={{ fontFamily: "'Oooh Baby', cursive", color: '#1a1a1a' }}>
+              <h1>
                 {title.names && (
-                  <span className="block text-5xl sm:text-8xl leading-tight">{title.names}</span>
+                  <span className="block text-5xl sm:text-8xl leading-tight" style={{ fontFamily: "'Florentea', cursive", color: '#1a1a1a' }}>{title.names}</span>
                 )}
                 <span className="block font-serif text-2xl sm:text-4xl mt-1" style={{ color: '#4a4a4a' }}>{title.subtitle}</span>
               </h1>
