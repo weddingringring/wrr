@@ -151,12 +151,13 @@ export async function POST(request: Request) {
         postcode: postcode,
         country_code: countryCode, // CRITICAL: Used for Twilio phone number allocation by country
         website: website,
-        instagram: instagram,
+        instagram_handle: instagram,
         subscription_type: subscriptionType,
         subscription_status: subscriptionStatus,
         logo_url: logoUrl,
-        owner_email: ownerEmail,
-        owner_phone: ownerPhone
+        primary_contact_name: [ownerFirstName, ownerLastName].filter(Boolean).join(' '),
+        primary_contact_email: ownerEmail,
+        primary_contact_phone: ownerPhone
       })
       .select()
       .single()
