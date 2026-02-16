@@ -1,24 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createClient } from '@supabase/supabase-js'
 
-async function getAuthUser() {
-  const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
-        set() {},
-        remove() {},
-      },
-    }
-  )
-  return supabase.auth.getUser()
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+async function getAuthUser(request: NextRequest) {
+  const authHeader = request.headers.get('Authorization')
+  if (!authHeader?.startsWith('Bearer ')) {
+    return null
+  }
+  
+  const token = authHeader.replace('Bearer ', '')
+  const { data: { user }, error } = await supabaseAdmin.auth.getUser(token)
+  
+  if (error || !user) return null
+  return user
 }
 
 export async function POST(
@@ -28,17 +26,10 @@ export async function POST(
   try {
     const eventId = params.id
     
-    // Get authenticated user from cookies
-    const { data: { user }, error: authError } = await getAuthUser()
-    if (authError || !user) {
+    const user = await getAuthUser(request)
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    
-    // Use service role for all DB operations
-    const supabaseAdmin = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
     
     const formData = await request.formData()
     const file = formData.get('greeting') as File
@@ -47,22 +38,19 @@ export async function POST(
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
     
-    // Validate file type (audio only)
     if (!file.type.startsWith('audio/')) {
       return NextResponse.json({ 
         error: 'Invalid file type. Please upload an audio file.' 
       }, { status: 400 })
     }
     
-    // Validate file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024 // 10MB
+    const maxSize = 10 * 1024 * 1024
     if (file.size > maxSize) {
       return NextResponse.json({ 
         error: 'File too large. Maximum size is 10MB.' 
       }, { status: 400 })
     }
     
-    // Get event to verify it exists and user owns it
     const { data: event, error: eventError } = await supabaseAdmin
       .from('events')
       .select('id, customer_user_id, greeting_audio_url')
@@ -73,7 +61,6 @@ export async function POST(
       return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     }
     
-    // Verify ownership
     if (event.customer_user_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
@@ -93,7 +80,7 @@ export async function POST(
     const fileName = `${eventId}/greeting.${fileExt}`
     const fileBuffer = await file.arrayBuffer()
     
-    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await supabaseAdmin.storage
       .from('event-greetings')
       .upload(fileName, fileBuffer, {
         contentType: file.type,
@@ -102,17 +89,13 @@ export async function POST(
     
     if (uploadError) {
       console.error('Upload error:', uploadError)
-      return NextResponse.json({ 
-        error: 'Failed to upload file' 
-      }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
     }
     
-    // Get public URL
     const { data: urlData } = supabaseAdmin.storage
       .from('event-greetings')
       .getPublicUrl(fileName)
     
-    // Update event with new greeting URL
     const { error: updateError } = await supabaseAdmin
       .from('events')
       .update({
@@ -124,9 +107,7 @@ export async function POST(
     
     if (updateError) {
       console.error('Update error:', updateError)
-      return NextResponse.json({ 
-        error: 'Failed to update event' 
-      }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to update event' }, { status: 500 })
     }
     
     return NextResponse.json({ 
@@ -136,9 +117,7 @@ export async function POST(
     
   } catch (error) {
     console.error('Error in greeting upload:', error)
-    return NextResponse.json({ 
-      error: 'Internal server error' 
-    }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -149,19 +128,11 @@ export async function DELETE(
   try {
     const eventId = params.id
     
-    // Get authenticated user from cookies
-    const { data: { user }, error: authError } = await getAuthUser()
-    if (authError || !user) {
+    const user = await getAuthUser(request)
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
-    // Use service role for all DB operations
-    const supabaseAdmin = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
-    
-    // Get event
     const { data: event, error: eventError } = await supabaseAdmin
       .from('events')
       .select('id, customer_user_id, greeting_audio_url')
@@ -172,12 +143,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     }
     
-    // Verify ownership
     if (event.customer_user_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
     
-    // Delete file from storage if exists
     if (event.greeting_audio_url) {
       const urlParts = event.greeting_audio_url.split('/event-greetings/')
       if (urlParts[1]) {
@@ -187,7 +156,6 @@ export async function DELETE(
       }
     }
     
-    // Remove greeting URL from event (revert to auto-generated)
     const { error: updateError } = await supabaseAdmin
       .from('events')
       .update({
@@ -198,17 +166,13 @@ export async function DELETE(
       .eq('id', eventId)
     
     if (updateError) {
-      return NextResponse.json({ 
-        error: 'Failed to update event' 
-      }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to update event' }, { status: 500 })
     }
     
     return NextResponse.json({ success: true })
     
   } catch (error) {
     console.error('Error deleting greeting:', error)
-    return NextResponse.json({ 
-      error: 'Internal server error' 
-    }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
