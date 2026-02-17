@@ -45,17 +45,23 @@ export async function POST(request: NextRequest) {
     // Create TwiML response
     const twiml = new VoiceResponse()
     
-    // Check if custom greeting audio exists
+    // Greeting priority chain:
+    // 1. User-uploaded custom audio greeting
+    // 2. AI-generated greeting (ElevenLabs)
+    // 3. Twilio Text-to-Speech fallback
     if (event.greeting_audio_url) {
-      // Play custom uploaded greeting
+      // Tier 1: Custom uploaded greeting
       twiml.play(event.greeting_audio_url)
+    } else if (event.ai_greeting_audio_url) {
+      // Tier 2: ElevenLabs AI-generated greeting
+      twiml.play(event.ai_greeting_audio_url)
     } else if (event.greeting_text) {
-      // Use text-to-speech for auto-generated greeting
+      // Tier 3: Twilio TTS fallback
       twiml.say({
         voice: 'Polly.Amy' // British English female voice
       }, event.greeting_text)
     } else {
-      // Fallback greeting
+      // Ultimate fallback
       twiml.say({
         voice: 'Polly.Amy'
       }, 'Please leave your message after the beep.')
