@@ -376,7 +376,7 @@ export default function HomePage() {
               opacity: 0.8,
               marginBottom: '4rem'
             }}>
-              Effortless to run. Instantly memorable. Designed to elevate your venue — and generate up to £350 per wedding.
+              Effortless to run. Instantly memorable. Fully branded for your venue — and capable of generating up to £350 per wedding.
             </p>
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '3.5rem' }}>
               <button
@@ -438,8 +438,14 @@ export default function HomePage() {
               <p style={{ marginBottom: '1.5rem', fontWeight: 500, color: '#F5E8E8' }}>
                 You provide the setting.
               </p>
+              <p style={{ marginBottom: '1.5rem' }}>
+                Couples receive instant access to their recordings in a secure online gallery — beautifully branded with your venue identity.
+              </p>
+              <p style={{ marginBottom: '1.5rem' }}>
+                Guests can share moments directly to Instagram Stories with your venue branding included, extending your reach beyond the wedding day.
+              </p>
               <p style={{ marginBottom: '3rem' }}>
-                Couples receive instant access to their recordings in a secure online gallery, while you benefit from an elegant feature capable of generating up to £350 per wedding.
+                You benefit from an elegant feature capable of generating up to £350 per wedding while strengthening your brand presence.
               </p>
               <button
                 onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
@@ -555,16 +561,16 @@ export default function HomePage() {
                   </svg>
                 ),
                 title: 'Word-Of-Mouth Marketing',
-                description: 'Couples share their recordings — and remember where they celebrated.'
+                description: 'Guests share recordings to Instagram Stories — with your venue branding included.'
               },
               {
                 icon: (
                   <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 0h.008v.008h-.008V7.5z" />
                   </svg>
                 ),
-                title: 'Designed To Last',
-                description: 'Durable hardware. Secure digital delivery. Professional presentation.'
+                title: 'Branded To Your Venue',
+                description: 'Custom-branded guestbooks and social sharing features reinforce your venue identity with every recording.'
               }
             ].map((benefit, idx) => (
               <div key={idx} style={{
@@ -710,7 +716,7 @@ export default function HomePage() {
               {
                 number: '4',
                 title: 'After The Event',
-                description: 'Couples access their recordings instantly via their private online gallery.'
+                description: 'Couples access their recordings instantly via their private online gallery — fully branded to your venue.'
               }
             ].map((step) => (
               <div key={step.number} style={{ textAlign: 'center' }}>
