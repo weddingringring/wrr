@@ -1359,9 +1359,6 @@ export default function CustomerDashboardPage() {
                     flexShrink: 0,
                   }}
                 >
-                  <div style={{ marginBottom: '0.4rem' }}>
-                    <Mic size={18} style={{ color: '#A0AEA3', strokeWidth: 1.5 }} />
-                  </div>
                   <div style={{
                     fontFamily: "'Oooh Baby', cursive",
                     fontSize: '1.6rem',
