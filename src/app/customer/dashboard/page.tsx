@@ -1240,7 +1240,7 @@ export default function CustomerDashboardPage() {
                     transform: 'rotate(-2.5deg)',
 
                     marginRight: '-1rem',
-                    zIndex: 2,
+                    zIndex: 1,
                     flexShrink: 0,
                   }}
                 >
@@ -1325,11 +1325,11 @@ export default function CustomerDashboardPage() {
                     width: '290px',
                     maxWidth: '80%',
                     borderRadius: '0.9rem',
-                    padding: '2.25rem 1.75rem',
+                    padding: '2.25rem 1.75rem 2.25rem 2.25rem',
                     textAlign: 'center',
                     transform: 'rotate(2deg) translateY(14px)',
-                    marginLeft: '-0.5rem',
-                    zIndex: 0,
+                    marginLeft: '0rem',
+                    zIndex: 2,
                     flexShrink: 0,
                   }}
                 >
