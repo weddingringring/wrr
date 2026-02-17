@@ -20,6 +20,7 @@ interface Message {
   id: string
   caller_number: string
   recording_url: string
+  enhanced_recording_url: string | null
   duration_seconds: number
   duration: number
   created_at: string
@@ -559,7 +560,7 @@ export default function CustomerDashboardPage() {
         const msg = activeMessages[i]
         setZipProgress(`Downloading ${i + 1}/${activeMessages.length}...`)
         try {
-          const signedUrl = await getSignedUrl(msg.recording_url)
+          const signedUrl = await getSignedUrl(msg.enhanced_recording_url || msg.recording_url)
           const response = await fetch(signedUrl)
           const blob = await response.blob()
           let baseName = (msg.caller_name || 'message').replace(/[^a-zA-Z0-9\s-]/g, '').trim()
@@ -1910,7 +1911,7 @@ export default function CustomerDashboardPage() {
                                   <button onClick={() => { photoMessageRef.current = message.id; photoInputRef.current?.click(); setActiveMenu(null) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
                                     <ImageIcon size={14} /> {message.guest_photo_url ? 'Change photo' : 'Add photo'}
                                   </button>
-                                  <button onClick={() => { handleShare(message.recording_url, name); setActiveMenu(null) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
+                                  <button onClick={() => { handleShare(message.enhanced_recording_url || message.recording_url, name); setActiveMenu(null) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
                                     <Share2 size={14} /> Share
                                   </button>
                                   <div style={{ borderTop: '1px solid #eee', margin: '4px 0' }}></div>
@@ -1936,7 +1937,7 @@ export default function CustomerDashboardPage() {
                       {/* Play + progress */}
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={() => handlePlay(message.id, message.recording_url)}
+                          onClick={() => handlePlay(message.id, message.enhanced_recording_url || message.recording_url)}
                           className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
                           style={{
                             background: isPlaying ? '#D4A5A5' : 'linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%)',
@@ -1982,10 +1983,10 @@ export default function CustomerDashboardPage() {
                               )}
                             </div>
                             <div className="flex items-center gap-1 flex-shrink-0">
-                              <button onClick={() => handleDownload(message.recording_url, name)} className="p-1.5 rounded-lg hover:bg-black/5 transition" title="Download">
+                              <button onClick={() => handleDownload(message.enhanced_recording_url || message.recording_url, name)} className="p-1.5 rounded-lg hover:bg-black/5 transition" title="Download">
                                 <Download size={14} style={{ color: '#999' }} />
                               </button>
-                              <button onClick={() => handleShare(message.recording_url, name)} className="p-1.5 rounded-lg hover:bg-black/5 transition" title="Share">
+                              <button onClick={() => handleShare(message.enhanced_recording_url || message.recording_url, name)} className="p-1.5 rounded-lg hover:bg-black/5 transition" title="Share">
                                 <Share2 size={14} style={{ color: '#999' }} />
                               </button>
                             </div>
