@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { Play, Pause, Upload, ChevronDown, ChevronUp } from 'lucide-react'
 
@@ -9,15 +9,19 @@ interface GreetingCardProps {
   greetingAudioUrl: string | null
   greetingText: string
   onUpdate: () => void
+  startEditing?: boolean
+  onCollapse?: () => void
 }
 
-export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, onUpdate }: GreetingCardProps) {
+export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, onUpdate, startEditing = false, onCollapse }: GreetingCardProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(startEditing)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
+
+  useEffect(() => { setEditing(startEditing) }, [startEditing])
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -101,7 +105,7 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
           <h3 className="text-white font-serif text-lg">
             {hasGreeting ? 'Change Greeting' : 'Upload Audio Greeting'}
           </h3>
-          <button onClick={() => setEditing(false)} className="p-1 hover:bg-white/10 rounded-lg transition">
+          <button onClick={() => { setEditing(false); onCollapse?.() }} className="p-1 hover:bg-white/10 rounded-lg transition">
             <ChevronUp size={20} className="text-white/70" />
           </button>
         </div>
