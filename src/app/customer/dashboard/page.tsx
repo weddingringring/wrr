@@ -773,8 +773,8 @@ export default function CustomerDashboardPage() {
           </p>
         </div>
 
-        {/* Greeting Card - only shown when no messages yet */}
-        {event && activeMessageCount === 0 && (
+        {/* Greeting Card - always visible as compact prompt */}
+        {event && (
           <div className="mb-6">
             <GreetingCard
               eventId={event.id}
