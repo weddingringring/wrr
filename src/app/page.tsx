@@ -398,48 +398,66 @@ export default function HomePage() {
         padding: '6rem 0'
       }}>
         <div style={{
-          maxWidth: '900px',
+          maxWidth: '1200px',
           margin: '0 auto',
-          padding: '0 2rem'
+          padding: '0 2rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4rem',
+          flexWrap: 'wrap'
         }}>
-          <h2 style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            fontSize: '3.5rem',
-            lineHeight: 1.1,
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            marginBottom: '2rem',
-            color: '#F5E8E8'
-          }}>
-            What We Do.
-          </h2>
-          <div style={{ fontSize: '1.125rem', lineHeight: 1.8, color: '#E8C9C9' }}>
-            <p style={{ marginBottom: '1.5rem' }}>
-              We are the audio guestbook where timeless elegance meets modern convenience. Our vintage-style phones, combined with our modern software, creates an unforgettable audio guestbook experience.
-            </p>
-            <p style={{ marginBottom: '1.5rem' }}>
-              With a swift 30-second setup on our user-friendly online system, venues can effortlessly enhance their offerings and attract couples seeking that extra touch of charm.
-            </p>
-            <p style={{ marginBottom: '3rem' }}>
-              Elevate your venue, captivate your clients, and ensure every celebration is a resounding success with WeddingRingRing.
-            </p>
-            <a 
-              href="#how-it-works"
+          <div style={{ flex: '1 1 400px', minWidth: 0 }}>
+            <h2 style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: '3.5rem',
+              lineHeight: 1.1,
+              fontWeight: 500,
+              letterSpacing: '-0.02em',
+              marginBottom: '2rem',
+              color: '#F5E8E8'
+            }}>
+              What We Do.
+            </h2>
+            <div style={{ fontSize: '1.125rem', lineHeight: 1.8, color: '#E8C9C9' }}>
+              <p style={{ marginBottom: '1.5rem' }}>
+                We are the audio guestbook where timeless elegance meets modern convenience. Our vintage-style phones, combined with our modern software, creates an unforgettable audio guestbook experience.
+              </p>
+              <p style={{ marginBottom: '1.5rem' }}>
+                With a swift 30-second setup on our user-friendly online system, venues can effortlessly enhance their offerings and attract couples seeking that extra touch of charm.
+              </p>
+              <p style={{ marginBottom: '3rem' }}>
+                Elevate your venue, captivate your clients, and ensure every celebration is a resounding success with WeddingRingRing.
+              </p>
+              <a 
+                href="#how-it-works"
+                style={{
+                  display: 'inline-block',
+                  background: 'white',
+                  color: '#1a1a1a',
+                  padding: '1rem 2rem',
+                  borderRadius: '0.375rem',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  border: '2px solid white',
+                  transition: 'all 0.2s'
+                }}
+              >
+                Find Out How It Works
+              </a>
+            </div>
+          </div>
+          <div style={{ flex: '1 1 350px', minWidth: 0, display: 'flex', justifyContent: 'center' }}>
+            <img
+              src="/Mockup-7.png"
+              alt="WeddingRingRing app dashboard showing voice messages from wedding guests"
               style={{
-                display: 'inline-block',
-                background: 'white',
-                color: '#1a1a1a',
-                padding: '1rem 2rem',
-                borderRadius: '0.375rem',
-                fontSize: '1rem',
-                fontWeight: 600,
-                textDecoration: 'none',
-                border: '2px solid white',
-                transition: 'all 0.2s'
+                width: '100%',
+                maxWidth: '480px',
+                height: 'auto',
+                borderRadius: '12px',
               }}
-            >
-              Find Out How It Works
-            </a>
+            />
           </div>
         </div>
       </section>
