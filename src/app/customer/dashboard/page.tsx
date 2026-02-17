@@ -1172,16 +1172,26 @@ export default function CustomerDashboardPage() {
                   letterSpacing: '0.02em'
                 }}>
                   {(() => {
-                    if (!event?.event_date) return 'Your Big Day'
+                    if (!event?.event_date) return <span>Your Big Day</span>
                     const eventDate = new Date(event.event_date + 'T00:00:00')
                     const today = new Date()
                     today.setHours(0, 0, 0, 0)
                     const diffMs = eventDate.getTime() - today.getTime()
                     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-                    if (diffDays > 1) return `${diffDays} days to go`
-                    if (diffDays === 1) return 'Tomorrow!'
-                    if (diffDays === 0) return 'Today!'
-                    return 'Your Big Day'
+                    if (diffDays > 1) return (
+                      <>
+                        <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '4.5rem', fontWeight: 300, color: '#3D5A4C', lineHeight: 1 }}>{diffDays}</div>
+                        <div style={{ fontSize: '1rem', color: '#8a8a7a', marginTop: '0.25rem' }}>days to go</div>
+                      </>
+                    )
+                    if (diffDays === 1) return (
+                      <>
+                        <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '4.5rem', fontWeight: 300, color: '#3D5A4C', lineHeight: 1 }}>1</div>
+                        <div style={{ fontSize: '1rem', color: '#8a8a7a', marginTop: '0.25rem' }}>day to go</div>
+                      </>
+                    )
+                    if (diffDays === 0) return <span style={{ fontSize: '1.5rem', color: '#3D5A4C' }}>Today!</span>
+                    return <span>Your Big Day</span>
                   })()}
                 </div>
 
