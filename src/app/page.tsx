@@ -373,10 +373,10 @@ export default function HomePage() {
             <p style={{
               fontSize: '1rem',
               color: '#6a6a6a',
-              opacity: 0.7,
-              marginBottom: '3.5rem'
+              opacity: 0.8,
+              marginBottom: '4rem'
             }}>
-              Effortless to run. Instantly memorable. Designed to elevate your venue.
+              Effortless to run. Instantly memorable. Designed to elevate your venue — and generate up to £350 per wedding.
             </p>
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '3.5rem' }}>
               <a
@@ -433,11 +433,14 @@ export default function HomePage() {
               <p style={{ marginBottom: '1.5rem' }}>
                 WeddingRingRing allows your venue to offer a beautifully designed vintage-style audio guestbook — without adding complexity to your team's day.
               </p>
-              <p style={{ marginBottom: '1.5rem' }}>
-                We provide the hardware, the software, and the support. You provide the setting.
+              <p style={{ marginBottom: '2rem' }}>
+                We provide the hardware, the software, and the support.
+              </p>
+              <p style={{ marginBottom: '1.5rem', fontWeight: 500, color: '#F5E8E8' }}>
+                You provide the setting.
               </p>
               <p style={{ marginBottom: '3rem' }}>
-                Couples receive instant access to their recordings in a secure online gallery, while you benefit from an elegant, revenue-generating feature that enhances your offering.
+                Couples receive instant access to their recordings in a secure online gallery, while you benefit from an elegant feature capable of generating up to £350 per wedding.
               </p>
               <a 
                 href="#how-it-works"
@@ -517,7 +520,7 @@ export default function HomePage() {
                   </svg>
                 ),
                 title: 'Additional Revenue Per Wedding',
-                description: 'Offer a premium upgrade couples are happy to pay for.'
+                description: 'Generate up to £350 per event with a premium upgrade couples value.'
               },
               {
                 icon: (
@@ -568,7 +571,7 @@ export default function HomePage() {
               <div key={idx} style={{
                 background: 'white',
                 borderRadius: '0.5rem',
-                padding: '2.25rem',
+                padding: '2.5rem',
                 border: '1px solid rgba(0, 0, 0, 0.08)',
                 boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
                 transition: 'all 0.3s'
@@ -609,7 +612,7 @@ export default function HomePage() {
           {/* CTA Section */}
           <div style={{
             textAlign: 'center',
-            padding: '5rem 0',
+            padding: '6rem 0',
             marginTop: '4rem'
           }}>
             <h3 style={{
@@ -628,7 +631,7 @@ export default function HomePage() {
               maxWidth: '600px',
               margin: '0 auto 3rem'
             }}>
-              Let's discuss how WeddingRingRing could work seamlessly within your venue.
+              Let's explore how WeddingRingRing could integrate seamlessly into your venue and enhance your offering.
             </p>
             <button
               onClick={() => setModalOpen(true)}
@@ -654,14 +657,14 @@ export default function HomePage() {
       <section id="how-it-works" style={{
         background: '#1a1a1a',
         color: '#E8C9C9',
-        padding: '7rem 0'
+        padding: '5.5rem 0'
       }}>
         <div style={{
           maxWidth: '1200px',
           margin: '0 auto',
           padding: '0 2rem'
         }}>
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <h2 style={{
               fontFamily: "'Playfair Display', Georgia, serif",
               fontSize: '3.5rem',
@@ -687,7 +690,7 @@ export default function HomePage() {
             gap: '3rem',
             maxWidth: '1000px',
             margin: '0 auto',
-            padding: '4rem 0'
+            padding: '3rem 0'
           }}>
             {[
               {
@@ -724,7 +727,7 @@ export default function HomePage() {
                 </div>
                 <h3 style={{
                   fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: '1.25rem',
+                  fontSize: '1.4rem',
                   fontWeight: 500,
                   color: '#F5E8E8',
                   marginBottom: '1rem',
@@ -734,7 +737,7 @@ export default function HomePage() {
                 </h3>
                 <p style={{
                   fontSize: '1rem',
-                  lineHeight: 1.6,
+                  lineHeight: 1.75,
                   color: '#E8C9C9'
                 }}>
                   {step.description}
@@ -742,6 +745,17 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+
+          <p style={{
+            textAlign: 'center',
+            fontSize: '1.2rem',
+            fontWeight: 500,
+            color: '#D4B5B5',
+            marginTop: '3rem',
+            paddingBottom: '1rem'
+          }}>
+            Simple for your team. Memorable for your couples.
+          </p>
         </div>
       </section>
 
