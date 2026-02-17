@@ -178,7 +178,7 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
 
       <div className="flex-1 min-w-0">
         <p className="text-sm truncate" style={{ color: '#4a4a4a' }}>
-          {hasGreeting ? 'Custom audio greeting active' : 'Using automated voice greeting'}
+          {hasGreeting ? 'Custom audio greeting active' : 'Upload a personalised greeting for your guests'}
         </p>
       </div>
 
@@ -187,7 +187,7 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
       <button
         onClick={() => setEditing(true)}
         className="flex-shrink-0 p-2 rounded-lg hover:bg-sage-light/30 transition"
-        title={hasGreeting ? 'Change greeting' : 'Upload greeting'}
+        title={hasGreeting ? 'Change greeting' : 'Record a greeting'}
       >
         <Pencil size={15} style={{ color: '#6E7D71' }} />
       </button>
