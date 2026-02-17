@@ -316,7 +316,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* The Process */}
-      <section style={{ background: 'white', padding: '5rem 0' }}>
+      <section style={{ background: '#1a1a1a', padding: '5rem 0' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
           <div style={{
             display: 'grid',
@@ -346,10 +346,10 @@ export default function HowItWorksPage() {
               }
             ].map((step) => (
               <div key={step.number} style={{
-                background: '#FAF8F3',
+                background: 'rgba(255,255,255,0.05)',
                 borderRadius: '12px',
                 padding: '2rem 1.5rem',
-                border: '1px solid rgba(0,0,0,0.06)',
+                border: '1px solid rgba(255,255,255,0.08)',
                 display: 'flex',
                 flexDirection: 'column',
               }}>
@@ -367,7 +367,7 @@ export default function HowItWorksPage() {
                   fontFamily: "var(--font-serif)",
                   fontSize: '1.15rem',
                   fontWeight: 600,
-                  color: '#1a1a1a',
+                  color: '#F5E8E8',
                   marginBottom: '0.75rem',
                   lineHeight: 1.3,
                 }}>
@@ -376,7 +376,7 @@ export default function HowItWorksPage() {
                 <p style={{
                   fontSize: '0.9rem',
                   lineHeight: 1.6,
-                  color: '#6a6a6a',
+                  color: '#E8C9C9',
                   margin: 0,
                 }}>
                   {step.description}
