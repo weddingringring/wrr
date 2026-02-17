@@ -4,17 +4,17 @@ import { createClient } from '@supabase/supabase-js'
 // These are stable premade voices available to all accounts
 const VOICE_MAP: Record<string, { voiceId: string; name: string }> = {
   // British English
-  GB: { voiceId: 'ThT5KcBeYPX3keUQqHPh', name: 'Dorothy (British, warm)' },
+  GB: { voiceId: '3vbrfmIQGJrswxh7ife4', name: 'Anaya (British, warm)' },
   // American English
   US: { voiceId: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah (American, warm)' },
   // Australian English
   AU: { voiceId: 'IKne3meq5aSn9XLyUdCD', name: 'Charlie (Australian, casual)' },
   // Canadian English (use American)
-  CA: { voiceId: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah (American, warm)' },
+  CA: { voiceId: 'RiK8PTtVIeKKoFFTk9fg', name: 'Kat (Canadian, warm)' },
   // Irish English
-  IE: { voiceId: 'ThT5KcBeYPX3keUQqHPh', name: 'Dorothy (British, warm)' },
+  IE: { voiceId: '3b8fXc91YHS1i2DYAlBQ', name: 'Laura (Irish, warm)' },
   // New Zealand (use Australian)
-  NZ: { voiceId: 'IKne3meq5aSn9XLyUdCD', name: 'Charlie (Australian, casual)' },
+  NZ: { voiceId: 'I9VVAGGSjpxHJqji4rzb', name: 'Kim (Kiwi, casual)' },
 }
 
 const DEFAULT_VOICE = VOICE_MAP.GB
