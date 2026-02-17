@@ -359,7 +359,8 @@ export default function HomePage() {
               fontWeight: 400,
               letterSpacing: '-0.03em',
               marginBottom: '1.5rem',
-              marginTop: '1rem'
+              marginTop: '1rem',
+              overflowWrap: 'break-word' as any
             }}>
               The Audio Guestbook For Venues.
             </h1>
@@ -1370,13 +1371,13 @@ export default function HomePage() {
             grid-template-columns: 1fr !important;
           }
           .hero-headline {
-            font-size: 2.75rem !important;
+            font-size: 3.25rem !important;
           }
           .hero-subheading {
-            font-size: 1.15rem !important;
+            font-size: 1.25rem !important;
           }
           .hero-supporting {
-            font-size: 0.9rem !important;
+            font-size: 0.95rem !important;
           }
         }
       `}</style>
