@@ -327,7 +327,7 @@ export default function HomePage() {
       <section style={{
         position: 'relative',
         background: '#F5E8E8',
-        padding: '6rem 0 4rem',
+        padding: '7rem 0 5rem',
         overflow: 'hidden'
       }}>
         <div style={{
@@ -354,25 +354,35 @@ export default function HomePage() {
           <div style={{ maxWidth: '700px' }}>
             <h1 style={{
               fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: '4.5rem',
+              fontSize: '5.2rem',
               lineHeight: 1.05,
               fontWeight: 400,
               letterSpacing: '-0.03em',
-              marginBottom: '2rem'
+              marginBottom: '1.5rem',
+              marginTop: '1rem'
             }}>
               The Audio Guestbook For Venues.
             </h1>
             <p style={{
-              fontSize: '1.25rem',
-              color: '#6a6a6a',
-              marginBottom: '3rem'
+              fontSize: '1.35rem',
+              color: '#4a4a4a',
+              marginBottom: '1rem'
             }}>
-              Memories to listen back to for a lifetime
+              A luxury audio experience your couples will pay extra for.
             </p>
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '3rem' }}>
-              <button
-                onClick={() => setModalOpen(true)}
+            <p style={{
+              fontSize: '1rem',
+              color: '#6a6a6a',
+              opacity: 0.7,
+              marginBottom: '3.5rem'
+            }}>
+              Effortless to run. Instantly memorable. Designed to elevate your venue.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '3.5rem' }}>
+              <a
+                href="#how-it-works"
                 style={{
+                  display: 'inline-block',
                   background: '#1a1a1a',
                   color: 'white',
                   padding: '1rem 2rem',
@@ -381,11 +391,12 @@ export default function HomePage() {
                   fontWeight: 600,
                   border: 'none',
                   cursor: 'pointer',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.2s',
+                  textDecoration: 'none'
                 }}
               >
-                Find Out More
-              </button>
+                Discover How It Works
+              </a>
             </div>
           </div>
         </div>
@@ -395,7 +406,7 @@ export default function HomePage() {
       <section style={{
         background: '#1a1a1a',
         color: '#E8C9C9',
-        padding: '6rem 0'
+        padding: '7rem 0'
       }}>
         <div style={{
           maxWidth: '1200px',
@@ -416,17 +427,17 @@ export default function HomePage() {
               marginBottom: '2rem',
               color: '#F5E8E8'
             }}>
-              What We Do.
+              A Premium Add-On, Fully Managed For You.
             </h2>
-            <div style={{ fontSize: '1.125rem', lineHeight: 1.8, color: '#E8C9C9' }}>
+            <div style={{ fontSize: '1.125rem', lineHeight: 1.8, color: '#E8C9C9', maxWidth: '540px' }}>
               <p style={{ marginBottom: '1.5rem' }}>
-                We are the audio guestbook where timeless elegance meets modern convenience. Our vintage-style phones, combined with our modern software, creates an unforgettable audio guestbook experience.
+                WeddingRingRing allows your venue to offer a beautifully designed vintage-style audio guestbook — without adding complexity to your team's day.
               </p>
               <p style={{ marginBottom: '1.5rem' }}>
-                With a swift 30-second setup on our user-friendly online system, venues can effortlessly enhance their offerings and attract couples seeking that extra touch of charm.
+                We provide the hardware, the software, and the support. You provide the setting.
               </p>
               <p style={{ marginBottom: '3rem' }}>
-                Elevate your venue, captivate your clients, and ensure every celebration is a resounding success with WeddingRingRing.
+                Couples receive instant access to their recordings in a secure online gallery, while you benefit from an elegant, revenue-generating feature that enhances your offering.
               </p>
               <a 
                 href="#how-it-works"
@@ -443,7 +454,7 @@ export default function HomePage() {
                   transition: 'all 0.2s'
                 }}
               >
-                Find Out How It Works
+                See How Simple It Is
               </a>
             </div>
           </div>
@@ -462,10 +473,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Why You Need An Audio Guestbook */}
+      {/* Why Leading Venues Offer Audio Guestbooks */}
       <section style={{
         background: '#F5E8E8',
-        padding: '6rem 0'
+        padding: '7rem 0'
       }}>
         <div style={{
           maxWidth: '1200px',
@@ -481,7 +492,7 @@ export default function HomePage() {
               letterSpacing: '-0.02em',
               marginBottom: '1.5rem'
             }}>
-              Why You Need An Audio Guestbook.
+              Why Leading Venues Offer Audio Guestbooks
             </h2>
             <p style={{
               fontSize: '1.25rem',
@@ -505,26 +516,35 @@ export default function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 ),
-                title: 'Boost Income & Profitability',
-                description: 'WeddingRingRing opens up new revenue streams for your venue with premium package options.'
+                title: 'Additional Revenue Per Wedding',
+                description: 'Offer a premium upgrade couples are happy to pay for.'
               },
               {
                 icon: (
                   <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 ),
-                title: 'Create Lasting Memories',
-                description: 'Happy couples return for celebrations and recommend your venue to friends and family.'
+                title: 'Zero Operational Burden',
+                description: 'No installation. No technical setup. No ongoing management.'
               },
               {
                 icon: (
                   <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
                 ),
-                title: 'Attract More Bookings',
-                description: 'Stand out in a competitive market with this unique and attractive venue feature.'
+                title: 'Elevated Guest Experience',
+                description: 'Adds atmosphere, charm, and interaction to your space.'
+              },
+              {
+                icon: (
+                  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+                  </svg>
+                ),
+                title: 'Stand Out In A Competitive Market',
+                description: 'Differentiate your venue with a modern yet timeless feature.'
               },
               {
                 icon: (
@@ -533,31 +553,22 @@ export default function HomePage() {
                   </svg>
                 ),
                 title: 'Word-Of-Mouth Marketing',
-                description: 'Delighted customers become your best marketing tool, sharing unforgettable moments.'
+                description: 'Couples share their recordings — and remember where they celebrated.'
               },
               {
                 icon: (
                   <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                   </svg>
                 ),
-                title: 'Low-Effort, High-Impact',
-                description: 'Quick online setup and durable vintage phones built to last with minimal effort.'
-              },
-              {
-                icon: (
-                  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
-                  </svg>
-                ),
-                title: 'Great Fun For Guests!',
-                description: 'Adds an element of fun, allowing guests to contribute heartfelt messages and laughter.'
+                title: 'Designed To Last',
+                description: 'Durable hardware. Secure digital delivery. Professional presentation.'
               }
             ].map((benefit, idx) => (
               <div key={idx} style={{
                 background: 'white',
                 borderRadius: '0.5rem',
-                padding: '2rem',
+                padding: '2.25rem',
                 border: '1px solid rgba(0, 0, 0, 0.08)',
                 boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
                 transition: 'all 0.3s'
@@ -576,16 +587,16 @@ export default function HomePage() {
                   {benefit.icon}
                 </div>
                 <h3 style={{
-                  fontSize: '1.25rem',
+                  fontSize: '1.2rem',
                   lineHeight: 1.4,
                   fontWeight: 600,
-                  marginBottom: '1rem',
+                  marginBottom: '0.75rem',
                   color: '#1a1a1a'
                 }}>
                   {benefit.title}
                 </h3>
                 <p style={{
-                  fontSize: '1rem',
+                  fontSize: '0.9375rem',
                   color: '#6a6a6a',
                   lineHeight: 1.7
                 }}>
@@ -598,7 +609,7 @@ export default function HomePage() {
           {/* CTA Section */}
           <div style={{
             textAlign: 'center',
-            padding: '4rem 0',
+            padding: '5rem 0',
             marginTop: '4rem'
           }}>
             <h3 style={{
@@ -608,7 +619,7 @@ export default function HomePage() {
               fontWeight: 500,
               color: '#1a1a1a'
             }}>
-              Want to know more?
+              Ready To Add A New Premium Revenue Stream?
             </h3>
             <p style={{
               color: '#6a6a6a',
@@ -617,7 +628,7 @@ export default function HomePage() {
               maxWidth: '600px',
               margin: '0 auto 3rem'
             }}>
-              Get in touch to find out how we can help you host your own audio guestbook
+              Let's discuss how WeddingRingRing could work seamlessly within your venue.
             </p>
             <button
               onClick={() => setModalOpen(true)}
@@ -633,7 +644,7 @@ export default function HomePage() {
                 transition: 'all 0.2s'
               }}
             >
-              Get In Touch
+              Book A Conversation
             </button>
           </div>
         </div>
@@ -643,7 +654,7 @@ export default function HomePage() {
       <section id="how-it-works" style={{
         background: '#1a1a1a',
         color: '#E8C9C9',
-        padding: '6rem 0'
+        padding: '7rem 0'
       }}>
         <div style={{
           maxWidth: '1200px',
@@ -666,14 +677,14 @@ export default function HomePage() {
               fontSize: '1.25rem',
               color: '#E8C9C9'
             }}>
-              It only takes a minute!
+              No installation. No training. No stress.
             </p>
           </div>
 
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '2rem',
+            gap: '3rem',
             maxWidth: '1000px',
             margin: '0 auto',
             padding: '4rem 0'
@@ -681,23 +692,23 @@ export default function HomePage() {
             {[
               {
                 number: '1',
-                title: 'Before the event',
-                description: "Log in and provide the couple's details - we'll handle the rest!"
+                title: 'Before The Event',
+                description: "Log in and enter the couple's details. We handle the rest."
               },
               {
                 number: '2',
-                title: 'Day of the event',
-                description: 'Punch in the code we provide and the phone is ready to go!'
+                title: 'Day Of The Event',
+                description: 'The phone arrives ready. Plug in and place it beautifully.'
               },
               {
                 number: '3',
-                title: 'During the event',
+                title: 'During The Event',
                 description: 'Guests pick up, listen to the greeting, leave a message, and hang up.'
               },
               {
                 number: '4',
-                title: 'After the event',
-                description: 'Couples access all messages instantly from their secure online account.'
+                title: 'After The Event',
+                description: 'Couples access their recordings instantly via their private online gallery.'
               }
             ].map((step) => (
               <div key={step.number} style={{ textAlign: 'center' }}>
