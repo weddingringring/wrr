@@ -379,21 +379,15 @@ export default function HowItWorksPage() {
             alignItems: 'center'
           }} className="grid-responsive">
             <div>
-              <div style={{ 
-                width: '100%', 
-                aspectRatio: '1', 
-                background: 'var(--color-surface-cream)', 
-                borderRadius: '0.5rem', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                border: '2px dashed var(--color-border)'
-              }}>
-                <p style={{ color: 'var(--color-text-secondary)', textAlign: 'center', padding: '2rem' }}>
-                  Rotary Phone Image<br/>
-                  <span style={{ fontSize: '0.875rem' }}>(Placeholder)</span>
-                </p>
-              </div>
+              <img
+                src="/Mockup-9.png"
+                alt="WeddingRingRing vintage rotary phone"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '0.5rem',
+                }}
+              />
             </div>
             <div>
               <h2 style={{
@@ -456,21 +450,15 @@ export default function HowItWorksPage() {
               </ul>
             </div>
             <div>
-              <div style={{ 
-                width: '100%', 
-                aspectRatio: '1', 
-                background: 'var(--color-surface-cream)', 
-                borderRadius: '0.5rem', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                border: '2px dashed var(--color-border)'
-              }}>
-                <p style={{ color: 'var(--color-text-secondary)', textAlign: 'center', padding: '2rem' }}>
-                  Software Screenshot<br/>
-                  <span style={{ fontSize: '0.875rem' }}>(Mac, Mobile & Tablet View)</span>
-                </p>
-              </div>
+              <img
+                src="/Mockup-6.png"
+                alt="WeddingRingRing software dashboard on Mac, mobile and tablet"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '0.5rem',
+                }}
+              />
             </div>
           </div>
         </div>
