@@ -432,10 +432,10 @@ export default function HomePage() {
               <p style={{ marginBottom: '1.5rem' }}>
                 WeddingRingRing allows your venue to offer a beautifully designed vintage-style audio guestbook — without adding complexity to your team's day.
               </p>
-              <p style={{ marginBottom: '2rem' }}>
+              <p style={{ marginBottom: '0.25rem' }}>
                 We provide the hardware, the software, and the support.
               </p>
-              <p style={{ marginBottom: '1.5rem', fontWeight: 500, color: '#F5E8E8' }}>
+              <p style={{ marginBottom: '2rem', fontWeight: 500, color: '#F5E8E8' }}>
                 You provide the setting.
               </p>
               <p style={{ marginBottom: '1.5rem' }}>
