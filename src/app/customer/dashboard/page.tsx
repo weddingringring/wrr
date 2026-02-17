@@ -1270,7 +1270,7 @@ export default function CustomerDashboardPage() {
                     width: '320px',
                     maxWidth: '85%',
                     borderRadius: '1rem',
-                    padding: '2.5rem 2rem',
+                    padding: '2.25rem 2rem',
                     textAlign: 'center',
                     transform: 'rotate(-2.5deg)',
 
@@ -1279,7 +1279,7 @@ export default function CustomerDashboardPage() {
                     flexShrink: 0,
                   }}
                 >
-                  <div style={{ marginBottom: '1.25rem' }}>
+                  <div style={{ marginBottom: '1rem' }}>
                     {(() => {
                       if (!event?.event_date) return <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.1rem', color: '#6E7D71' }}>Your Big Day</span>
                       const eventDate = new Date(event.event_date + 'T00:00:00')
@@ -1299,19 +1299,9 @@ export default function CustomerDashboardPage() {
                           <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1rem', color: '#8a8a7a', marginTop: '0.25rem' }}>day to go</div>
                         </>
                       )
-                      if (diffDays === 0) return <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.5rem', color: '#3D5A4C' }}>Today!</span>
+                      if (diffDays === 0) return <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.5rem', color: '#3D5A4C' }}>Today</span>
                       return <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.1rem', color: '#6E7D71' }}>Your Big Day</span>
                     })()}
-                  </div>
-
-                  <div style={{
-                    fontFamily: "'Oooh Baby', cursive",
-                    fontSize: '2rem',
-                    color: '#3D5A4C',
-                    lineHeight: 1.3,
-                    marginBottom: '1.25rem'
-                  }}>
-                    No messages yet!
                   </div>
 
                   <div style={{
@@ -1321,14 +1311,15 @@ export default function CustomerDashboardPage() {
                     lineHeight: 1.6
                   }}>
                     {(() => {
-                      if (!event?.event_date) return 'Messages will appear here as guests call in.'
+                      const eventType = event?.event_type === 'wedding' ? 'wedding' : 'event'
+                      if (!event?.event_date) return 'Your messages will appear here.'
                       const eventDate = new Date(event.event_date + 'T00:00:00')
                       const today = new Date()
                       today.setHours(0, 0, 0, 0)
                       const diffMs = eventDate.getTime() - today.getTime()
                       const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-                      if (diffDays > 0) return 'Check back after the big day!'
-                      return 'Messages will appear here as guests call in.'
+                      if (diffDays > 0) return `Your messages will appear here after your ${eventType}.`
+                      return 'Your messages will appear here as guests call in.'
                     })()}
                   </div>
 
@@ -1360,7 +1351,7 @@ export default function CustomerDashboardPage() {
                     width: '290px',
                     maxWidth: '80%',
                     borderRadius: '0.9rem',
-                    padding: '2.25rem 1.75rem 2.25rem 2.25rem',
+                    padding: '1.75rem 1.75rem 1.75rem 2.25rem',
                     textAlign: 'center',
                     transform: 'rotate(2deg) translateY(14px)',
                     marginLeft: '0rem',
@@ -1368,8 +1359,8 @@ export default function CustomerDashboardPage() {
                     flexShrink: 0,
                   }}
                 >
-                  <div style={{ marginBottom: '0.6rem' }}>
-                    <Mic size={20} style={{ color: '#A0AEA3', strokeWidth: 1.5 }} />
+                  <div style={{ marginBottom: '0.4rem' }}>
+                    <Mic size={18} style={{ color: '#A0AEA3', strokeWidth: 1.5 }} />
                   </div>
                   <div style={{
                     fontFamily: "'Oooh Baby', cursive",
@@ -1387,12 +1378,12 @@ export default function CustomerDashboardPage() {
                         fontFamily: "'Playfair Display', Georgia, serif",
                         fontSize: '0.95rem',
                         color: '#6E7D71',
-                        marginBottom: '1.25rem',
+                        marginBottom: '0.75rem',
                         lineHeight: 1.6
                       }}>
                         Your greeting is ready.
                       </div>
-                      <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '0' }}>
                         <button
                           onClick={() => {
                             const audio = document.getElementById('parchment-greeting-audio') as HTMLAudioElement
@@ -1471,7 +1462,7 @@ export default function CustomerDashboardPage() {
                         fontFamily: "'Playfair Display', Georgia, serif",
                         fontSize: '0.9rem',
                         color: '#8a8a7a',
-                        marginBottom: '1.25rem',
+                        marginBottom: '0.9rem',
                         lineHeight: 1.6
                       }}>
                         Record a greeting for your guests to hear when they call.
@@ -1540,20 +1531,19 @@ export default function CustomerDashboardPage() {
                   {event?.twilio_phone_number && (
                     <>
                       <div style={{
-                        margin: '1.25rem 0 1rem',
+                        margin: '0.9rem 0 0.75rem',
                         height: '1px',
-                        background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,140,0.25) 30%, rgba(180,165,140,0.25) 70%, transparent 100%)',
+                        background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,140,0.18) 30%, rgba(180,165,140,0.18) 70%, transparent 100%)',
                       }} />
 
                       <div style={{
                         fontFamily: "'Playfair Display', Georgia, serif",
-                        fontSize: '0.8rem',
+                        fontSize: '0.85rem',
                         color: '#8a8a7a',
-                        letterSpacing: '0.06em',
-                        textTransform: 'uppercase',
-                        marginBottom: '0.6rem',
+                        letterSpacing: '0.03em',
+                        marginBottom: '0.5rem',
                       }}>
-                        Share your guestbook number
+                        Share Your Guestbook Number
                       </div>
 
                       <p style={{
@@ -1561,7 +1551,7 @@ export default function CustomerDashboardPage() {
                         fontSize: '0.82rem',
                         color: '#8a8a7a',
                         lineHeight: 1.55,
-                        marginBottom: '0.9rem',
+                        marginBottom: '0.65rem',
                       }}>
                         Guests who can't make the big day can still leave their message by calling this number.
                       </p>
@@ -1572,7 +1562,7 @@ export default function CustomerDashboardPage() {
                         fontWeight: 400,
                         color: '#3D5A4C',
                         letterSpacing: '0.12em',
-                        marginBottom: '0.9rem',
+                        marginBottom: '0.6rem',
                       }}>
                         {formatPhoneDisplay(event.twilio_phone_number)}
                       </div>
@@ -1582,32 +1572,32 @@ export default function CustomerDashboardPage() {
                           onClick={handleCopyNumber}
                           style={{
                             display: 'flex', alignItems: 'center', gap: '0.35rem',
-                            fontSize: '0.8rem',
-                            padding: '0.45rem 0.85rem',
+                            fontSize: '0.78rem',
+                            padding: '0.4rem 0.9rem',
                             background: 'transparent',
-                            color: numberCopied ? '#3D5A4C' : '#8a8a7a',
-                            border: '1px solid rgba(0,0,0,0.1)',
-                            borderRadius: '0.4rem',
+                            color: numberCopied ? '#3D5A4C' : '#9a9a8a',
+                            border: '1px solid rgba(0,0,0,0.07)',
+                            borderRadius: '2rem',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                           }}
                         >
-                          {numberCopied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy Number</>}
+                          {numberCopied ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy Number</>}
                         </button>
                         <button
                           onClick={handleShareNumber}
                           style={{
                             display: 'flex', alignItems: 'center', gap: '0.35rem',
-                            fontSize: '0.8rem',
-                            padding: '0.45rem 0.85rem',
+                            fontSize: '0.78rem',
+                            padding: '0.4rem 0.9rem',
                             background: 'transparent',
-                            color: '#8a8a7a',
-                            border: '1px solid rgba(0,0,0,0.1)',
-                            borderRadius: '0.4rem',
+                            color: '#9a9a8a',
+                            border: '1px solid rgba(0,0,0,0.07)',
+                            borderRadius: '2rem',
                             cursor: 'pointer',
                           }}
                         >
-                          <Share2 size={13} /> Share
+                          <Share2 size={12} /> Share
                         </button>
                       </div>
 
@@ -1615,7 +1605,7 @@ export default function CustomerDashboardPage() {
                         fontFamily: "'Playfair Display', Georgia, serif",
                         fontSize: '0.72rem',
                         color: '#a8a898',
-                        marginTop: '0.75rem',
+                        marginTop: '0.6rem',
                         lineHeight: 1.5,
                       }}>
                         Share it with friends and family who can't attend in person.
