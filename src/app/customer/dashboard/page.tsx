@@ -12,7 +12,7 @@ import {
   Filter, X, Trash2, Tag, Clock, Phone, User,
   Star, Music, ChevronDown, MoreHorizontal,
   Image as ImageIcon, Upload, Check, Undo2,
-  Archive, Settings, LogOut, MessageCircle,
+  Archive, Settings, LogOut, MessageCircle, Mic,
   LayoutGrid, Layers, SlidersHorizontal
 } from 'lucide-react'
 
@@ -1173,7 +1173,12 @@ export default function CustomerDashboardPage() {
               <style>{`
                 .empty-parchment {
                   background: linear-gradient(145deg, #FFFEF7 0%, #FBF8F0 25%, #F8F4E8 50%, #FBF7ED 75%, #FFFDF5 100%);
-                  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.07), inset 0 0 60px rgba(255,252,240,0.5);
+                }
+                .empty-parchment.parchment-primary {
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 6px 12px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.09), inset 0 0 60px rgba(255,252,240,0.5);
+                }
+                .empty-parchment.parchment-secondary {
+                  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 3px 6px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05), inset 0 0 60px rgba(255,252,240,0.5);
                 }
                 .empty-parchment::before {
                   content: '';
@@ -1214,16 +1219,17 @@ export default function CustomerDashboardPage() {
                     margin-right: 0 !important;
                   }
                   .parchment-card-2 {
-                    transform: rotate(1deg) !important;
+                    transform: rotate(1deg) translateY(0) !important;
                     margin-left: 0 !important;
-                    margin-top: -1rem !important;
+                    margin-top: -0.5rem !important;
+                    width: 290px !important;
                   }
                 }
               `}</style>
               <div className="parchment-cards-row">
                 {/* Card 1: Countdown */}
                 <div
-                  className="empty-parchment parchment-card-1"
+                  className="empty-parchment parchment-primary parchment-card-1"
                   style={{
                     position: 'relative',
                     width: '320px',
@@ -1313,24 +1319,26 @@ export default function CustomerDashboardPage() {
 
                 {/* Card 2: Greeting — self-contained */}
                 <div
-                  className="empty-parchment parchment-card-2"
+                  className="empty-parchment parchment-secondary parchment-card-2"
                   style={{
                     position: 'relative',
-                    width: '320px',
-                    maxWidth: '85%',
-                    borderRadius: '1rem',
-                    padding: '2.5rem 2rem',
+                    width: '290px',
+                    maxWidth: '80%',
+                    borderRadius: '0.9rem',
+                    padding: '2.25rem 1.75rem',
                     textAlign: 'center',
-                    transform: 'rotate(1.5deg)',
-
+                    transform: 'rotate(2deg) translateY(14px)',
                     marginLeft: '-1rem',
                     zIndex: 2,
                     flexShrink: 0,
                   }}
                 >
+                  <div style={{ marginBottom: '0.6rem' }}>
+                    <Mic size={20} style={{ color: '#A0AEA3', strokeWidth: 1.5 }} />
+                  </div>
                   <div style={{
                     fontFamily: "'Oooh Baby', cursive",
-                    fontSize: '1.8rem',
+                    fontSize: '1.6rem',
                     color: '#3D5A4C',
                     lineHeight: 1.3,
                     marginBottom: '0.5rem'
@@ -1347,7 +1355,7 @@ export default function CustomerDashboardPage() {
                         marginBottom: '1.25rem',
                         lineHeight: 1.6
                       }}>
-                        Custom greeting uploaded ✓
+                        Your greeting is ready.
                       </div>
                       <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                         <button
@@ -1369,7 +1377,7 @@ export default function CustomerDashboardPage() {
                             cursor: 'pointer',
                           }}
                         >
-                          <Play size={14} fill="white" stroke="white" /> Preview
+                          <Play size={14} fill="white" stroke="white" /> Listen
                         </button>
                         <button
                           onClick={() => setGreetingExpanded(!greetingExpanded)}
@@ -1384,7 +1392,7 @@ export default function CustomerDashboardPage() {
                             cursor: 'pointer',
                           }}
                         >
-                          <Upload size={14} /> Change
+                          <Upload size={14} /> Edit Greeting
                         </button>
                       </div>
                       <audio id="parchment-greeting-audio" className="hidden" />
