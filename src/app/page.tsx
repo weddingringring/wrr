@@ -317,7 +317,7 @@ export default function HomePage() {
           >
             ×
           </button>
-          <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1.25rem', color: '#1a1a1a', textDecoration: 'none', fontWeight: 500 }}>How It Works</a>
+          <a href="#how-it-works" onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' }) }} style={{ fontSize: '1.25rem', color: '#1a1a1a', textDecoration: 'none', fontWeight: 500 }}>How It Works</a>
           <Link href="/login" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '1.25rem', color: '#1a1a1a', textDecoration: 'none', fontWeight: 500 }}>Log In</Link>
           <button onClick={() => { setModalOpen(true); setMobileMenuOpen(false); }} style={{ background: '#1a1a1a', color: 'white', padding: '1rem 2rem', borderRadius: '0.375rem', fontSize: '1rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}>Get Started</button>
         </div>
@@ -379,8 +379,8 @@ export default function HomePage() {
               Effortless to run. Instantly memorable. Designed to elevate your venue — and generate up to £350 per wedding.
             </p>
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '3.5rem' }}>
-              <a
-                href="#how-it-works"
+              <button
+                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
                 style={{
                   display: 'inline-block',
                   background: '#1a1a1a',
@@ -392,11 +392,10 @@ export default function HomePage() {
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
-                  textDecoration: 'none'
                 }}
               >
                 Discover How It Works
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -442,8 +441,8 @@ export default function HomePage() {
               <p style={{ marginBottom: '3rem' }}>
                 Couples receive instant access to their recordings in a secure online gallery, while you benefit from an elegant feature capable of generating up to £350 per wedding.
               </p>
-              <a 
-                href="#how-it-works"
+              <button
+                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
                 style={{
                   display: 'inline-block',
                   background: 'white',
@@ -452,13 +451,13 @@ export default function HomePage() {
                   borderRadius: '0.375rem',
                   fontSize: '1rem',
                   fontWeight: 600,
-                  textDecoration: 'none',
                   border: '2px solid white',
+                  cursor: 'pointer',
                   transition: 'all 0.2s'
                 }}
               >
                 See How Simple It Is
-              </a>
+              </button>
             </div>
           </div>
           <div style={{ flex: '1 1 350px', minWidth: 0, display: 'flex', justifyContent: 'center' }}>
