@@ -1370,6 +1370,7 @@ export default function CustomerDashboardPage() {
                   </div>
 
                   {event?.greeting_audio_url ? (
+                    /* Tier 1: User-uploaded custom greeting */
                     <>
                       <div style={{
                         fontFamily: "'Playfair Display', Georgia, serif",
@@ -1453,7 +1454,102 @@ export default function CustomerDashboardPage() {
                         </div>
                       )}
                     </>
+                  ) : event?.ai_greeting_audio_url ? (
+                    /* Tier 2: AI-generated greeting exists — encourage personal recording */
+                    <>
+                      <div style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        fontSize: '0.88rem',
+                        color: '#8a8a7a',
+                        marginBottom: '0.75rem',
+                        lineHeight: 1.6
+                      }}>
+                        We've created a greeting for you automatically. For a personal touch, we'd recommend recording your own.
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '0' }}>
+                        <button
+                          onClick={() => {
+                            const audio = document.getElementById('parchment-greeting-audio') as HTMLAudioElement
+                            if (audio) {
+                              if (audio.paused) { audio.src = event.ai_greeting_audio_url; audio.play() }
+                              else { audio.pause(); audio.currentTime = 0 }
+                            }
+                          }}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '0.4rem',
+                            fontSize: '0.85rem',
+                            padding: '0.55rem 1rem',
+                            background: 'transparent',
+                            color: '#6E7D71',
+                            border: '1px solid rgba(0,0,0,0.12)',
+                            borderRadius: '0.5rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <Play size={14} /> Preview
+                        </button>
+                        <button
+                          onClick={() => setGreetingExpanded(!greetingExpanded)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '0.4rem',
+                            fontSize: '0.85rem',
+                            padding: '0.55rem 1rem',
+                            background: '#3D5A4C',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.5rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <Upload size={14} /> Record Your Own
+                        </button>
+                      </div>
+                      <audio id="parchment-greeting-audio" className="hidden" />
+
+                      {/* Inline upload area */}
+                      {greetingExpanded && (
+                        <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                          <input
+                            ref={greetingFileRef}
+                            type="file"
+                            accept="audio/mp3,audio/mpeg,audio/wav,audio/x-wav"
+                            className="hidden"
+                            onChange={handleGreetingUpload}
+                          />
+                          <button
+                            onClick={() => greetingFileRef.current?.click()}
+                            disabled={greetingUploading}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: '0.4rem', margin: '0 auto',
+                              fontSize: '0.85rem',
+                              padding: '0.55rem 1rem',
+                              background: '#3D5A4C',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.5rem',
+                              cursor: 'pointer',
+                              opacity: greetingUploading ? 0.6 : 1,
+                            }}
+                          >
+                            <Upload size={14} />
+                            {greetingUploading ? 'Uploading...' : 'Choose File (MP3 / WAV)'}
+                          </button>
+                          <p style={{
+                            fontFamily: "'Playfair Display', Georgia, serif",
+                            fontSize: '0.8rem',
+                            color: '#a0a090',
+                            marginTop: '0.75rem',
+                            lineHeight: 1.5
+                          }}>
+                            MP3 or WAV · Under 10MB · Keep it under 30 seconds
+                          </p>
+                          {greetingError && <p style={{ color: '#c45', fontSize: '0.8rem', marginTop: '0.5rem' }}>{greetingError}</p>}
+                          {greetingSuccess && <p style={{ color: '#3D5A4C', fontSize: '0.8rem', marginTop: '0.5rem' }}>{greetingSuccess}</p>}
+                        </div>
+                      )}
+                    </>
                   ) : (
+                    /* Tier 3: No greeting at all */
                     <>
                       <div style={{
                         fontFamily: "'Playfair Display', Georgia, serif",
