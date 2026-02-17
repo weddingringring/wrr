@@ -316,56 +316,74 @@ export default function HowItWorksPage() {
       </section>
 
       {/* The Process */}
-      <section style={{ background: 'white', padding: '6rem 0' }}>
-        <div className="content-narrow" style={{ padding: '0 2rem' }}>
-          
-          <div className="step-block">
-            <div className="step-number-large">1</div>
-            <h3>You Get Your Dedicated Phone</h3>
-            <p>
-              Each venue receives their own vintage phone that stays with you permanently. No shipping back and forth, no rental hassles. It's yours to keep on-site and use whenever you have an event.
-            </p>
-            <p>
-              The phone is battery-powered and uses cellular technology, so you can place it anywhere in your venue - no need to worry about power outlets or Wi-Fi coverage.
-            </p>
+      <section style={{ background: 'white', padding: '5rem 0' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '1.5rem',
+          }} className="grid-steps-responsive">
+            {[
+              {
+                number: '01',
+                title: 'Get Your Phone',
+                description: "Your venue receives its own vintage phone — it stays with you permanently. No shipping, no rentals."
+              },
+              {
+                number: '02',
+                title: '30-Second Setup',
+                description: "Log in, enter the couple's details, and we handle the rest. Custom greeting generated automatically."
+              },
+              {
+                number: '03',
+                title: 'Guests Leave Messages',
+                description: "Guests pick up, hear the greeting, and leave a message. No Wi-Fi needed — it just works."
+              },
+              {
+                number: '04',
+                title: 'Instant Delivery',
+                description: "Messages appear in the couple's secure account immediately. Unlimited access and downloads, forever."
+              }
+            ].map((step) => (
+              <div key={step.number} style={{
+                background: '#FAF8F3',
+                borderRadius: '12px',
+                padding: '2rem 1.5rem',
+                border: '1px solid rgba(0,0,0,0.06)',
+                display: 'flex',
+                flexDirection: 'column',
+              }}>
+                <span style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: '2.5rem',
+                  fontWeight: 300,
+                  color: '#C9A6A6',
+                  lineHeight: 1,
+                  marginBottom: '1rem',
+                }}>
+                  {step.number}
+                </span>
+                <h3 style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: '1.15rem',
+                  fontWeight: 600,
+                  color: '#1a1a1a',
+                  marginBottom: '0.75rem',
+                  lineHeight: 1.3,
+                }}>
+                  {step.title}
+                </h3>
+                <p style={{
+                  fontSize: '0.9rem',
+                  lineHeight: 1.6,
+                  color: '#6a6a6a',
+                  margin: 0,
+                }}>
+                  {step.description}
+                </p>
+              </div>
+            ))}
           </div>
-
-          <div className="step-block">
-            <div className="step-number-large">2</div>
-            <h3>30-Second Online Setup</h3>
-            <p>
-              When you have a wedding booked, simply log into your account and enter the couple's details. That's it. Takes less time than making a cup of tea.
-            </p>
-            <p>
-              We automatically generate a custom greeting in the couple's names and set up their secure online account where all messages will be delivered.
-            </p>
-          </div>
-
-          <div className="step-block">
-            <div className="step-number-large">3</div>
-            <h3>On the Wedding Day</h3>
-            <p>
-              Plug in the phone at your venue (battery keeps it charged all day). Guests pick up the receiver, hear the personalized greeting, and leave their message. It's intuitive - no instructions needed.
-            </p>
-            <ul className="feature-list">
-              <li>No Wi-Fi required - uses cellular connection</li>
-              <li>Battery-powered for placement flexibility</li>
-              <li>Works anywhere in your venue</li>
-              <li>Guests instinctively know what to do</li>
-            </ul>
-          </div>
-
-          <div className="step-block">
-            <div className="step-number-large">4</div>
-            <h3>Instant Message Delivery</h3>
-            <p>
-              Every message is automatically uploaded to the couple's secure online account as soon as it's recorded. No waiting, no downloading, no transferring files.
-            </p>
-            <p>
-              Couples can listen to their messages the next day (or even during the reception if they want!). They get unlimited access forever, can download individual messages or the entire collection.
-            </p>
-          </div>
-
         </div>
       </section>
 
@@ -1017,6 +1035,9 @@ export default function HowItWorksPage() {
           .grid-responsive {
             grid-template-columns: 1fr !important;
           }
+          .grid-steps-responsive {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
           .form-row-responsive {
             grid-template-columns: 1fr !important;
           }
@@ -1028,6 +1049,11 @@ export default function HowItWorksPage() {
           }
           .step-number-large {
             font-size: 4rem !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .grid-steps-responsive {
+            grid-template-columns: 1fr !important;
           }
         }
       `}</style>
