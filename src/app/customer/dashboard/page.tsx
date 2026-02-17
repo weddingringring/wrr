@@ -1181,9 +1181,18 @@ export default function CustomerDashboardPage() {
                   inset: 0;
                   border-radius: inherit;
                   background-image:
-                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65 0.2' numOctaves='4' seed='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65 0.2' numOctaves='4' seed='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),
+                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.02 0.4' numOctaves='2' seed='8' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
                   opacity: 0.03;
                   mix-blend-mode: multiply;
+                  pointer-events: none;
+                }
+                .empty-parchment::after {
+                  content: '';
+                  position: absolute;
+                  inset: 0;
+                  border-radius: inherit;
+                  border: 1px solid rgba(180, 165, 140, 0.25);
                   pointer-events: none;
                 }
                 .parchment-cards-row {
@@ -1223,7 +1232,7 @@ export default function CustomerDashboardPage() {
                     padding: '2.5rem 2rem',
                     textAlign: 'center',
                     transform: 'rotate(-2.5deg)',
-                    border: '1px solid rgba(0,0,0,0.04)',
+
                     marginRight: '-1rem',
                     zIndex: 1,
                     flexShrink: 0,
@@ -1313,7 +1322,7 @@ export default function CustomerDashboardPage() {
                     padding: '2.5rem 2rem',
                     textAlign: 'center',
                     transform: 'rotate(1.5deg)',
-                    border: '1px solid rgba(0,0,0,0.04)',
+
                     marginLeft: '-1rem',
                     zIndex: 2,
                     flexShrink: 0,
