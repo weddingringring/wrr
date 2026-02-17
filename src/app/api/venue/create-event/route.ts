@@ -237,6 +237,31 @@ export async function POST(request: NextRequest) {
       console.error(`Failed to send welcome email to ${customerEmail}:`, emailError.message)
     }
 
+    // ── Generate AI greeting with ElevenLabs ──
+    let aiGreetingResult = null
+    try {
+      const { generateAiGreeting } = await import('@/lib/elevenlabs')
+
+      // Get venue country code
+      const { data: venueCountry } = await supabaseAdmin
+        .from('venues')
+        .select('country_code')
+        .eq('id', venueData.id)
+        .single()
+
+      const cc = venueCountry?.country_code || 'GB'
+      aiGreetingResult = await generateAiGreeting(eventData.id, greetingText, cc)
+
+      if ('url' in aiGreetingResult) {
+        console.log(`✓ AI greeting generated for event ${eventData.id}`)
+      } else {
+        console.warn(`AI greeting skipped: ${aiGreetingResult.error}`)
+      }
+    } catch (aiError: any) {
+      // Log but don't fail event creation
+      console.error(`AI greeting generation failed for event ${eventData.id}:`, aiError.message)
+    }
+
     return NextResponse.json({ 
       success: true,
       eventId: eventData.id,
