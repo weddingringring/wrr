@@ -44,6 +44,7 @@ export default function CustomerDashboardPage() {
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'favorites' | 'trash'>('all')
+  const [greetingExpanded, setGreetingExpanded] = useState(false)
   const [viewMode, setViewMode] = useState<'tiles' | 'cards'>('cards')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'longest' | 'shortest'>('newest')
@@ -773,8 +774,8 @@ export default function CustomerDashboardPage() {
           </p>
         </div>
 
-        {/* Greeting Card - always visible as compact prompt */}
-        {event && (
+        {/* Greeting Card - shown as green bar only when messages exist */}
+        {event && activeMessageCount > 0 && (
           <div className="mb-6">
             <GreetingCard
               eventId={event.id}
@@ -785,8 +786,8 @@ export default function CustomerDashboardPage() {
           </div>
         )}
 
-        {/* Filter Bar */}
-        <div className="mb-6">
+        {/* Filter Bar - hidden when no messages */}
+        {activeMessageCount > 0 && <div className="mb-6">
           {/* Mobile: compact bar */}
           <div className="flex sm:hidden items-center justify-between py-2">
             <div className="flex items-center gap-3">
@@ -1127,13 +1128,13 @@ export default function CustomerDashboardPage() {
               )}
             </div>
           </div>
-        </div>
+        </div>}
 
         {/* Messages Display */}
         {filteredMessages.length === 0 ? (
           filter === 'all' && !searchQuery && selectedTags.length === 0 ? (
-            /* Single angled parchment card — no messages yet */
-            <div style={{ position: 'relative', height: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            /* Two overlapping parchment cards — countdown + greeting */
+            <div>
               <style>{`
                 .empty-parchment {
                   background: linear-gradient(145deg, #FFFEF7 0%, #FBF8F0 25%, #F8F4E8 50%, #FBF7ED 75%, #FFFDF5 100%);
@@ -1150,98 +1151,244 @@ export default function CustomerDashboardPage() {
                   mix-blend-mode: multiply;
                   pointer-events: none;
                 }
+                .parchment-cards-row {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 0;
+                  padding: 2rem 0;
+                }
+                @media (max-width: 640px) {
+                  .parchment-cards-row {
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 1.5rem;
+                    padding: 1.5rem 0;
+                  }
+                  .parchment-card-1 {
+                    transform: rotate(-1.5deg) !important;
+                    margin-right: 0 !important;
+                  }
+                  .parchment-card-2 {
+                    transform: rotate(1deg) !important;
+                    margin-left: 0 !important;
+                    margin-top: -1rem !important;
+                  }
+                }
               `}</style>
-              <div
-                className="empty-parchment"
-                style={{
-                  position: 'relative',
-                  width: '340px',
-                  maxWidth: '90%',
-                  borderRadius: '1rem',
-                  padding: '2.5rem 2rem',
-                  textAlign: 'center',
-                  transform: 'rotate(-2deg)',
-                  border: '1px solid rgba(0,0,0,0.04)',
-                }}
-              >
-                <div style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: '1.1rem',
-                  color: '#6E7D71',
-                  marginBottom: '1.5rem',
-                  letterSpacing: '0.02em'
-                }}>
-                  {(() => {
-                    if (!event?.event_date) return <span>Your Big Day</span>
-                    const eventDate = new Date(event.event_date + 'T00:00:00')
-                    const today = new Date()
-                    today.setHours(0, 0, 0, 0)
-                    const diffMs = eventDate.getTime() - today.getTime()
-                    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-                    if (diffDays > 1) return (
-                      <>
-                        <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '4.5rem', fontWeight: 300, color: '#3D5A4C', lineHeight: 1 }}>{diffDays}</div>
-                        <div style={{ fontSize: '1rem', color: '#8a8a7a', marginTop: '0.25rem' }}>days to go</div>
-                      </>
-                    )
-                    if (diffDays === 1) return (
-                      <>
-                        <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '4.5rem', fontWeight: 300, color: '#3D5A4C', lineHeight: 1 }}>1</div>
-                        <div style={{ fontSize: '1rem', color: '#8a8a7a', marginTop: '0.25rem' }}>day to go</div>
-                      </>
-                    )
-                    if (diffDays === 0) return <span style={{ fontSize: '1.5rem', color: '#3D5A4C' }}>Today!</span>
-                    return <span>Your Big Day</span>
-                  })()}
-                </div>
-
-                <div style={{
-                  fontFamily: "'Oooh Baby', cursive",
-                  fontSize: '2rem',
-                  color: '#3D5A4C',
-                  lineHeight: 1.3,
-                  marginBottom: '1.5rem'
-                }}>
-                  No messages yet!
-                </div>
-
-                <div style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: '0.95rem',
-                  color: '#8a8a7a',
-                  lineHeight: 1.6
-                }}>
-                  {(() => {
-                    if (!event?.event_date) return 'Messages will appear here as guests call in.'
-                    const eventDate = new Date(event.event_date + 'T00:00:00')
-                    const today = new Date()
-                    today.setHours(0, 0, 0, 0)
-                    const diffMs = eventDate.getTime() - today.getTime()
-                    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-                    if (diffDays > 0) return 'Check back after the big day!'
-                    return 'Messages will appear here as guests call in.'
-                  })()}
-                </div>
-
-                {event?.event_date && (
-                  <div style={{
-                    marginTop: '1.5rem',
-                    paddingTop: '1.25rem',
-                    borderTop: '1px solid rgba(0,0,0,0.06)',
-                    fontFamily: "'Playfair Display', Georgia, serif",
-                    fontSize: '0.85rem',
-                    color: '#a0a090',
-                    letterSpacing: '0.05em'
-                  }}>
-                    {new Date(event.event_date + 'T00:00:00').toLocaleDateString('en-GB', {
-                      weekday: 'long',
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    })}
+              <div className="parchment-cards-row">
+                {/* Card 1: Countdown */}
+                <div
+                  className="empty-parchment parchment-card-1"
+                  style={{
+                    position: 'relative',
+                    width: '320px',
+                    maxWidth: '85%',
+                    borderRadius: '1rem',
+                    padding: '2.5rem 2rem',
+                    textAlign: 'center',
+                    transform: 'rotate(-2.5deg)',
+                    border: '1px solid rgba(0,0,0,0.04)',
+                    marginRight: '-2rem',
+                    zIndex: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  <div style={{ marginBottom: '1.25rem' }}>
+                    {(() => {
+                      if (!event?.event_date) return <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.1rem', color: '#6E7D71' }}>Your Big Day</span>
+                      const eventDate = new Date(event.event_date + 'T00:00:00')
+                      const today = new Date()
+                      today.setHours(0, 0, 0, 0)
+                      const diffMs = eventDate.getTime() - today.getTime()
+                      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+                      if (diffDays > 1) return (
+                        <>
+                          <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '4.5rem', fontWeight: 300, color: '#3D5A4C', lineHeight: 1 }}>{diffDays}</div>
+                          <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1rem', color: '#8a8a7a', marginTop: '0.25rem' }}>days to go</div>
+                        </>
+                      )
+                      if (diffDays === 1) return (
+                        <>
+                          <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '4.5rem', fontWeight: 300, color: '#3D5A4C', lineHeight: 1 }}>1</div>
+                          <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1rem', color: '#8a8a7a', marginTop: '0.25rem' }}>day to go</div>
+                        </>
+                      )
+                      if (diffDays === 0) return <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.5rem', color: '#3D5A4C' }}>Today!</span>
+                      return <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.1rem', color: '#6E7D71' }}>Your Big Day</span>
+                    })()}
                   </div>
-                )}
+
+                  <div style={{
+                    fontFamily: "'Oooh Baby', cursive",
+                    fontSize: '2rem',
+                    color: '#3D5A4C',
+                    lineHeight: 1.3,
+                    marginBottom: '1.25rem'
+                  }}>
+                    No messages yet!
+                  </div>
+
+                  <div style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontSize: '0.95rem',
+                    color: '#8a8a7a',
+                    lineHeight: 1.6
+                  }}>
+                    {(() => {
+                      if (!event?.event_date) return 'Messages will appear here as guests call in.'
+                      const eventDate = new Date(event.event_date + 'T00:00:00')
+                      const today = new Date()
+                      today.setHours(0, 0, 0, 0)
+                      const diffMs = eventDate.getTime() - today.getTime()
+                      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+                      if (diffDays > 0) return 'Check back after the big day!'
+                      return 'Messages will appear here as guests call in.'
+                    })()}
+                  </div>
+
+                  {event?.event_date && (
+                    <div style={{
+                      marginTop: '1.25rem',
+                      paddingTop: '1rem',
+                      borderTop: '1px solid rgba(0,0,0,0.06)',
+                      fontFamily: "'Playfair Display', Georgia, serif",
+                      fontSize: '0.85rem',
+                      color: '#a0a090',
+                      letterSpacing: '0.05em'
+                    }}>
+                      {new Date(event.event_date + 'T00:00:00').toLocaleDateString('en-GB', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Card 2: Greeting */}
+                <div
+                  className="empty-parchment parchment-card-2"
+                  style={{
+                    position: 'relative',
+                    width: '320px',
+                    maxWidth: '85%',
+                    borderRadius: '1rem',
+                    padding: '2.5rem 2rem',
+                    textAlign: 'center',
+                    transform: 'rotate(1.5deg)',
+                    border: '1px solid rgba(0,0,0,0.04)',
+                    marginLeft: '-2rem',
+                    zIndex: 2,
+                    flexShrink: 0,
+                  }}
+                >
+                  <div style={{
+                    fontFamily: "'Oooh Baby', cursive",
+                    fontSize: '1.8rem',
+                    color: '#3D5A4C',
+                    lineHeight: 1.3,
+                    marginBottom: '1.25rem'
+                  }}>
+                    Your Greeting
+                  </div>
+
+                  {event?.greeting_audio_url ? (
+                    <>
+                      <div style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        fontSize: '0.95rem',
+                        color: '#6E7D71',
+                        marginBottom: '1.5rem',
+                        lineHeight: 1.6
+                      }}>
+                        Custom greeting uploaded
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => {
+                            const audio = document.getElementById('parchment-greeting-audio') as HTMLAudioElement
+                            if (audio) {
+                              if (audio.paused) { audio.src = event.greeting_audio_url; audio.play() }
+                              else { audio.pause(); audio.currentTime = 0 }
+                            }
+                          }}
+                          style={{
+                            fontFamily: "'Playfair Display', Georgia, serif",
+                            fontSize: '0.9rem',
+                            padding: '0.6rem 1.25rem',
+                            background: '#3D5A4C',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.5rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ▶ Preview
+                        </button>
+                        <button
+                          onClick={() => setGreetingExpanded(true)}
+                          style={{
+                            fontFamily: "'Playfair Display', Georgia, serif",
+                            fontSize: '0.9rem',
+                            padding: '0.6rem 1.25rem',
+                            background: 'transparent',
+                            color: '#6E7D71',
+                            border: '1px solid rgba(0,0,0,0.12)',
+                            borderRadius: '0.5rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Change
+                        </button>
+                      </div>
+                      <audio id="parchment-greeting-audio" className="hidden" />
+                    </>
+                  ) : (
+                    <>
+                      <div style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        fontSize: '0.95rem',
+                        color: '#8a8a7a',
+                        marginBottom: '1.5rem',
+                        lineHeight: 1.6
+                      }}>
+                        Record a personal greeting for your guests to hear when they call.
+                      </div>
+                      <button
+                        onClick={() => setGreetingExpanded(true)}
+                        style={{
+                          fontFamily: "'Playfair Display', Georgia, serif",
+                          fontSize: '0.95rem',
+                          padding: '0.7rem 1.5rem',
+                          background: '#3D5A4C',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Upload Greeting
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
+
+              {/* Greeting upload panel — shows when user clicks Upload/Change */}
+              {greetingExpanded && event && (
+                <div style={{ maxWidth: '660px', margin: '1rem auto 0' }}>
+                  <GreetingCard
+                    eventId={event.id}
+                    greetingAudioUrl={event.greeting_audio_url}
+                    greetingText={event.greeting_text}
+                    onUpdate={loadMessages}
+                    startEditing={true}
+                    onCollapse={() => setGreetingExpanded(false)}
+                  />
+                </div>
+              )}
             </div>
           ) : (
           <div className="bg-white rounded-xl shadow-sm p-12 text-center" style={{ border: '1px solid #e8ece9' }}>
