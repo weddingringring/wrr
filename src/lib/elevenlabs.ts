@@ -198,7 +198,8 @@ export async function enhanceRecording(
 
     // 2. Send to ElevenLabs Voice Isolator API
     const formData = new FormData()
-    formData.append('audio', new Blob([audioBuffer], { type: 'audio/mpeg' }), 'recording.mp3')
+    const audioBlob = new Blob([new Uint8Array(audioBuffer)], { type: 'audio/mpeg' })
+    formData.append('audio', audioBlob, 'recording.mp3')
 
     const isolateRes = await fetch('https://api.elevenlabs.io/v1/audio-isolation', {
       method: 'POST',
