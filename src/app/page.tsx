@@ -352,7 +352,7 @@ export default function HomePage() {
           zIndex: 1
         }}>
           <div style={{ maxWidth: '700px' }}>
-            <h1 style={{
+            <h1 className="hero-headline" style={{
               fontFamily: "'Playfair Display', Georgia, serif",
               fontSize: '5.2rem',
               lineHeight: 1.05,
@@ -363,14 +363,14 @@ export default function HomePage() {
             }}>
               The Audio Guestbook For Venues.
             </h1>
-            <p style={{
+            <p className="hero-subheading" style={{
               fontSize: '1.35rem',
               color: '#4a4a4a',
               marginBottom: '1rem'
             }}>
               A luxury audio experience your couples will pay extra for.
             </p>
-            <p style={{
+            <p className="hero-supporting" style={{
               fontSize: '1rem',
               color: '#6a6a6a',
               opacity: 0.8,
@@ -1368,6 +1368,15 @@ export default function HomePage() {
           }
           .form-row-responsive {
             grid-template-columns: 1fr !important;
+          }
+          .hero-headline {
+            font-size: 2.75rem !important;
+          }
+          .hero-subheading {
+            font-size: 1.15rem !important;
+          }
+          .hero-supporting {
+            font-size: 0.9rem !important;
           }
         }
       `}</style>
