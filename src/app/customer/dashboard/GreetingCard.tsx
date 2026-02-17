@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import { Play, Pause, Pencil, X, Upload, ChevronDown, ChevronUp } from 'lucide-react'
+import { Play, Pause, Upload, ChevronDown, ChevronUp } from 'lucide-react'
 
 interface GreetingCardProps {
   eventId: string
@@ -102,7 +102,7 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
             {hasGreeting ? 'Change Greeting' : 'Upload Audio Greeting'}
           </h3>
           <button onClick={() => setEditing(false)} className="p-1 hover:bg-white/10 rounded-lg transition">
-            <X size={18} className="text-white/70" />
+            <ChevronUp size={20} className="text-white/70" />
           </button>
         </div>
 
@@ -187,7 +187,7 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
       )}
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm truncate text-white">
+        <p className="truncate text-white font-serif" style={{ fontSize: '1.05rem' }}>
           {hasGreeting ? 'Custom audio greeting active' : 'Upload a personalised greeting for your guests'}
         </p>
       </div>
@@ -199,7 +199,7 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
         className="flex-shrink-0 p-2 rounded-lg hover:bg-white/10 transition"
         title={hasGreeting ? 'Change greeting' : 'Record a greeting'}
       >
-        <Pencil size={15} className="text-white/70" />
+        <ChevronDown size={18} className="text-white/70" />
       </button>
 
       <audio ref={audioRef} className="hidden" />
