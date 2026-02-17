@@ -45,6 +45,10 @@ export default function CustomerDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'favorites' | 'trash'>('all')
   const [greetingExpanded, setGreetingExpanded] = useState(false)
+  const [greetingUploading, setGreetingUploading] = useState(false)
+  const [greetingError, setGreetingError] = useState<string | null>(null)
+  const [greetingSuccess, setGreetingSuccess] = useState<string | null>(null)
+  const greetingFileRef = useRef<HTMLInputElement>(null)
   const [viewMode, setViewMode] = useState<'tiles' | 'cards'>('cards')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'longest' | 'shortest'>('newest')
@@ -607,6 +611,37 @@ export default function CustomerDashboardPage() {
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.push('/customer/login')
+  }
+
+  const handleGreetingUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('audio/')) { setGreetingError('Please upload an audio file (MP3 or WAV)'); return }
+    if (file.size > 10 * 1024 * 1024) { setGreetingError('File is too large. Maximum size is 10MB.'); return }
+    setGreetingUploading(true)
+    setGreetingError(null)
+    setGreetingSuccess(null)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const formData = new FormData()
+      formData.append('greeting', file)
+      const response = await fetch(`/api/events/${event?.id}/greeting`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${session?.access_token || ''}` },
+        body: formData,
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Failed to upload greeting')
+      setGreetingSuccess('Greeting uploaded!')
+      setGreetingExpanded(false)
+      loadMessages()
+      setTimeout(() => setGreetingSuccess(null), 3000)
+    } catch (err: any) {
+      setGreetingError(err.message || 'Failed to upload greeting')
+    } finally {
+      setGreetingUploading(false)
+      if (greetingFileRef.current) greetingFileRef.current.value = ''
+    }
   }
 
   const getEventDisplayName = () => {
@@ -1189,7 +1224,7 @@ export default function CustomerDashboardPage() {
                     textAlign: 'center',
                     transform: 'rotate(-2.5deg)',
                     border: '1px solid rgba(0,0,0,0.04)',
-                    marginRight: '-2rem',
+                    marginRight: '-1rem',
                     zIndex: 1,
                     flexShrink: 0,
                   }}
@@ -1267,7 +1302,7 @@ export default function CustomerDashboardPage() {
                   )}
                 </div>
 
-                {/* Card 2: Greeting */}
+                {/* Card 2: Greeting — self-contained */}
                 <div
                   className="empty-parchment parchment-card-2"
                   style={{
@@ -1279,7 +1314,7 @@ export default function CustomerDashboardPage() {
                     textAlign: 'center',
                     transform: 'rotate(1.5deg)',
                     border: '1px solid rgba(0,0,0,0.04)',
-                    marginLeft: '-2rem',
+                    marginLeft: '-1rem',
                     zIndex: 2,
                     flexShrink: 0,
                   }}
@@ -1289,9 +1324,9 @@ export default function CustomerDashboardPage() {
                     fontSize: '1.8rem',
                     color: '#3D5A4C',
                     lineHeight: 1.3,
-                    marginBottom: '1.25rem'
+                    marginBottom: '0.5rem'
                   }}>
-                    Your Greeting
+                    Your Personal Audio Greeting
                   </div>
 
                   {event?.greeting_audio_url ? (
@@ -1300,12 +1335,12 @@ export default function CustomerDashboardPage() {
                         fontFamily: "'Playfair Display', Georgia, serif",
                         fontSize: '0.95rem',
                         color: '#6E7D71',
-                        marginBottom: '1.5rem',
+                        marginBottom: '1.25rem',
                         lineHeight: 1.6
                       }}>
-                        Custom greeting uploaded
+                        Custom greeting uploaded ✓
                       </div>
-                      <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                         <button
                           onClick={() => {
                             const audio = document.getElementById('parchment-greeting-audio') as HTMLAudioElement
@@ -1315,8 +1350,87 @@ export default function CustomerDashboardPage() {
                             }
                           }}
                           style={{
-                            fontFamily: "'Playfair Display', Georgia, serif",
-                            fontSize: '0.9rem',
+                            display: 'flex', alignItems: 'center', gap: '0.4rem',
+                            fontSize: '0.85rem',
+                            padding: '0.55rem 1rem',
+                            background: '#3D5A4C',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.5rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <Play size={14} fill="white" stroke="white" /> Preview
+                        </button>
+                        <button
+                          onClick={() => setGreetingExpanded(!greetingExpanded)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '0.4rem',
+                            fontSize: '0.85rem',
+                            padding: '0.55rem 1rem',
+                            background: 'transparent',
+                            color: '#6E7D71',
+                            border: '1px solid rgba(0,0,0,0.12)',
+                            borderRadius: '0.5rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <Upload size={14} /> Change
+                        </button>
+                      </div>
+                      <audio id="parchment-greeting-audio" className="hidden" />
+
+                      {/* Inline upload area */}
+                      {greetingExpanded && (
+                        <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                          <input
+                            ref={greetingFileRef}
+                            type="file"
+                            accept="audio/mp3,audio/mpeg,audio/wav,audio/x-wav"
+                            className="hidden"
+                            onChange={handleGreetingUpload}
+                          />
+                          <button
+                            onClick={() => greetingFileRef.current?.click()}
+                            disabled={greetingUploading}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: '0.4rem', margin: '0 auto',
+                              fontSize: '0.85rem',
+                              padding: '0.55rem 1rem',
+                              background: '#3D5A4C',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.5rem',
+                              cursor: 'pointer',
+                              opacity: greetingUploading ? 0.6 : 1,
+                            }}
+                          >
+                            <Upload size={14} />
+                            {greetingUploading ? 'Uploading...' : 'Choose File (MP3 / WAV)'}
+                          </button>
+                          {greetingError && <p style={{ color: '#c45', fontSize: '0.8rem', marginTop: '0.75rem' }}>{greetingError}</p>}
+                          {greetingSuccess && <p style={{ color: '#3D5A4C', fontSize: '0.8rem', marginTop: '0.75rem' }}>{greetingSuccess}</p>}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        fontSize: '0.9rem',
+                        color: '#8a8a7a',
+                        marginBottom: '1.25rem',
+                        lineHeight: 1.6
+                      }}>
+                        Record a greeting for your guests to hear when they call.
+                      </div>
+
+                      {!greetingExpanded ? (
+                        <button
+                          onClick={() => setGreetingExpanded(true)}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                            fontSize: '0.85rem',
                             padding: '0.6rem 1.25rem',
                             background: '#3D5A4C',
                             color: 'white',
@@ -1325,70 +1439,52 @@ export default function CustomerDashboardPage() {
                             cursor: 'pointer',
                           }}
                         >
-                          ▶ Preview
+                          <Upload size={14} /> Upload Greeting
                         </button>
-                        <button
-                          onClick={() => setGreetingExpanded(true)}
-                          style={{
+                      ) : (
+                        <div>
+                          <input
+                            ref={greetingFileRef}
+                            type="file"
+                            accept="audio/mp3,audio/mpeg,audio/wav,audio/x-wav"
+                            className="hidden"
+                            onChange={handleGreetingUpload}
+                          />
+                          <button
+                            onClick={() => greetingFileRef.current?.click()}
+                            disabled={greetingUploading}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                              fontSize: '0.85rem',
+                              padding: '0.6rem 1.25rem',
+                              background: '#3D5A4C',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.5rem',
+                              cursor: 'pointer',
+                              opacity: greetingUploading ? 0.6 : 1,
+                            }}
+                          >
+                            <Upload size={14} />
+                            {greetingUploading ? 'Uploading...' : 'Choose File (MP3 / WAV)'}
+                          </button>
+                          <p style={{
                             fontFamily: "'Playfair Display', Georgia, serif",
-                            fontSize: '0.9rem',
-                            padding: '0.6rem 1.25rem',
-                            background: 'transparent',
-                            color: '#6E7D71',
-                            border: '1px solid rgba(0,0,0,0.12)',
-                            borderRadius: '0.5rem',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          Change
-                        </button>
-                      </div>
-                      <audio id="parchment-greeting-audio" className="hidden" />
-                    </>
-                  ) : (
-                    <>
-                      <div style={{
-                        fontFamily: "'Playfair Display', Georgia, serif",
-                        fontSize: '0.95rem',
-                        color: '#8a8a7a',
-                        marginBottom: '1.5rem',
-                        lineHeight: 1.6
-                      }}>
-                        Record a personal greeting for your guests to hear when they call.
-                      </div>
-                      <button
-                        onClick={() => setGreetingExpanded(true)}
-                        style={{
-                          fontFamily: "'Playfair Display', Georgia, serif",
-                          fontSize: '0.95rem',
-                          padding: '0.7rem 1.5rem',
-                          background: '#3D5A4C',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '0.5rem',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Upload Greeting
-                      </button>
+                            fontSize: '0.8rem',
+                            color: '#a0a090',
+                            marginTop: '1rem',
+                            lineHeight: 1.5
+                          }}>
+                            MP3 or WAV · Under 10MB · Keep it under 30 seconds
+                          </p>
+                          {greetingError && <p style={{ color: '#c45', fontSize: '0.8rem', marginTop: '0.5rem' }}>{greetingError}</p>}
+                          {greetingSuccess && <p style={{ color: '#3D5A4C', fontSize: '0.8rem', marginTop: '0.5rem' }}>{greetingSuccess}</p>}
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
               </div>
-
-              {/* Greeting upload panel — shows when user clicks Upload/Change */}
-              {greetingExpanded && event && (
-                <div style={{ maxWidth: '660px', margin: '1rem auto 0' }}>
-                  <GreetingCard
-                    eventId={event.id}
-                    greetingAudioUrl={event.greeting_audio_url}
-                    greetingText={event.greeting_text}
-                    onUpdate={loadMessages}
-                    startEditing={true}
-                    onCollapse={() => setGreetingExpanded(false)}
-                  />
-                </div>
-              )}
             </div>
           ) : (
           <div className="bg-white rounded-xl shadow-sm p-12 text-center" style={{ border: '1px solid #e8ece9' }}>
