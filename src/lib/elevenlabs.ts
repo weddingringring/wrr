@@ -83,11 +83,11 @@ export async function generateAiGreeting(
     const filePath = `ai-greetings/${eventId}.mp3`
 
     // Delete any existing AI greeting for this event
-    await supabase.storage.from('greetings').remove([filePath])
+    await supabase.storage.from('event-greetings').remove([filePath])
 
     // Upload new audio
     const { error: uploadError } = await supabase.storage
-      .from('greetings')
+      .from('event-greetings')
       .upload(filePath, audioBuffer, {
         contentType: 'audio/mpeg',
         upsert: true,
@@ -100,7 +100,7 @@ export async function generateAiGreeting(
 
     // Get public URL
     const { data: urlData } = supabase.storage
-      .from('greetings')
+      .from('event-greetings')
       .getPublicUrl(filePath)
 
     // Update the event record
