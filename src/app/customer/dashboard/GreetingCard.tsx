@@ -15,7 +15,6 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [dismissed, setDismissed] = useState(false)
   const [editing, setEditing] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
@@ -24,8 +23,6 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const hasGreeting = !!greetingAudioUrl
-
-  if (dismissed) return null
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -159,15 +156,19 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
     )
   }
 
-  // ── Compact default view ──
+  // ── Compact default view (dark green bar, click to expand) ──
   return (
-    <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: '#f5f0e8', border: '1px solid #e8ece9' }}>
+    <div
+      className="flex items-center gap-3 rounded-xl px-4 py-3 cursor-pointer transition hover:opacity-90"
+      style={{ background: '#3D5A4C' }}
+      onClick={() => !hasGreeting ? setEditing(true) : undefined}
+    >
       {/* Play button (only if custom greeting exists) */}
       {hasGreeting && (
         <button
-          onClick={togglePlay}
+          onClick={(e) => { e.stopPropagation(); togglePlay() }}
           className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition"
-          style={{ background: '#3D5A4C' }}
+          style={{ background: 'rgba(255,255,255,0.15)' }}
         >
           {isPlaying
             ? <Pause size={15} fill="white" stroke="white" />
@@ -176,28 +177,29 @@ export default function GreetingCard({ eventId, greetingAudioUrl, greetingText, 
         </button>
       )}
 
+      {!hasGreeting && (
+        <div
+          className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ background: 'rgba(255,255,255,0.15)' }}
+        >
+          <Upload size={15} className="text-white" />
+        </div>
+      )}
+
       <div className="flex-1 min-w-0">
-        <p className="text-sm truncate" style={{ color: '#4a4a4a' }}>
+        <p className="text-sm truncate text-white">
           {hasGreeting ? 'Custom audio greeting active' : 'Upload a personalised greeting for your guests'}
         </p>
       </div>
 
-      {success && <span className="text-xs text-deep-green flex-shrink-0">{success}</span>}
+      {success && <span className="text-xs text-white/80 flex-shrink-0">{success}</span>}
 
       <button
-        onClick={() => setEditing(true)}
-        className="flex-shrink-0 p-2 rounded-lg hover:bg-sage-light/30 transition"
+        onClick={(e) => { e.stopPropagation(); setEditing(true) }}
+        className="flex-shrink-0 p-2 rounded-lg hover:bg-white/10 transition"
         title={hasGreeting ? 'Change greeting' : 'Record a greeting'}
       >
-        <Pencil size={15} style={{ color: '#6E7D71' }} />
-      </button>
-
-      <button
-        onClick={() => setDismissed(true)}
-        className="flex-shrink-0 p-1.5 rounded-lg hover:bg-sage-light/30 transition"
-        title="Dismiss"
-      >
-        <X size={14} style={{ color: '#999' }} />
+        <Pencil size={15} className="text-white/70" />
       </button>
 
       <audio ref={audioRef} className="hidden" />
