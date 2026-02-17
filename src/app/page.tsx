@@ -376,7 +376,7 @@ export default function HomePage() {
               opacity: 0.8,
               marginBottom: '4rem'
             }}>
-              Effortless to run. Instantly memorable. Fully branded for your venue — and capable of generating up to £350 per wedding.
+              Effortless to run. Instantly memorable. Fully branded for your venue — generating up to £350 per wedding.
             </p>
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '3.5rem' }}>
               <button
@@ -442,7 +442,7 @@ export default function HomePage() {
                 Couples receive instant access to their recordings in a secure online gallery — beautifully branded with your venue identity.
               </p>
               <p style={{ marginBottom: '1.5rem' }}>
-                Guests can share moments directly to Instagram Stories with your venue branding included, extending your reach beyond the wedding day.
+                Guests can share recordings directly to Instagram Stories — extending your venue's reach beyond the wedding day.
               </p>
               <p style={{ marginBottom: '3rem' }}>
                 You benefit from an elegant feature capable of generating up to £350 per wedding while strengthening your brand presence.
@@ -525,7 +525,7 @@ export default function HomePage() {
                   </svg>
                 ),
                 title: 'Additional Revenue Per Wedding',
-                description: 'Generate up to £350 per event with a premium upgrade couples value.'
+                description: 'Generate up to £350 per event through a premium upgrade couples genuinely value.'
               },
               {
                 icon: (
@@ -662,7 +662,7 @@ export default function HomePage() {
       <section id="how-it-works" style={{
         background: '#1a1a1a',
         color: '#E8C9C9',
-        padding: '5.5rem 0'
+        padding: '4.8rem 0 4.7rem'
       }}>
         <div style={{
           maxWidth: '1200px',
@@ -725,7 +725,7 @@ export default function HomePage() {
                   fontSize: '6rem',
                   fontWeight: 300,
                   color: '#C9A6A6',
-                  marginBottom: '1.5rem',
+                  marginBottom: '1rem',
                   lineHeight: 1
                 }}>
                   {step.number}
@@ -741,7 +741,7 @@ export default function HomePage() {
                   {step.title}
                 </h3>
                 <p style={{
-                  fontSize: '1rem',
+                  fontSize: '1.05rem',
                   lineHeight: 1.75,
                   color: '#E8C9C9'
                 }}>
