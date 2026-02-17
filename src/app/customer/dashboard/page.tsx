@@ -1131,6 +1131,109 @@ export default function CustomerDashboardPage() {
 
         {/* Messages Display */}
         {filteredMessages.length === 0 ? (
+          filter === 'all' && !searchQuery && selectedTags.length === 0 ? (
+            /* Single angled parchment card — no messages yet */
+            <div style={{ position: 'relative', height: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <style>{`
+                .empty-parchment {
+                  background: linear-gradient(145deg, #FFFEF7 0%, #FBF8F0 25%, #F8F4E8 50%, #FBF7ED 75%, #FFFDF5 100%);
+                  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.07), inset 0 0 60px rgba(255,252,240,0.5);
+                }
+                .empty-parchment::before {
+                  content: '';
+                  position: absolute;
+                  inset: 0;
+                  border-radius: inherit;
+                  background-image:
+                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65 0.2' numOctaves='4' seed='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+                  opacity: 0.03;
+                  mix-blend-mode: multiply;
+                  pointer-events: none;
+                }
+              `}</style>
+              <div
+                className="empty-parchment"
+                style={{
+                  position: 'relative',
+                  width: '340px',
+                  maxWidth: '90%',
+                  borderRadius: '1rem',
+                  padding: '2.5rem 2rem',
+                  textAlign: 'center',
+                  transform: 'rotate(-2deg)',
+                  border: '1px solid rgba(0,0,0,0.04)',
+                }}
+              >
+                <div style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: '1.1rem',
+                  color: '#6E7D71',
+                  marginBottom: '1.5rem',
+                  letterSpacing: '0.02em'
+                }}>
+                  {(() => {
+                    if (!event?.event_date) return 'Your Big Day'
+                    const eventDate = new Date(event.event_date + 'T00:00:00')
+                    const today = new Date()
+                    today.setHours(0, 0, 0, 0)
+                    const diffMs = eventDate.getTime() - today.getTime()
+                    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+                    if (diffDays > 1) return `${diffDays} days to go`
+                    if (diffDays === 1) return 'Tomorrow!'
+                    if (diffDays === 0) return 'Today!'
+                    return 'Your Big Day'
+                  })()}
+                </div>
+
+                <div style={{
+                  fontFamily: "'Oooh Baby', cursive",
+                  fontSize: '2rem',
+                  color: '#3D5A4C',
+                  lineHeight: 1.3,
+                  marginBottom: '1.5rem'
+                }}>
+                  No messages yet!
+                </div>
+
+                <div style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: '0.95rem',
+                  color: '#8a8a7a',
+                  lineHeight: 1.6
+                }}>
+                  {(() => {
+                    if (!event?.event_date) return 'Messages will appear here as guests call in.'
+                    const eventDate = new Date(event.event_date + 'T00:00:00')
+                    const today = new Date()
+                    today.setHours(0, 0, 0, 0)
+                    const diffMs = eventDate.getTime() - today.getTime()
+                    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+                    if (diffDays > 0) return 'Check back after the big day!'
+                    return 'Messages will appear here as guests call in.'
+                  })()}
+                </div>
+
+                {event?.event_date && (
+                  <div style={{
+                    marginTop: '1.5rem',
+                    paddingTop: '1.25rem',
+                    borderTop: '1px solid rgba(0,0,0,0.06)',
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontSize: '0.85rem',
+                    color: '#a0a090',
+                    letterSpacing: '0.05em'
+                  }}>
+                    {new Date(event.event_date + 'T00:00:00').toLocaleDateString('en-GB', {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
           <div className="bg-white rounded-xl shadow-sm p-12 text-center" style={{ border: '1px solid #e8ece9' }}>
             <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: '#f5f0e8' }}>
               {filter === 'trash' ? (
@@ -1162,6 +1265,7 @@ export default function CustomerDashboardPage() {
               }
             </p>
           </div>
+          )
         ) : viewMode === 'cards' ? (
           <MessageCardStack
             messages={filteredMessages}
