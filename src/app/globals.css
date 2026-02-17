@@ -38,3 +38,70 @@ body {
     scrollbar-width: none;
   }
 }
+
+/* Global select/dropdown styling */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  border: 1.5px solid #d4cfc7;
+  border-radius: 0.5rem;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: #1a1a1a;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236a6a6a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+select:hover {
+  border-color: #C9A6A6;
+}
+
+select:focus {
+  outline: none;
+  border-color: #C9A6A6;
+  box-shadow: 0 0 0 3px rgba(201, 166, 166, 0.15);
+}
+
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f5f2ed;
+}
+
+/* Dark background context */
+[style*="background: #1a1a1a"] select,
+[style*="background:#1a1a1a"] select,
+.dark-select {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #F5E8E8;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23E8C9C9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+[style*="background: #1a1a1a"] select:hover,
+[style*="background:#1a1a1a"] select:hover,
+.dark-select:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+[style*="background: #1a1a1a"] select:focus,
+[style*="background:#1a1a1a"] select:focus,
+.dark-select:focus {
+  border-color: #C9A6A6;
+  box-shadow: 0 0 0 3px rgba(201, 166, 166, 0.2);
+}
+
+/* Option styling (limited browser support but improves where available) */
+select option {
+  padding: 0.5rem 1rem;
+  color: #1a1a1a;
+  background: #fff;
+}
