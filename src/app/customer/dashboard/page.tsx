@@ -12,7 +12,7 @@ import {
   Filter, X, Trash2, Tag, Clock, Phone, User,
   Star, Music, ChevronDown, MoreHorizontal,
   Image as ImageIcon, Upload, Check, Undo2,
-  Archive, Settings, LogOut, MessageCircle, Mic,
+  Archive, Settings, LogOut, MessageCircle, Mic, Copy,
   LayoutGrid, Layers, SlidersHorizontal
 } from 'lucide-react'
 
@@ -48,6 +48,7 @@ export default function CustomerDashboardPage() {
   const [greetingUploading, setGreetingUploading] = useState(false)
   const [greetingError, setGreetingError] = useState<string | null>(null)
   const [greetingSuccess, setGreetingSuccess] = useState<string | null>(null)
+  const [numberCopied, setNumberCopied] = useState(false)
   const greetingFileRef = useRef<HTMLInputElement>(null)
   const [viewMode, setViewMode] = useState<'tiles' | 'cards'>('cards')
   const [searchQuery, setSearchQuery] = useState('')
@@ -641,6 +642,40 @@ export default function CustomerDashboardPage() {
     } finally {
       setGreetingUploading(false)
       if (greetingFileRef.current) greetingFileRef.current.value = ''
+    }
+  }
+
+  const formatPhoneDisplay = (phone: string) => {
+    // Convert +44... to 0... for UK display
+    const national = phone.startsWith('+44') ? '0' + phone.slice(3) : phone
+    // Format as 0XXXX XXXXXX
+    const digits = national.replace(/\D/g, '')
+    if (digits.length === 11) return digits.slice(0, 5) + ' ' + digits.slice(5)
+    return national
+  }
+
+  const handleCopyNumber = () => {
+    const phone = event?.twilio_phone_number
+    if (!phone) return
+    navigator.clipboard.writeText(formatPhoneDisplay(phone))
+    setNumberCopied(true)
+    setTimeout(() => setNumberCopied(false), 2000)
+  }
+
+  const handleShareNumber = () => {
+    const phone = event?.twilio_phone_number
+    if (!phone) return
+    const displayName = getEventDisplayName()
+    const formatted = formatPhoneDisplay(phone)
+    if (navigator.share) {
+      navigator.share({
+        title: `${displayName} Guestbook`,
+        text: `Leave a message for ${displayName} by calling ${formatted}`
+      }).catch(() => {})
+    } else {
+      navigator.clipboard.writeText(`Leave a message for ${displayName} by calling ${formatted}`)
+      setNumberCopied(true)
+      setTimeout(() => setNumberCopied(false), 2000)
     }
   }
 
@@ -1498,6 +1533,93 @@ export default function CustomerDashboardPage() {
                           {greetingSuccess && <p style={{ color: '#3D5A4C', fontSize: '0.8rem', marginTop: '0.5rem' }}>{greetingSuccess}</p>}
                         </div>
                       )}
+                    </>
+                  )}
+
+                  {/* Divider + Guestbook Number */}
+                  {event?.twilio_phone_number && (
+                    <>
+                      <div style={{
+                        margin: '1.25rem 0 1rem',
+                        height: '1px',
+                        background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,140,0.25) 30%, rgba(180,165,140,0.25) 70%, transparent 100%)',
+                      }} />
+
+                      <div style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        fontSize: '0.8rem',
+                        color: '#8a8a7a',
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        marginBottom: '0.6rem',
+                      }}>
+                        Share your guestbook number
+                      </div>
+
+                      <p style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        fontSize: '0.82rem',
+                        color: '#8a8a7a',
+                        lineHeight: 1.55,
+                        marginBottom: '0.9rem',
+                      }}>
+                        Guests who can't make the big day can still leave their message by calling this number.
+                      </p>
+
+                      <div style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        fontSize: '1.3rem',
+                        fontWeight: 400,
+                        color: '#3D5A4C',
+                        letterSpacing: '0.12em',
+                        marginBottom: '0.9rem',
+                      }}>
+                        {formatPhoneDisplay(event.twilio_phone_number)}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                        <button
+                          onClick={handleCopyNumber}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '0.35rem',
+                            fontSize: '0.8rem',
+                            padding: '0.45rem 0.85rem',
+                            background: 'transparent',
+                            color: numberCopied ? '#3D5A4C' : '#8a8a7a',
+                            border: '1px solid rgba(0,0,0,0.1)',
+                            borderRadius: '0.4rem',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          {numberCopied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy Number</>}
+                        </button>
+                        <button
+                          onClick={handleShareNumber}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '0.35rem',
+                            fontSize: '0.8rem',
+                            padding: '0.45rem 0.85rem',
+                            background: 'transparent',
+                            color: '#8a8a7a',
+                            border: '1px solid rgba(0,0,0,0.1)',
+                            borderRadius: '0.4rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <Share2 size={13} /> Share
+                        </button>
+                      </div>
+
+                      <p style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        fontSize: '0.72rem',
+                        color: '#a8a898',
+                        marginTop: '0.75rem',
+                        lineHeight: 1.5,
+                      }}>
+                        Share it with friends and family who can't attend in person.
+                      </p>
                     </>
                   )}
                 </div>
