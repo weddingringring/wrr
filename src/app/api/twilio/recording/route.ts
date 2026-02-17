@@ -122,6 +122,23 @@ export async function POST(request: NextRequest) {
     // Log full row so we can see all actual column names
     console.log(`Message created:`, JSON.stringify(message))
     
+    // Trigger async voice enhancement (fire-and-forget)
+    // Don't await — let the response return immediately
+    try {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL
+      if (appUrl && process.env.ELEVENLABS_API_KEY) {
+        fetch(`${appUrl}/api/messages/${message.id}/enhance`, {
+          method: 'POST',
+        }).catch(err => {
+          console.error(`Voice enhancement trigger failed for message ${message.id}:`, err.message)
+        })
+        console.log(`Voice enhancement triggered for message ${message.id}`)
+      }
+    } catch (enhanceErr) {
+      // Never fail the webhook because of enhancement
+      console.error('Enhancement trigger error:', enhanceErr)
+    }
+    
     // TODO: Optional - Send notification to customer (email/SMS)
     // Could trigger a separate notification service here
     
