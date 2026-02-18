@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import GreetingCard from './GreetingCard'
 import MessageCardStack from './MessageCardStack'
+import ImpersonationBanner from '@/components/ImpersonationBanner'
 import JSZip from 'jszip'
 import {
   Play, Pause, Heart, Download, Share2, Search,
@@ -41,6 +42,9 @@ const AVAILABLE_TAGS = [
 
 export default function CustomerDashboardPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const viewAsId = searchParams.get('viewAs')
+  const [isImpersonating, setIsImpersonating] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)
@@ -247,19 +251,35 @@ export default function CustomerDashboardPage() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      router.push('/customer/login')
+      router.push('/')
       return
+    }
+
+    // Check if this is a developer impersonation
+    let targetUserId = user.id
+    if (viewAsId) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      if (profile?.role === 'developer') {
+        targetUserId = viewAsId
+        setIsImpersonating(true)
+      }
     }
 
     const { data: eventData } = await supabase
       .from('events')
       .select('*')
-      .eq('customer_user_id', user.id)
+      .eq('customer_user_id', targetUserId)
       .single()
 
     if (!eventData) {
-      await supabase.auth.signOut()
-      router.push('/customer/login')
+      if (!viewAsId) {
+        await supabase.auth.signOut()
+        router.push('/')
+      }
       return
     }
 
@@ -284,10 +304,23 @@ export default function CustomerDashboardPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
+      // Use impersonated user ID if developer is viewing as customer
+      let targetUserId = user.id
+      if (viewAsId) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        if (profile?.role === 'developer') {
+          targetUserId = viewAsId
+        }
+      }
+
       const { data: eventData } = await supabase
         .from('events')
         .select('*')
-        .eq('customer_user_id', user.id)
+        .eq('customer_user_id', targetUserId)
         .single()
 
       if (!eventData) return
@@ -720,6 +753,12 @@ export default function CustomerDashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ background: '#FFEFEF' }}>
+      {isImpersonating && event && (
+        <ImpersonationBanner 
+          label={`${event.partner_1_first_name}${event.partner_2_first_name ? ` & ${event.partner_2_first_name}` : ''}'s ${event.event_type || 'Event'}`} 
+          type="customer" 
+        />
+      )}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href="https://fonts.googleapis.com/css2?family=Oooh+Baby&display=swap" rel="stylesheet" />
