@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    if (profile?.role !== 'admin') {
+    if (profile?.role !== 'admin' && profile?.role !== 'developer') {
       return NextResponse.json({ error: 'Admin only' }, { status: 403 })
     }
 
@@ -111,6 +111,7 @@ export async function POST(request: Request) {
       .from('profiles')
       .select('id, email, role')
       .neq('role', 'admin')
+      .neq('role', 'developer')
 
     let profilesDeleted = 0
     let authUsersDeleted = 0
