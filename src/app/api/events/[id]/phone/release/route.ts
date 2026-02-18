@@ -47,7 +47,7 @@ export async function POST(
         .eq('id', user.id)
         .single()
       
-      if (profile?.role !== 'admin') {
+      if (profile?.role !== 'admin' && profile?.role !== 'developer') {
         return NextResponse.json({ error: 'Forbidden - Admin only' }, { status: 403 })
       }
     }
