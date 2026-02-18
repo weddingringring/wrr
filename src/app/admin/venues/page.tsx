@@ -112,7 +112,7 @@ export default function AdminVenuesPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, city, or contact..."
-                  className="w-full pl-9 pr-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full pl-9 pr-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent" style={{ border: "1px solid #E8E6E2" }}
                 />
               </div>
             </div>
