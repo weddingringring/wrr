@@ -117,7 +117,7 @@ export default function AdminPhonesPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by serial, IMEI, SIM, venue..."
-                  className="w-full pl-9 pr-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full pl-9 pr-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent" style={{ border: "1px solid #E8E6E2" }}
                 />
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function AdminPhonesPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent" style={{ border: "1px solid #E8E6E2" }}
               >
                 <option value="all">All Statuses</option>
                 <option value="available">Available</option>
@@ -256,25 +256,25 @@ function AddPhoneModal({ onClose, onSuccess }: { onClose: () => void, onSuccess:
               <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Serial Number *</label>
               <input type="text" required value={formData.serialNumber}
                 onChange={(e) => setFormData({...formData, serialNumber: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green" placeholder="OPIS001" />
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }} placeholder="OPIS001" />
             </div>
             <div>
               <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>IMEI *</label>
               <input type="text" required value={formData.imei}
                 onChange={(e) => setFormData({...formData, imei: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green" placeholder="123456789012345" />
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }} placeholder="123456789012345" />
             </div>
             <div>
               <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>SIM Number *</label>
               <input type="tel" required value={formData.simNumber}
                 onChange={(e) => setFormData({...formData, simNumber: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green" placeholder="+447700900000" />
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }} placeholder="+447700900000" />
             </div>
             <div>
               <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>SIM Provider *</label>
               <select required value={formData.simProvider}
                 onChange={(e) => setFormData({...formData, simProvider: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green">
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }}>
                 <option value="EE">EE</option><option value="Vodafone">Vodafone</option>
                 <option value="O2">O2</option><option value="Three">Three</option><option value="Other">Other</option>
               </select>
@@ -283,13 +283,13 @@ function AddPhoneModal({ onClose, onSuccess }: { onClose: () => void, onSuccess:
               <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Color *</label>
               <input type="text" required value={formData.color}
                 onChange={(e) => setFormData({...formData, color: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green" placeholder="Pink" />
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }} placeholder="Pink" />
             </div>
             <div>
               <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Model *</label>
               <input type="text" required value={formData.model}
                 onChange={(e) => setFormData({...formData, model: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green" placeholder="Opis 60s Mobile" />
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }} placeholder="Opis 60s Mobile" />
             </div>
           </div>
           <div className="flex gap-4 pt-4">
