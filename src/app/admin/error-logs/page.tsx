@@ -81,7 +81,7 @@ export default function AdminErrorLogsPage() {
             <div>
               <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Status</label>
               <select value={filter} onChange={(e) => setFilter(e.target.value as any)}
-                className="px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green">
+                className="px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }}>
                 <option value="all">All Errors</option>
                 <option value="unresolved">Unresolved Only</option>
               </select>
@@ -89,7 +89,7 @@ export default function AdminErrorLogsPage() {
             <div>
               <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Severity</label>
               <select value={severityFilter} onChange={(e) => setSeverityFilter(e.target.value)}
-                className="px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green">
+                className="px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }}>
                 <option value="all">All Severities</option>
                 <option value="critical">Critical</option>
                 <option value="error">Error</option>
