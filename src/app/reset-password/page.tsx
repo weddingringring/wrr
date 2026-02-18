@@ -62,7 +62,7 @@ function ResetPasswordForm() {
         .single()
 
       // Redirect to appropriate dashboard
-      if (profile?.role === 'admin') {
+      if (profile?.role === 'admin' || profile?.role === 'developer') {
         router.push('/admin')
       } else if (profile?.role === 'venue') {
         router.push('/venue')
