@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
@@ -24,6 +24,14 @@ interface Event {
 }
 
 export default function VenueDashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-cream flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-deep-green" /></div>}>
+      <VenueDashboardContent />
+    </Suspense>
+  )
+}
+
+function VenueDashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const viewAsId = searchParams.get('viewAs')
