@@ -388,25 +388,38 @@ function VenueDashboardContent() {
           </div>
         </div>
 
-        {/* Controls Bar */}
+        {/* Primary Action */}
+        <div className="mb-6">
+          <button
+            onClick={() => setCreateModalOpen(true)}
+            className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+            style={{ border: 'none', cursor: 'pointer', padding: '0.75rem 1.5rem', fontSize: '0.9375rem' }}
+          >
+            <Plus size={18} />
+            Create New Event
+          </button>
+          <p style={{ color: '#aaa', fontSize: '0.75rem', marginTop: '0.375rem' }}>Add a new couple and event details.</p>
+        </div>
+
+        {/* Search & Filter Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="relative flex-1 max-w-xs">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#aaa' }} />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#bbb' }} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search events..."
                 className="w-full pl-8 pr-3 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-deep-green focus:border-transparent"
-                style={{ borderColor: '#ddd' }}
+                style={{ borderColor: '#e0e0e0', background: '#fff' }}
               />
             </div>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as any)}
               className="px-2.5 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-deep-green focus:border-transparent"
-              style={{ borderColor: '#ddd' }}
+              style={{ borderColor: '#e0e0e0' }}
             >
               <option value="all">All Events</option>
               <option value="upcoming">Upcoming</option>
@@ -416,7 +429,7 @@ function VenueDashboardContent() {
               value={filterEventType}
               onChange={(e) => setFilterEventType(e.target.value)}
               className="px-2.5 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-deep-green focus:border-transparent"
-              style={{ borderColor: '#ddd' }}
+              style={{ borderColor: '#e0e0e0' }}
             >
               <option value="all">All Types</option>
               <option value="wedding">Weddings</option>
@@ -426,40 +439,30 @@ function VenueDashboardContent() {
               <option value="other">Other</option>
             </select>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex rounded-md overflow-hidden border" style={{ borderColor: '#ddd' }}>
-              <button
-                onClick={() => handleViewChange('list')}
-                className={`px-2.5 py-1.5 text-xs flex items-center gap-1 transition ${
-                  view === 'list'
-                    ? 'bg-deep-green text-white'
-                    : 'bg-white hover:bg-gray-50'
-                }`}
-                style={{ border: 'none', cursor: 'pointer', color: view === 'list' ? '#fff' : '#555', fontWeight: 500 }}
-              >
-                <List size={13} />
-                List
-              </button>
-              <button
-                onClick={() => handleViewChange('calendar')}
-                className={`px-2.5 py-1.5 text-xs flex items-center gap-1 transition ${
-                  view === 'calendar'
-                    ? 'bg-deep-green text-white'
-                    : 'bg-white hover:bg-gray-50'
-                }`}
-                style={{ border: 'none', borderLeft: '1px solid #ddd', cursor: 'pointer', color: view === 'calendar' ? '#fff' : '#555', fontWeight: 500 }}
-              >
-                <LayoutGrid size={13} />
-                Cards
-              </button>
-            </div>
+          <div className="flex rounded-md overflow-hidden border" style={{ borderColor: '#ddd' }}>
             <button
-              onClick={() => setCreateModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-deep-green text-white rounded-md font-medium hover:bg-deep-green-dark transition text-sm"
-              style={{ border: 'none', cursor: 'pointer' }}
+              onClick={() => handleViewChange('list')}
+              className={`px-2.5 py-1.5 text-xs flex items-center gap-1 transition ${
+                view === 'list'
+                  ? 'bg-charcoal text-white'
+                  : 'bg-white hover:bg-gray-50'
+              }`}
+              style={{ border: 'none', cursor: 'pointer', color: view === 'list' ? '#fff' : '#888', fontWeight: 500 }}
             >
-              <Plus size={15} />
-              Create Event
+              <List size={13} />
+              List
+            </button>
+            <button
+              onClick={() => handleViewChange('calendar')}
+              className={`px-2.5 py-1.5 text-xs flex items-center gap-1 transition ${
+                view === 'calendar'
+                  ? 'bg-charcoal text-white'
+                  : 'bg-white hover:bg-gray-50'
+              }`}
+              style={{ border: 'none', borderLeft: '1px solid #ddd', cursor: 'pointer', color: view === 'calendar' ? '#fff' : '#888', fontWeight: 500 }}
+            >
+              <LayoutGrid size={13} />
+              Cards
             </button>
           </div>
         </div>
@@ -472,19 +475,9 @@ function VenueDashboardContent() {
             </p>
             <p className="text-xs mb-5" style={{ color: '#aaa' }}>
               {events.length === 0 
-                ? 'Create your first event to get started' 
+                ? 'Use the Create New Event button above to get started' 
                 : 'Try adjusting your search or filters'}
             </p>
-            {events.length === 0 && (
-              <button
-                onClick={() => setCreateModalOpen(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-deep-green text-white rounded-md font-medium hover:bg-deep-green-dark transition text-sm"
-                style={{ border: 'none', cursor: 'pointer' }}
-              >
-                <Plus size={15} />
-                Create Event
-              </button>
-            )}
           </div>
         ) : view === 'list' ? (
           /* ─── LIST VIEW ─── */
