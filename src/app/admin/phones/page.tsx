@@ -303,7 +303,6 @@ function AddPhoneModal({ onClose, onSuccess }: { onClose: () => void, onSuccess:
               style={{ border: 'none', cursor: 'pointer' }}>
               {loading ? 'Adding...' : 'Add Phone'}
             </button>
-            </button>
           </div>
         </form>
       </div>
