@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
         request.nextUrl.searchParams.get('required') === 'true') {
       // Redirect to appropriate dashboard
       const url = request.nextUrl.clone()
-      if (profile?.role === 'admin') {
+      if (profile?.role === 'admin' || profile?.role === 'developer') {
         url.pathname = '/admin'
       } else if (profile?.role === 'venue') {
         url.pathname = '/venue'
