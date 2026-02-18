@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import AdminHeader from '@/components/AdminHeader'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Eye } from 'lucide-react'
 
 interface Event {
   id: string
@@ -15,6 +15,7 @@ interface Event {
   partner_2_first_name: string | null
   partner_2_last_name: string | null
   customer_email: string
+  customer_user_id: string
   twilio_phone_number: string | null
   status: string
   venue: { name: string; city: string }
@@ -28,9 +29,17 @@ export default function AdminEventsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed' | 'cancelled'>('all')
   const [filterTimeframe, setFilterTimeframe] = useState<'all' | 'upcoming' | 'past'>('all')
+  const [userRole, setUserRole] = useState<string>('admin')
   
-  useEffect(() => { loadEvents() }, [])
+  useEffect(() => { loadEvents(); checkRole() }, [])
   useEffect(() => { filterEvents() }, [searchQuery, filterStatus, filterTimeframe, events])
+  
+  const checkRole = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    if (profile?.role) setUserRole(profile.role)
+  }
   
   const loadEvents = async () => {
     try {
@@ -209,10 +218,21 @@ export default function AdminEventsPage() {
                         }`}>{event.status}</span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Link href={`/admin/events/${event.id}`}
-                          className="text-sm text-deep-green hover:text-deep-green-dark font-medium">
-                          View Details
-                        </Link>
+                        <div className="flex items-center justify-end gap-3">
+                          {userRole === 'developer' && (
+                            <Link
+                              href={`/customer/dashboard?viewAs=${event.customer_user_id}`}
+                              className="text-sage hover:text-deep-green transition"
+                              title="View as customer"
+                            >
+                              <Eye size={16} />
+                            </Link>
+                          )}
+                          <Link href={`/admin/events/${event.id}`}
+                            className="text-sm text-deep-green hover:text-deep-green-dark font-medium">
+                            View Details
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))}
