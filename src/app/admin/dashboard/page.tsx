@@ -75,7 +75,7 @@ export default function AdminDashboardPage() {
 
   const checkAuth = async () => {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.push('/admin/login'); return }
+    if (!user) { router.push('/'); return }
     const { data: profile } = await supabase
       .from('profiles')
       .select('role, first_name, last_name')
@@ -83,7 +83,7 @@ export default function AdminDashboardPage() {
       .single()
     if (profile?.role !== 'admin') {
       await supabase.auth.signOut()
-      router.push('/admin/login')
+      router.push('/')
       return
     }
     setUser({ ...profile, full_name: `${profile.first_name} ${profile.last_name}` })
