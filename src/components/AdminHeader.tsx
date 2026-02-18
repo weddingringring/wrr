@@ -28,12 +28,12 @@ export default function AdminHeader({ currentPage = 'dashboard' }: AdminHeaderPr
 
   return (
     <header style={{
-      background: '#F0EAEA',
-      padding: '1rem 0',
+      background: '#F6F5F3',
+      padding: '0.875rem 0',
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)'
+      borderBottom: '1px solid #E8E6E2',
     }}>
       <div style={{
         maxWidth: '1200px',
@@ -43,7 +43,6 @@ export default function AdminHeader({ currentPage = 'dashboard' }: AdminHeaderPr
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        {/* Logo */}
         <Link href="/admin/dashboard">
           <Image 
             src="/logo.png" 
@@ -51,14 +50,10 @@ export default function AdminHeader({ currentPage = 'dashboard' }: AdminHeaderPr
             width={400} 
             height={100} 
             priority 
-            style={{
-              maxWidth: '160px',
-              height: 'auto'
-            }}
+            style={{ maxWidth: '160px', height: 'auto' }}
           />
         </Link>
 
-        {/* Nav Links */}
         <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           {navItems.map(item => {
             const Icon = item.icon
@@ -68,14 +63,14 @@ export default function AdminHeader({ currentPage = 'dashboard' }: AdminHeaderPr
                 key={item.key}
                 href={item.href}
                 style={{
-                  color: isActive ? '#3D5A4C' : '#1a1a1a',
+                  color: isActive ? '#3D5A4C' : '#555',
                   textDecoration: 'none',
                   fontWeight: isActive ? 600 : 500,
                   fontSize: '0.8125rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.375rem',
-                  opacity: isActive ? 1 : 0.7,
+                  opacity: isActive ? 1 : 0.75,
                   transition: 'all 0.2s',
                   borderBottom: isActive ? '2px solid #3D5A4C' : '2px solid transparent',
                   paddingBottom: '0.125rem'
@@ -87,12 +82,12 @@ export default function AdminHeader({ currentPage = 'dashboard' }: AdminHeaderPr
             )
           })}
 
-          <div style={{ width: '1px', height: '1.25rem', background: 'rgba(0,0,0,0.15)', margin: '0 0.25rem' }} />
+          <div style={{ width: '1px', height: '1.25rem', background: '#E8E6E2', margin: '0 0.25rem' }} />
 
           <button
             onClick={handleSignOut}
             style={{
-              color: '#6a6a6a',
+              color: '#888',
               fontWeight: 500,
               fontSize: '0.8125rem',
               background: 'none',
