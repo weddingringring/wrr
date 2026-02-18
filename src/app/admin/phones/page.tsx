@@ -77,8 +77,8 @@ export default function AdminPhonesPage() {
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition" style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
-            style={{ border: 'none', cursor: 'pointer' }}
+            className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+            style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem', border: 'none', cursor: 'pointer' }}
           >
             <Plus size={16} />
             Add Phone
@@ -145,8 +145,8 @@ export default function AdminPhonesPage() {
               <p style={{ fontSize: "0.8125rem", color: "#bbb", marginBottom: "1.5rem" }}>Add your first phone to start tracking inventory</p>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition" style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
-                style={{ border: 'none', cursor: 'pointer' }}
+                className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+                style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem', border: 'none', cursor: 'pointer' }}
               >
                 <Plus size={16} />
                 Add Phone
