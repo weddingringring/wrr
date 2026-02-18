@@ -29,6 +29,7 @@ module.exports = {
           light: '#D9C081',
           dark: '#B99341',
         },
+        charcoal: '#1a1a1a',
       },
       fontFamily: {
         serif: ['Playfair Display', 'serif'],
