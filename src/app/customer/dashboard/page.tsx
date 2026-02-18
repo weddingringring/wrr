@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
@@ -41,6 +41,14 @@ const AVAILABLE_TAGS = [
 ]
 
 export default function CustomerDashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ background: '#FFEFEF' }}><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-deep-green" /></div>}>
+      <CustomerDashboardContent />
+    </Suspense>
+  )
+}
+
+function CustomerDashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const viewAsId = searchParams.get('viewAs')
