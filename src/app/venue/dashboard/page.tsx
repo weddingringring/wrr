@@ -490,60 +490,74 @@ function VenueDashboardContent() {
           /* ─── LIST VIEW ─── */
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead style={{ background: '#fafafa' }}>
-                  <tr className="border-b" style={{ borderColor: '#eee' }}>
-                    <th className="px-5 py-2.5 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#999' }}>Event</th>
-                    <th className="px-5 py-2.5 text-left text-xs font-medium uppercase tracking-wider cursor-pointer select-none" style={{ color: '#999' }} onClick={() => handleSort('date')}>
+              <table className="w-full" style={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+                <thead>
+                  <tr style={{ background: '#f7f7f7', borderBottom: '1px solid #e8e8e8' }}>
+                    <th className="pl-5 pr-3 py-2 text-left uppercase tracking-wider select-none" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Event</th>
+                    <th className="px-3 py-2 text-left uppercase tracking-wider cursor-pointer select-none" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500, width: '120px' }} onClick={() => handleSort('date')}>
                       Date <SortIndicator field="date" />
                     </th>
-                    <th className="px-5 py-2.5 text-left text-xs font-medium uppercase tracking-wider cursor-pointer select-none" style={{ color: '#999' }} onClick={() => handleSort('messages')}>
+                    <th className="px-3 py-2 text-left uppercase tracking-wider cursor-pointer select-none" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500, width: '90px' }} onClick={() => handleSort('messages')}>
                       Messages <SortIndicator field="messages" />
                     </th>
-                    <th className="px-5 py-2.5 text-left text-xs font-medium uppercase tracking-wider cursor-pointer select-none" style={{ color: '#999' }} onClick={() => handleSort('status')}>
+                    <th className="px-3 py-2 text-left uppercase tracking-wider cursor-pointer select-none" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500, width: '100px' }} onClick={() => handleSort('status')}>
                       Status <SortIndicator field="status" />
                     </th>
-                    <th className="px-5 py-2.5 text-right text-xs font-medium uppercase tracking-wider" style={{ color: '#999' }}>Actions</th>
+                    <th className="px-5 py-2 text-right uppercase tracking-wider select-none" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500, width: '100px' }}></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedEvents.map(event => (
-                    <tr key={event.id} className="transition hover:bg-gray-50/60" style={{ borderBottom: '1px solid #f0f0f0' }}>
-                      <td className="px-5 py-2.5">
-                        <div className="text-sm" style={{ fontWeight: 600, color: '#111' }}>{getEventDisplayName(event)}</div>
-                        <div className="text-xs" style={{ color: '#bbb', marginTop: '1px' }}>{event.customer_email}</div>
+                  {sortedEvents.map((event, idx) => (
+                    <tr
+                      key={event.id}
+                      onClick={() => { setSelectedEvent(event); setEventDetailsModalOpen(true) }}
+                      className="transition-colors"
+                      style={{
+                        borderBottom: '1px solid #f0f0f0',
+                        background: idx % 2 === 1 ? '#fcfcfc' : '#fff',
+                        cursor: 'pointer',
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#f5f5f5' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#fcfcfc' : '#fff' }}
+                    >
+                      <td className="pl-5 pr-3 py-2">
+                        <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#0d0d0d', lineHeight: 1.3 }}>{getEventDisplayName(event)}</div>
+                        <div style={{ fontSize: '0.6875rem', color: '#c0c0c0', marginTop: '2px', letterSpacing: '0.01em' }}>{event.customer_email}</div>
                       </td>
-                      <td className="px-5 py-2.5 text-sm" style={{ color: '#333' }}>
+                      <td className="px-3 py-2" style={{ fontSize: '0.8125rem', color: '#444' }}>
                         {new Date(event.event_date).toLocaleDateString('en-GB', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'
                         })}
                       </td>
-                      <td className="px-5 py-2.5">
-                        <span className={`text-sm ${getMessageColor(event.messages_count)}`}>
+                      <td className="px-3 py-2">
+                        <span className={`${getMessageColor(event.messages_count)}`} style={{ fontSize: '0.8125rem' }}>
                           {event.messages_count}
                         </span>
                       </td>
-                      <td className="px-5 py-2.5">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          event.status === 'active'
-                            ? 'bg-deep-green/8 text-deep-green'
-                            : event.status === 'completed'
-                              ? 'bg-sage/10 text-sage-dark'
-                              : 'bg-rose/10 text-rose-dark'
-                        }`}>
+                      <td className="px-3 py-2">
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '2px 10px',
+                          borderRadius: '999px',
+                          fontSize: '0.6875rem',
+                          fontWeight: 500,
+                          letterSpacing: '0.02em',
+                          background: event.status === 'active' ? 'rgba(61,90,76,0.08)' : event.status === 'completed' ? 'rgba(140,160,140,0.1)' : 'rgba(200,100,100,0.08)',
+                          color: event.status === 'active' ? '#3D5A4C' : event.status === 'completed' ? '#7a8a7a' : '#b05050',
+                        }}>
                           {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
                         </span>
                       </td>
-                      <td className="px-5 py-2.5 text-right">
-                        <button
-                          onClick={() => { setSelectedEvent(event); setEventDetailsModalOpen(true) }}
-                          className="text-sm text-deep-green hover:text-deep-green-dark font-medium"
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                      <td className="px-5 py-2 text-right">
+                        <span
+                          className="text-deep-green hover:text-deep-green-dark font-medium"
+                          style={{ fontSize: '0.8125rem' }}
                         >
                           View Details
-                        </button>
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -553,7 +567,7 @@ function VenueDashboardContent() {
           </div>
         ) : (
           /* ─── CARD VIEW ─── */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {sortedEvents.map(event => {
               const isPast = new Date(event.event_date) < new Date()
               return (
@@ -602,23 +616,24 @@ function EventCard({ event, getDisplayName, isPast = false, onClick }: {
   const daysUntil = Math.ceil(
     (new Date(event.event_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
   )
+  const msgCount = event.messages_count
   
   return (
     <button
       onClick={onClick}
-      className={`block p-5 rounded-lg border transition hover:shadow-md w-full text-left ${
+      className={`block p-4.5 border transition hover:shadow-md w-full text-left ${
         isPast
           ? 'border-gray-200 bg-white/70 hover:border-gray-300'
-          : 'border-deep-green/15 bg-white hover:border-deep-green/40'
+          : 'border-deep-green/12 bg-white hover:border-deep-green/35'
       }`}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'pointer', borderRadius: '8px', padding: '1.125rem' }}
     >
-      <div className="flex items-start justify-between mb-2.5">
-        <div className="flex-1 min-w-0">
-          <h4 className="font-serif text-base mb-0.5" style={{ color: '#111', fontWeight: 600 }}>
+      <div className="flex items-start justify-between mb-2">
+        <div className="flex-1 min-w-0 pr-2">
+          <h4 className="font-serif mb-0.5" style={{ color: '#0d0d0d', fontWeight: 600, fontSize: '1.0625rem', lineHeight: 1.3 }}>
             {getDisplayName(event)}
           </h4>
-          <p className="text-xs" style={{ color: '#999' }}>
+          <p style={{ color: '#aaa', fontSize: '0.75rem' }}>
             {new Date(event.event_date).toLocaleDateString('en-GB', {
               weekday: 'short',
               day: 'numeric',
@@ -628,17 +643,31 @@ function EventCard({ event, getDisplayName, isPast = false, onClick }: {
           </p>
         </div>
         {!isPast && daysUntil >= 0 && (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-deep-green/8 text-deep-green ml-2 whitespace-nowrap" style={{ fontSize: '0.6875rem' }}>
-            {daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `${daysUntil}d`}
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '2px 8px',
+            borderRadius: '999px',
+            fontSize: '0.6875rem',
+            fontWeight: 500,
+            background: daysUntil <= 7 ? 'rgba(61,90,76,0.1)' : 'rgba(61,90,76,0.06)',
+            color: '#3D5A4C',
+            whiteSpace: 'nowrap',
+          }}>
+            {daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil}d`}
           </span>
         )}
       </div>
       
-      <div className="flex items-center justify-between text-xs pt-2.5" style={{ borderTop: '1px solid #f0f0f0' }}>
-        <span style={{ color: event.messages_count === 0 ? '#ccc' : event.messages_count >= 10 ? '#3D5A4C' : '#666', fontWeight: event.messages_count >= 10 ? 600 : 400 }}>
-          {event.messages_count} {event.messages_count === 1 ? 'message' : 'messages'}
+      <div className="flex items-center justify-between pt-2.5" style={{ borderTop: '1px solid #f0f0f0' }}>
+        <span style={{
+          fontSize: '0.8125rem',
+          color: msgCount === 0 ? '#ccc' : msgCount >= 10 ? '#3D5A4C' : '#555',
+          fontWeight: msgCount >= 10 ? 600 : msgCount === 0 ? 400 : 500,
+        }}>
+          {msgCount} {msgCount === 1 ? 'message' : 'messages'}
         </span>
-        <span className="text-deep-green font-medium">
+        <span className="text-deep-green" style={{ fontSize: '0.8125rem', fontWeight: 500 }}>
           View →
         </span>
       </div>
