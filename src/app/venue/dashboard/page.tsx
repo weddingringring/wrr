@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import EventCreateModal from '@/components/EventCreateModal'
 import EventDetailsModal from '@/components/EventDetailsModal'
+import ImpersonationBanner from '@/components/ImpersonationBanner'
 
 interface Event {
   id: string
@@ -24,6 +25,9 @@ interface Event {
 
 export default function VenueDashboardPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const viewAsId = searchParams.get('viewAs')
+  const [isImpersonating, setIsImpersonating] = useState(false)
   const [events, setEvents] = useState<Event[]>([])
   const [view, setView] = useState<'calendar' | 'list'>('calendar')
   const [loading, setLoading] = useState(true)
@@ -45,28 +49,44 @@ export default function VenueDashboardPage() {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      router.push('/venue/login')
+      router.push('/')
       return
+    }
+
+    // Check if this is a developer impersonation
+    let targetUserId = user.id
+    if (viewAsId) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      if (profile?.role === 'developer') {
+        targetUserId = viewAsId
+        setIsImpersonating(true)
+      }
     }
     
     // Get venue
     const { data: venueData } = await supabase
       .from('venues')
       .select('*')
-      .eq('owner_id', user.id)
+      .eq('owner_id', targetUserId)
       .single()
     
     if (!venueData) {
-      await supabase.auth.signOut()
-      router.push('/venue/login')
+      if (!viewAsId) {
+        await supabase.auth.signOut()
+        router.push('/')
+      }
       return
     }
     
-    // Get profile
+    // Get profile for the target user
     const { data: profile } = await supabase
       .from('profiles')
       .select('first_name, last_name')
-      .eq('id', user.id)
+      .eq('id', targetUserId)
       .single()
     
     setUser(profile)
@@ -77,12 +97,25 @@ export default function VenueDashboardPage() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+
+      // Use impersonated user ID if developer is viewing as venue
+      let targetUserId = user.id
+      if (viewAsId) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        if (profile?.role === 'developer') {
+          targetUserId = viewAsId
+        }
+      }
       
       // Get venue first
       const { data: venueData } = await supabase
         .from('venues')
         .select('id')
-        .eq('owner_id', user.id)
+        .eq('owner_id', targetUserId)
         .single()
       
       if (!venueData) return
@@ -183,6 +216,9 @@ export default function VenueDashboardPage() {
   
   return (
     <div className="min-h-screen bg-cream">
+      {isImpersonating && venue && (
+        <ImpersonationBanner label={venue.name} type="venue" />
+      )}
       {/* Header */}
       <header className="bg-white border-b border-sage-light shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
