@@ -8,7 +8,7 @@ import AdminHeader from '@/components/AdminHeader'
 import VenueCreateModal from '@/components/VenueCreateModal'
 import VenueDetailsModal from '@/components/VenueDetailsModal'
 import VenueEditModal from '@/components/VenueEditModal'
-import { Building2, Calendar, Mic, Phone, Plus, Search, ChevronRight } from 'lucide-react'
+import { Building2, Calendar, Mic, Phone, Plus, Search, ChevronRight, Eye } from 'lucide-react'
 
 interface DashboardStats {
   totalVenues: number
@@ -21,6 +21,7 @@ interface DashboardStats {
 
 interface Venue {
   id: string
+  owner_id: string
   name: string
   city: string
   primary_contact_name: string
@@ -40,6 +41,7 @@ interface Event {
   partner_2_first_name: string | null
   partner_2_last_name: string | null
   customer_email: string
+  customer_user_id: string
   twilio_phone_number: string | null
   status: string
   venue: { name: string; city: string }
@@ -51,6 +53,7 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
+  const [userRole, setUserRole] = useState<string>('admin')
   const [venueModalOpen, setVenueModalOpen] = useState(false)
   const [detailsModalOpen, setDetailsModalOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
@@ -81,11 +84,12 @@ export default function AdminDashboardPage() {
       .select('role, first_name, last_name')
       .eq('id', user.id)
       .single()
-    if (profile?.role !== 'admin') {
+    if (profile?.role !== 'admin' && profile?.role !== 'developer') {
       await supabase.auth.signOut()
       router.push('/')
       return
     }
+    setUserRole(profile.role)
     setUser({ ...profile, full_name: `${profile.first_name} ${profile.last_name}` })
   }
 
@@ -305,13 +309,24 @@ export default function AdminDashboardPage() {
                           </span>
                         </td>
                         <td className="px-6 py-3.5 text-right">
-                          <button
-                            onClick={() => { setSelectedVenueId(venue.id); setEditModalOpen(true) }}
-                            className="text-sm text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
-                            style={{ background: 'none', border: 'none', padding: 0 }}
-                          >
-                            Edit
-                          </button>
+                          <div className="flex items-center justify-end gap-3">
+                            {userRole === 'developer' && (
+                              <Link
+                                href={`/venue/dashboard?viewAs=${venue.owner_id}`}
+                                className="text-sage hover:text-deep-green transition"
+                                title="View as venue"
+                              >
+                                <Eye size={16} />
+                              </Link>
+                            )}
+                            <button
+                              onClick={() => { setSelectedVenueId(venue.id); setEditModalOpen(true) }}
+                              className="text-sm text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
+                              style={{ background: 'none', border: 'none', padding: 0 }}
+                            >
+                              Edit
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -374,6 +389,9 @@ export default function AdminDashboardPage() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Venue</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Messages</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Status</th>
+                      {userRole === 'developer' && (
+                        <th className="px-6 py-3 text-right text-xs font-medium text-sage-dark uppercase tracking-wider">View</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-sage-light/40">
@@ -400,6 +418,17 @@ export default function AdminDashboardPage() {
                             {event.status}
                           </span>
                         </td>
+                        {userRole === 'developer' && (
+                          <td className="px-6 py-3.5 text-right">
+                            <Link
+                              href={`/customer/dashboard?viewAs=${event.customer_user_id}`}
+                              className="text-sage hover:text-deep-green transition"
+                              title="View as customer"
+                            >
+                              <Eye size={16} />
+                            </Link>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
