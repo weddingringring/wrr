@@ -92,8 +92,8 @@ export default function AdminVenuesPage() {
           <h1 className="font-serif text-3xl" style={{ color: "#111" }}>Venues</h1>
           <button
             onClick={() => setVenueModalOpen(true)}
-            className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition" style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
-            style={{ border: 'none', cursor: 'pointer' }}
+            className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+            style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem', border: 'none', cursor: 'pointer' }}
           >
             <Plus size={16} />
             Add Venue
@@ -158,8 +158,8 @@ export default function AdminVenuesPage() {
               {!searchQuery && (
                 <button
                   onClick={() => setVenueModalOpen(true)}
-                  className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition" style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
-                  style={{ border: 'none', cursor: 'pointer' }}
+                  className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+                  style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem', border: 'none', cursor: 'pointer' }}
                 >
                   <Plus size={16} />
                   Add Venue
