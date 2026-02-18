@@ -127,7 +127,7 @@ export default function AdminEventsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Names, venue, email, phone..."
-                  className="w-full pl-9 pr-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full pl-9 pr-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent" style={{ border: "1px solid #E8E6E2" }}
                 />
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function AdminEventsPage() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as any)}
-                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent" style={{ border: "1px solid #E8E6E2" }}
               >
                 <option value="all">All Statuses</option>
                 <option value="active">Active</option>
@@ -149,7 +149,7 @@ export default function AdminEventsPage() {
               <select
                 value={filterTimeframe}
                 onChange={(e) => setFilterTimeframe(e.target.value as any)}
-                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent" style={{ border: "1px solid #E8E6E2" }}
               >
                 <option value="all">All Time</option>
                 <option value="upcoming">Upcoming</option>
