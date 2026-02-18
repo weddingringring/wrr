@@ -7,10 +7,11 @@ import AdminHeader from '@/components/AdminHeader'
 import VenueCreateModal from '@/components/VenueCreateModal'
 import VenueDetailsModal from '@/components/VenueDetailsModal'
 import VenueEditModal from '@/components/VenueEditModal'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Eye } from 'lucide-react'
 
 interface Venue {
   id: string
+  owner_id: string
   name: string
   city: string
   primary_contact_name: string
@@ -31,9 +32,17 @@ export default function AdminVenuesPage() {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [selectedVenueId, setSelectedVenueId] = useState<string | null>(null)
+  const [userRole, setUserRole] = useState<string>('admin')
   
-  useEffect(() => { loadVenues() }, [])
+  useEffect(() => { loadVenues(); checkRole() }, [])
   useEffect(() => { filterVenues() }, [searchQuery, filterStatus, venues])
+  
+  const checkRole = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    if (profile?.role) setUserRole(profile.role)
+  }
   
   const loadVenues = async () => {
     try {
@@ -202,13 +211,24 @@ export default function AdminVenuesPage() {
                         }`}>{venue.is_active ? 'Active' : 'Inactive'}</span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button
-                          onClick={() => { setSelectedVenueId(venue.id); setEditModalOpen(true) }}
-                          className="text-sm text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
-                          style={{ background: 'none', border: 'none', padding: 0 }}
-                        >
-                          Edit
-                        </button>
+                        <div className="flex items-center justify-end gap-3">
+                          {userRole === 'developer' && (
+                            <Link
+                              href={`/venue/dashboard?viewAs=${venue.owner_id}`}
+                              className="text-sage hover:text-deep-green transition"
+                              title="View as venue"
+                            >
+                              <Eye size={16} />
+                            </Link>
+                          )}
+                          <button
+                            onClick={() => { setSelectedVenueId(venue.id); setEditModalOpen(true) }}
+                            className="text-sm text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
+                            style={{ background: 'none', border: 'none', padding: 0 }}
+                          >
+                            Edit
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
