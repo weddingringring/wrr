@@ -4,9 +4,11 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
+import Image from 'next/image'
 import EventCreateModal from '@/components/EventCreateModal'
 import EventDetailsModal from '@/components/EventDetailsModal'
 import ImpersonationBanner from '@/components/ImpersonationBanner'
+import { Calendar, CalendarDays, List, Plus, Search, Mic, Settings, LogOut } from 'lucide-react'
 
 interface Event {
   id: string
@@ -25,7 +27,7 @@ interface Event {
 
 export default function VenueDashboardPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-cream flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-deep-green" /></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ background: '#F5E8E8' }}><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-deep-green" /></div>}>
       <VenueDashboardContent />
     </Suspense>
   )
@@ -213,7 +215,7 @@ function VenueDashboardContent() {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F5E8E8' }}>
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-deep-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-sage-dark">Loading...</p>
@@ -223,184 +225,260 @@ function VenueDashboardContent() {
   }
   
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen" style={{ background: '#F5E8E8' }}>
       {isImpersonating && venue && (
         <ImpersonationBanner label={venue.name} type="venue" />
       )}
       {/* Header */}
-      <header className="bg-white border-b border-sage-light shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <Link href="/venue/dashboard">
+      <header style={{
+        background: '#F5E8E8',
+        padding: '1rem 0',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 2rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          {/* Logos */}
+          <div className="flex items-center gap-4">
+            <Link href="/venue/dashboard">
+              <Image 
+                src="/logo.png" 
+                alt="WeddingRingRing" 
+                width={400} 
+                height={100} 
+                priority 
+                style={{ maxWidth: '180px', height: 'auto' }}
+              />
+            </Link>
+            {venue?.logo_url && (
+              <>
+                <div style={{ width: '1px', height: '2rem', background: 'rgba(0,0,0,0.12)' }} />
                 <img 
-                  src="/logo.png" 
-                  alt="WeddingRingRing" 
-                  className="h-8 w-auto"
+                  src={venue.logo_url} 
+                  alt={venue.name}
+                  style={{ maxHeight: '48px', width: 'auto', objectFit: 'contain' }}
                 />
-              </Link>
-              {venue?.logo_url && (
-                <>
-                  <div className="border-l border-sage-light h-8"></div>
-                  <img 
-                    src={venue.logo_url} 
-                    alt={venue.name}
-                    className="h-8 w-auto object-contain"
-                  />
-                </>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-6">
-              {user && (
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-deep-green text-white flex items-center justify-center font-medium">
-                    {user.first_name?.[0]}{user.last_name?.[0]}
-                  </div>
-                  <span className="text-sm text-gray-900">
-                    {user.first_name} {user.last_name}
-                  </span>
-                </div>
-              )}
-              <Link
-                href="/venue/settings"
-                className="text-sm text-sage-dark hover:text-charcoal transition"
-              >
-                Settings
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="text-sm text-sage-dark hover:text-charcoal transition"
-              >
-                Sign Out
-              </button>
-            </div>
+              </>
+            )}
           </div>
+          
+          {/* Right side */}
+          <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+            {user && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-deep-green text-white flex items-center justify-center text-xs font-medium">
+                  {user.first_name?.[0]}{user.last_name?.[0]}
+                </div>
+                <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1a1a1a' }}>
+                  {user.first_name} {user.last_name}
+                </span>
+              </div>
+            )}
+            <div style={{ width: '1px', height: '1.25rem', background: 'rgba(0,0,0,0.15)' }} />
+            <Link
+              href="/venue/settings"
+              style={{
+                color: '#1a1a1a',
+                textDecoration: 'none',
+                fontWeight: 500,
+                fontSize: '0.8125rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                opacity: 0.7,
+                transition: 'all 0.2s'
+              }}
+            >
+              <Settings size={15} />
+              Settings
+            </Link>
+            <button
+              onClick={handleSignOut}
+              style={{
+                color: '#6a6a6a',
+                fontWeight: 500,
+                fontSize: '0.8125rem',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                padding: 0,
+                transition: 'all 0.2s'
+              }}
+            >
+              <LogOut size={15} />
+              Sign Out
+            </button>
+          </nav>
         </div>
       </header>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <p className="text-sm text-sage-dark mb-1">Upcoming Events</p>
-            <p className="text-3xl font-bold text-deep-green">{upcomingEvents.length}</p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <p className="text-sm text-sage-dark mb-1">Past Events</p>
-            <p className="text-3xl font-bold text-sage-dark">{pastEvents.length}</p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <p className="text-sm text-sage-dark mb-1">Total Messages</p>
-            <p className="text-3xl font-bold text-charcoal">{totalMessages}</p>
-          </div>
+        {/* Page Title */}
+        <div className="mb-8">
+          <h1 className="font-serif text-3xl text-charcoal">{venue?.name || 'Venue Dashboard'}</h1>
+          <p className="text-sm text-sage-dark mt-1">Welcome back, {user?.first_name}</p>
         </div>
-        
-        {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-          <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-xs text-sage-dark mb-2">Search</label>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name, email, or event type..."
-                className="w-full px-4 py-2 rounded-lg border border-sage-light bg-white text-charcoal placeholder:text-gray-400"
-              />
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm text-sage-dark mb-1">Upcoming Events</p>
+                <p className="text-3xl font-bold text-charcoal mb-1">{upcomingEvents.length}</p>
+                <p className="text-xs text-sage-dark">{events.length} total</p>
+              </div>
+              <div className="p-2.5 rounded-lg bg-deep-green/10 text-deep-green">
+                <CalendarDays size={22} />
+              </div>
             </div>
-            
-            <div>
-              <label className="block text-xs text-sage-dark mb-2">Status</label>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value as any)}
-                className="px-4 py-2 rounded-lg border border-sage-light bg-white text-charcoal"
-              >
-                <option value="all">All Events</option>
-                <option value="upcoming">Upcoming</option>
-                <option value="past">Past</option>
-              </select>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm text-sage-dark mb-1">Past Events</p>
+                <p className="text-3xl font-bold text-charcoal mb-1">{pastEvents.length}</p>
+                <p className="text-xs text-sage-dark">Completed</p>
+              </div>
+              <div className="p-2.5 rounded-lg bg-sage/10 text-sage-dark">
+                <Calendar size={22} />
+              </div>
             </div>
-            
-            <div>
-              <label className="block text-xs text-sage-dark mb-2">Event Type</label>
-              <select
-                value={filterEventType}
-                onChange={(e) => setFilterEventType(e.target.value)}
-                className="px-4 py-2 rounded-lg border border-sage-light bg-white text-charcoal"
-              >
-                <option value="all">All Types</option>
-                <option value="wedding">Weddings</option>
-                <option value="birthday">Birthdays</option>
-                <option value="anniversary">Anniversaries</option>
-                <option value="corporate">Corporate</option>
-                <option value="other">Other</option>
-              </select>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm text-sage-dark mb-1">Total Messages</p>
+                <p className="text-3xl font-bold text-charcoal mb-1">{totalMessages.toLocaleString()}</p>
+                <p className="text-xs text-sage-dark">All time</p>
+              </div>
+              <div className="p-2.5 rounded-lg bg-rose/10 text-rose-dark">
+                <Mic size={22} />
+              </div>
             </div>
           </div>
         </div>
         
-        {/* Actions Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setView('calendar')}
-              className={`px-4 py-2 rounded-lg transition ${
-                view === 'calendar'
-                  ? 'bg-deep-green text-white'
-                  : 'bg-white text-charcoal hover:bg-sage-light/30'
-              }`}
-            >
-              📅 Calendar
-            </button>
-            <button
-              onClick={() => setView('list')}
-              className={`px-4 py-2 rounded-lg transition ${
-                view === 'list'
-                  ? 'bg-deep-green text-white'
-                  : 'bg-white text-charcoal hover:bg-sage-light/30'
-              }`}
-            >
-              📋 List
-            </button>
-          </div>
-          
-          <button
-            onClick={() => setCreateModalOpen(true)}
-            className="px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
-          >
-            + Create Event
-          </button>
-        </div>
-        
-        {/* Calendar View */}
-        {view === 'calendar' && (
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="font-serif text-2xl text-charcoal mb-6">Your Events</h2>
-            
-            {filteredEvents.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-xl text-sage-dark mb-2">
-                  {events.length === 0 ? 'No events yet' : 'No events match your filters'}
-                </p>
-                <p className="text-sm text-sage-dark mb-6">
-                  {events.length === 0 
-                    ? 'Create your first event to get started' 
-                    : 'Try adjusting your filters'}
-                </p>
-                {events.length === 0 && (
+        {/* Events Section */}
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          {/* Section header with search, filters and actions */}
+          <div className="px-6 py-5 border-b border-sage-light/50">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h2 className="font-serif text-xl text-charcoal flex items-center gap-2">
+                  <CalendarDays size={20} className="text-deep-green" />
+                  Events
+                  <span className="text-sm font-sans text-sage-dark font-normal ml-1">({filteredEvents.length})</span>
+                </h2>
+                <div className="flex items-center gap-3">
+                  {/* View Toggle */}
+                  <div className="flex rounded-lg overflow-hidden border border-sage-light">
+                    <button
+                      onClick={() => setView('calendar')}
+                      className={`px-3 py-1.5 text-sm flex items-center gap-1.5 transition ${
+                        view === 'calendar'
+                          ? 'bg-deep-green text-white'
+                          : 'bg-white text-charcoal hover:bg-sage-light/30'
+                      }`}
+                      style={{ border: 'none', cursor: 'pointer' }}
+                    >
+                      <CalendarDays size={14} />
+                      Cards
+                    </button>
+                    <button
+                      onClick={() => setView('list')}
+                      className={`px-3 py-1.5 text-sm flex items-center gap-1.5 transition ${
+                        view === 'list'
+                          ? 'bg-deep-green text-white'
+                          : 'bg-white text-charcoal hover:bg-sage-light/30'
+                      }`}
+                      style={{ border: 'none', cursor: 'pointer' }}
+                    >
+                      <List size={14} />
+                      List
+                    </button>
+                  </div>
                   <button
                     onClick={() => setCreateModalOpen(true)}
-                    className="inline-block px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+                    className="inline-flex items-center gap-2 px-4 py-1.5 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition text-sm"
+                    style={{ border: 'none', cursor: 'pointer' }}
                   >
-                    + Create Event
+                    <Plus size={16} />
+                    Create Event
                   </button>
-                )}
+                </div>
               </div>
-            ) : (
+              {/* Filters row */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search by name, email, or event type..."
+                    className="w-full pl-9 pr-4 py-2 text-sm border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  />
+                </div>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value as any)}
+                  className="px-3 py-2 text-sm border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                >
+                  <option value="all">All Events</option>
+                  <option value="upcoming">Upcoming</option>
+                  <option value="past">Past</option>
+                </select>
+                <select
+                  value={filterEventType}
+                  onChange={(e) => setFilterEventType(e.target.value)}
+                  className="px-3 py-2 text-sm border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                >
+                  <option value="all">All Types</option>
+                  <option value="wedding">Weddings</option>
+                  <option value="birthday">Birthdays</option>
+                  <option value="anniversary">Anniversaries</option>
+                  <option value="corporate">Corporate</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Content area */}
+          {filteredEvents.length === 0 ? (
+            <div className="p-12 text-center">
+              <p className="text-sage-dark text-sm mb-2">
+                {events.length === 0 ? 'No events yet' : 'No events match your filters'}
+              </p>
+              <p className="text-xs text-sage-dark mb-6">
+                {events.length === 0 
+                  ? 'Create your first event to get started' 
+                  : 'Try adjusting your search or filters'}
+              </p>
+              {events.length === 0 && (
+                <button
+                  onClick={() => setCreateModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+                  style={{ border: 'none', cursor: 'pointer' }}
+                >
+                  <Plus size={16} />
+                  Create Event
+                </button>
+              )}
+            </div>
+          ) : view === 'calendar' ? (
+            <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredEvents.map(event => {
                   const isPast = new Date(event.event_date) < new Date()
@@ -418,57 +496,35 @@ function VenueDashboardContent() {
                   )
                 })}
               </div>
-            )}
-          </div>
-        )}
-        
-        {/* List View */}
-        {view === 'list' && (
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            </div>
+          ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-sage-light/20 border-b border-sage-light">
+                <thead className="bg-sage-light/10 border-b border-sage-light/50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Event
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Messages
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-charcoal uppercase tracking-wider">
-                      Actions
-                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Event</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Messages</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-sage-dark uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-sage-light">
+                <tbody className="divide-y divide-sage-light/40">
                   {filteredEvents.map(event => (
                     <tr key={event.id} className="hover:bg-sage-light/10 transition">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-charcoal">
-                          {getEventDisplayName(event)}
-                        </div>
+                      <td className="px-6 py-3.5">
+                        <div className="font-medium text-charcoal text-sm">{getEventDisplayName(event)}</div>
+                        <div className="text-xs text-sage-dark">{event.customer_email}</div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-charcoal">
-                          {new Date(event.event_date).toLocaleDateString('en-GB', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
-                        </div>
+                      <td className="px-6 py-3.5 text-sm text-charcoal">
+                        {new Date(event.event_date).toLocaleDateString('en-GB', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-charcoal">
-                          {event.messages_count} messages
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-3.5 text-sm text-charcoal">{event.messages_count}</td>
+                      <td className="px-6 py-3.5">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           event.status === 'active'
                             ? 'bg-deep-green/10 text-deep-green'
@@ -477,13 +533,14 @@ function VenueDashboardContent() {
                           {event.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-3.5 text-right">
                         <button
                           onClick={() => {
                             setSelectedEvent(event)
                             setEventDetailsModalOpen(true)
                           }}
                           className="text-sm text-deep-green hover:text-deep-green-dark font-medium"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                         >
                           View Details
                         </button>
@@ -493,8 +550,8 @@ function VenueDashboardContent() {
                 </tbody>
               </table>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
       
       {/* Event Create Modal */}
