@@ -191,17 +191,17 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F0EAEA' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F6F5F3' }}>
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-deep-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-sage-dark">Loading...</p>
+          <p style={{ color: '#999' }}>Loading...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#F0EAEA' }}>
+    <div className="min-h-screen" style={{ background: '#F6F5F3' }}>
       <AdminHeader currentPage="dashboard" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -222,15 +222,15 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* System Status Card */}
-        <div className="bg-white rounded-lg shadow-sm p-5 mb-5">
+        <div className="rounded-lg shadow-sm p-5 mb-5" style={{ background: '#EEEDEB', border: '1px solid #E8E6E2' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-5">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={16} style={{ color: '#888' }} />
-                <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#333' }}>System Status</span>
-                <span style={{ fontSize: '0.6875rem', color: '#aaa', fontWeight: 400 }}>Last 24h</span>
+                <ShieldCheck size={16} style={{ color: '#666' }} />
+                <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#222' }}>System Status</span>
+                <span style={{ fontSize: '0.6875rem', color: '#999', fontWeight: 400 }}>Last 24h</span>
               </div>
-              <div style={{ width: '1px', height: '1.25rem', background: '#e8e8e8' }} />
+              <div style={{ width: '1px', height: '1.25rem', background: '#ddd' }} />
               <div className="flex items-center gap-4">
                 <StatusIndicator label="Critical" count={stats?.criticalErrors || 0} color="red" />
                 <StatusIndicator label="Errors" count={stats?.errorErrors || 0} color="amber" />
@@ -243,7 +243,7 @@ export default function AdminDashboardPage() {
                 />
               </div>
             </div>
-            <Link href="/admin/error-logs" style={{ fontSize: '0.75rem', color: '#999', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Link href="/admin/error-logs" style={{ fontSize: '0.75rem', color: '#888', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
               View logs <ChevronRight size={12} />
             </Link>
           </div>
@@ -262,7 +262,7 @@ export default function AdminDashboardPage() {
           <Link
             href="/admin/phones"
             className="inline-flex items-center gap-1.5 rounded-lg font-medium transition text-sm"
-            style={{ padding: '0.625rem 1rem', color: '#555', border: '1px solid #ddd', background: '#fff' }}
+            style={{ padding: '0.625rem 1rem', color: '#555', border: '1px solid #E8E6E2', background: '#fff' }}
           >
             <Phone size={14} style={{ opacity: 0.6 }} />
             Phone Inventory
@@ -272,10 +272,10 @@ export default function AdminDashboardPage() {
         {/* ═══ OPERATIONAL DATA ZONE ═══ */}
 
         {/* Venues Table */}
-        <div className="bg-white rounded-lg shadow-sm mb-8 overflow-hidden">
-          <div className="px-5 py-4 border-b" style={{ borderColor: '#eee' }}>
+        <div className="bg-white rounded-lg shadow-sm mb-8 overflow-hidden" style={{ border: "1px solid #E8E6E2" }}>
+          <div className="px-5 py-4 border-b" style={{ borderColor: '#E8E6E2' }}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h2 className="font-serif text-lg flex items-center gap-2" style={{ color: '#111' }}>
+              <h2 className="font-serif text-lg flex items-center gap-2" style={{ color: '#111', fontWeight: 600 }}>
                 <Building2 size={18} className="text-deep-green" />
                 Venues
                 <span className="font-sans font-normal ml-1" style={{ fontSize: '0.8125rem', color: '#aaa' }}>({filteredVenues.length})</span>
@@ -316,12 +316,12 @@ export default function AdminDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ background: '#f7f7f7', borderBottom: '1px solid #eee' }}>
-                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Venue</th>
-                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Location</th>
-                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Contact</th>
-                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Status</th>
-                    <th className="px-5 py-2 text-right uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Actions</th>
+                  <tr style={{ background: '#F6F5F3', borderBottom: '1px solid #E8E6E2' }}>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Venue</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Location</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Contact</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Status</th>
+                    <th className="px-5 py-2 text-right uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -330,12 +330,12 @@ export default function AdminDashboardPage() {
                       key={venue.id}
                       onClick={() => { setSelectedVenueId(venue.id); setDetailsModalOpen(true) }}
                       className="transition-colors"
-                      style={{ borderBottom: '1px solid #f0f0f0', background: idx % 2 === 1 ? '#fcfcfc' : '#fff', cursor: 'pointer' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = '#f5f5f5' }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#fcfcfc' : '#fff' }}
+                      style={{ borderBottom: '1px solid #E8E6E2', background: idx % 2 === 1 ? '#FAFAF9' : '#fff', cursor: 'pointer' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(61,90,76,0.03)' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
                     >
                       <td className="px-5 py-2">
-                        <span style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '0.875rem' }}>{venue.name}</span>
+                        <span style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '0.9375rem' }}>{venue.name}</span>
                       </td>
                       <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: '#666' }}>{venue.city || '—'}</td>
                       <td className="px-5 py-2">
@@ -366,7 +366,7 @@ export default function AdminDashboardPage() {
                           <button
                             onClick={() => { setSelectedVenueId(venue.id); setEditModalOpen(true) }}
                             className="text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
-                            style={{ background: 'none', border: 'none', padding: 0, fontSize: '0.8125rem' }}
+                            style={{ background: 'none', border: 'none', padding: 0, fontSize: '0.8125rem', fontWeight: 600 }}
                           >
                             Edit
                           </button>
@@ -381,10 +381,10 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Events Table */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b" style={{ borderColor: '#eee' }}>
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden" style={{ border: "1px solid #E8E6E2" }}>
+          <div className="px-5 py-4 border-b" style={{ borderColor: '#E8E6E2' }}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h2 className="font-serif text-lg flex items-center gap-2" style={{ color: '#111' }}>
+              <h2 className="font-serif text-lg flex items-center gap-2" style={{ color: '#111', fontWeight: 600 }}>
                 <Calendar size={18} className="text-deep-green" />
                 Events
                 <span className="font-sans font-normal ml-1" style={{ fontSize: '0.8125rem', color: '#aaa' }}>({filteredEvents.length})</span>
@@ -425,14 +425,14 @@ export default function AdminDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ background: '#f7f7f7', borderBottom: '1px solid #eee' }}>
-                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Event</th>
-                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Date</th>
-                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Venue</th>
-                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Messages</th>
-                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Status</th>
+                  <tr style={{ background: '#F6F5F3', borderBottom: '1px solid #E8E6E2' }}>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Event</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Date</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Venue</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Messages</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Status</th>
                     {userRole === 'developer' && (
-                      <th className="px-5 py-2 text-right uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>View</th>
+                      <th className="px-5 py-2 text-right uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>View</th>
                     )}
                   </tr>
                 </thead>
@@ -441,13 +441,13 @@ export default function AdminDashboardPage() {
                     <tr
                       key={event.id}
                       className="transition-colors"
-                      style={{ borderBottom: '1px solid #f0f0f0', background: idx % 2 === 1 ? '#fcfcfc' : '#fff' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = '#f5f5f5' }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#fcfcfc' : '#fff' }}
+                      style={{ borderBottom: '1px solid #E8E6E2', background: idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(61,90,76,0.03)' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
                     >
                       <td className="px-5 py-2">
-                        <div style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '0.875rem' }}>{getEventDisplayName(event)}</div>
-                        <div style={{ fontSize: '0.6875rem', color: '#c0c0c0', marginTop: '1px' }}>{event.customer_email}</div>
+                        <div style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '1rem' }}>{getEventDisplayName(event)}</div>
+                        <div style={{ fontSize: '0.6875rem', color: '#bbb', marginTop: '1px' }}>{event.customer_email}</div>
                       </td>
                       <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: '#444' }}>
                         {new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -529,18 +529,18 @@ function StatCard({ title, value, subtitle, icon: Icon, color }: {
     'gold': 'bg-gold/8',
   }
   const iconColor: Record<string, React.CSSProperties> = {
-    'deep-green': { color: '#3D5A4C', opacity: 0.55 },
-    'sage': { color: '#7a8a7a', opacity: 0.55 },
-    'rose': { color: '#b05050', opacity: 0.5 },
-    'gold': { color: '#a08030', opacity: 0.5 },
+    'deep-green': { color: '#3D5A4C', opacity: 0.5 },
+    'sage': { color: '#7a8a7a', opacity: 0.5 },
+    'rose': { color: '#b05050', opacity: 0.45 },
+    'gold': { color: '#a08030', opacity: 0.45 },
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-5">
+    <div className="bg-white rounded-lg shadow-sm p-5" style={{ border: '1px solid #E8E6E2' }}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs uppercase tracking-wider mb-2" style={{ color: '#999', fontWeight: 500 }}>{title}</p>
-          <p className="font-bold mb-0.5" style={{ fontSize: '2.25rem', lineHeight: 1, color: '#111' }}>{value.toLocaleString()}</p>
+          <p className="text-xs uppercase tracking-wider mb-2" style={{ color: '#777', fontWeight: 500 }}>{title}</p>
+          <p className="font-bold mb-0.5" style={{ fontSize: '2.5rem', lineHeight: 1, color: '#111' }}>{value.toLocaleString()}</p>
           <p className="text-xs" style={{ color: '#999' }}>{subtitle}</p>
         </div>
         <div className={`p-2 rounded-lg ${iconBg[color] || ''}`}>
