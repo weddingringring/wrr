@@ -8,7 +8,7 @@ import AdminHeader from '@/components/AdminHeader'
 import VenueCreateModal from '@/components/VenueCreateModal'
 import VenueDetailsModal from '@/components/VenueDetailsModal'
 import VenueEditModal from '@/components/VenueEditModal'
-import { Building2, Calendar, Mic, Phone, Plus, Search, ChevronRight, Eye } from 'lucide-react'
+import { Building2, Calendar, Mic, Phone, Plus, Search, ChevronRight, Eye, AlertTriangle, ShieldCheck } from 'lucide-react'
 
 interface DashboardStats {
   totalVenues: number
@@ -17,6 +17,9 @@ interface DashboardStats {
   upcomingEvents: number
   totalMessages: number
   totalPhones: number
+  criticalErrors: number
+  warningErrors: number
+  errorErrors: number
 }
 
 interface Venue {
@@ -95,13 +98,16 @@ export default function AdminDashboardPage() {
 
   const loadStats = async () => {
     try {
-      const [venuesRes, activeVenuesRes, eventsRes, upcomingEventsRes, messagesRes, phonesRes] = await Promise.all([
+      const [venuesRes, activeVenuesRes, eventsRes, upcomingEventsRes, messagesRes, phonesRes, criticalRes, warningRes, errorRes] = await Promise.all([
         supabase.from('venues').select('id', { count: 'exact', head: true }),
         supabase.from('venues').select('id', { count: 'exact', head: true }).eq('is_active', true),
         supabase.from('events').select('id', { count: 'exact', head: true }),
         supabase.from('events').select('id', { count: 'exact', head: true }).gte('event_date', new Date().toISOString().split('T')[0]),
         supabase.from('messages').select('id', { count: 'exact', head: true }),
-        supabase.from('phones').select('id', { count: 'exact', head: true })
+        supabase.from('phones').select('id', { count: 'exact', head: true }),
+        supabase.from('error_logs').select('id', { count: 'exact', head: true }).eq('severity', 'critical').gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
+        supabase.from('error_logs').select('id', { count: 'exact', head: true }).eq('severity', 'warning').gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
+        supabase.from('error_logs').select('id', { count: 'exact', head: true }).eq('severity', 'error').gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
       ])
       setStats({
         totalVenues: venuesRes.count || 0,
@@ -109,7 +115,10 @@ export default function AdminDashboardPage() {
         totalEvents: eventsRes.count || 0,
         upcomingEvents: upcomingEventsRes.count || 0,
         totalMessages: messagesRes.count || 0,
-        totalPhones: phonesRes.count || 0
+        totalPhones: phonesRes.count || 0,
+        criticalErrors: criticalRes.count || 0,
+        warningErrors: warningRes.count || 0,
+        errorErrors: errorRes.count || 0,
       })
     } catch (error) {
       console.error('Error loading stats:', error)
@@ -182,7 +191,7 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F0EAEA' }}>
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-deep-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-sage-dark">Loading...</p>
@@ -192,254 +201,290 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen" style={{ background: '#F0EAEA' }}>
       <AdminHeader currentPage="dashboard" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="font-serif text-3xl text-charcoal">Admin Dashboard</h1>
-          <p className="text-sm text-sage-dark mt-1">Welcome back, {user?.full_name}</p>
+        <div className="mb-6">
+          <h1 className="font-serif text-3xl" style={{ color: '#111' }}>Admin Dashboard</h1>
+          <p className="text-sm mt-1" style={{ color: '#888' }}>Welcome back, {user?.full_name}</p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        {/* ═══ SYSTEM METRICS ZONE ═══ */}
+
+        {/* KPI Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
           <StatCard title="Total Venues" value={stats?.totalVenues || 0} subtitle={`${stats?.activeVenues || 0} active`} icon={Building2} color="deep-green" />
           <StatCard title="Total Events" value={stats?.totalEvents || 0} subtitle={`${stats?.upcomingEvents || 0} upcoming`} icon={Calendar} color="sage" />
           <StatCard title="Messages Recorded" value={stats?.totalMessages || 0} subtitle="All time" icon={Mic} color="rose" />
           <StatCard title="Phone Inventory" value={stats?.totalPhones || 0} subtitle="Total devices" icon={Phone} color="gold" />
         </div>
 
-        {/* Quick Actions */}
-        <div className="flex flex-wrap gap-3 mb-10">
+        {/* System Status Card */}
+        <div className="bg-white rounded-lg shadow-sm p-5 mb-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-5">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={16} style={{ color: '#888' }} />
+                <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#333' }}>System Status</span>
+                <span style={{ fontSize: '0.6875rem', color: '#aaa', fontWeight: 400 }}>Last 24h</span>
+              </div>
+              <div style={{ width: '1px', height: '1.25rem', background: '#e8e8e8' }} />
+              <div className="flex items-center gap-4">
+                <StatusIndicator label="Critical" count={stats?.criticalErrors || 0} color="red" />
+                <StatusIndicator label="Errors" count={stats?.errorErrors || 0} color="amber" />
+                <StatusIndicator label="Warnings" count={stats?.warningErrors || 0} color="yellow" />
+                <StatusIndicator
+                  label="Operational"
+                  count={(stats?.criticalErrors || 0) === 0 && (stats?.errorErrors || 0) === 0 ? 1 : 0}
+                  color="green"
+                  isBoolean
+                />
+              </div>
+            </div>
+            <Link href="/admin/error-logs" style={{ fontSize: '0.75rem', color: '#999', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              View logs <ChevronRight size={12} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 mb-12">
           <button
             onClick={() => setVenueModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition text-sm"
-            style={{ border: 'none', cursor: 'pointer' }}
+            className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+            style={{ border: 'none', cursor: 'pointer', padding: '0.625rem 1.25rem', fontSize: '0.875rem' }}
           >
             <Plus size={16} />
             Add Venue
           </button>
           <Link
             href="/admin/phones"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-charcoal rounded-lg font-medium hover:bg-sage-light/30 transition text-sm border border-sage-light"
+            className="inline-flex items-center gap-1.5 rounded-lg font-medium transition text-sm"
+            style={{ padding: '0.625rem 1rem', color: '#555', border: '1px solid #ddd', background: '#fff' }}
           >
-            <Phone size={16} />
+            <Phone size={14} style={{ opacity: 0.6 }} />
             Phone Inventory
-          </Link>
-          <Link
-            href="/admin/error-logs"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-charcoal rounded-lg font-medium hover:bg-sage-light/30 transition text-sm border border-sage-light"
-          >
-            Error Logs
           </Link>
         </div>
 
+        {/* ═══ OPERATIONAL DATA ZONE ═══ */}
+
         {/* Venues Table */}
-        <div className="bg-white rounded-xl shadow-sm mb-10 overflow-hidden">
-          <div className="px-6 py-5 border-b border-sage-light/50">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h2 className="font-serif text-xl text-charcoal flex items-center gap-2">
-                <Building2 size={20} className="text-deep-green" />
+        <div className="bg-white rounded-lg shadow-sm mb-8 overflow-hidden">
+          <div className="px-5 py-4 border-b" style={{ borderColor: '#eee' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <h2 className="font-serif text-lg flex items-center gap-2" style={{ color: '#111' }}>
+                <Building2 size={18} className="text-deep-green" />
                 Venues
-                <span className="text-sm font-sans text-sage-dark font-normal ml-1">({filteredVenues.length})</span>
+                <span className="font-sans font-normal ml-1" style={{ fontSize: '0.8125rem', color: '#aaa' }}>({filteredVenues.length})</span>
               </h2>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <div className="relative">
-                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#bbb' }} />
                   <input
                     type="text"
                     value={venueSearch}
                     onChange={(e) => setVenueSearch(e.target.value)}
                     placeholder="Search venues..."
-                    className="pl-9 pr-4 py-2 text-sm border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent w-48"
+                    className="pl-8 pr-3 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-deep-green focus:border-transparent w-44"
+                    style={{ borderColor: '#e0e0e0' }}
                   />
                 </div>
                 <select
                   value={venueFilter}
                   onChange={(e) => setVenueFilter(e.target.value as any)}
-                  className="px-3 py-2 text-sm border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="px-2.5 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  style={{ borderColor: '#e0e0e0' }}
                 >
                   <option value="all">All</option>
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </select>
+                <Link href="/admin/venues" style={{ fontSize: '0.75rem', color: '#999', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.2rem', marginLeft: '0.5rem' }}>
+                  View all <ChevronRight size={12} />
+                </Link>
               </div>
             </div>
           </div>
           {filteredVenues.length === 0 ? (
             <div className="p-8 text-center">
-              <p className="text-sage-dark text-sm">{venueSearch ? 'No venues match your search' : 'No venues yet'}</p>
+              <p style={{ color: '#999' }} className="text-sm">{venueSearch ? 'No venues match your search' : 'No venues yet'}</p>
             </div>
           ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-sage-light/10 border-b border-sage-light/50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Venue</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Location</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Contact</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-sage-dark uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-sage-light/40">
-                    {filteredVenues.slice(0, 10).map(venue => (
-                      <tr key={venue.id} className="hover:bg-sage-light/10 transition">
-                        <td className="px-6 py-3.5">
-                          <button
-                            onClick={() => { setSelectedVenueId(venue.id); setDetailsModalOpen(true) }}
-                            className="font-medium text-charcoal hover:text-deep-green transition cursor-pointer text-left text-sm"
-                            style={{ background: 'none', border: 'none', padding: 0 }}
-                          >
-                            {venue.name}
-                          </button>
-                        </td>
-                        <td className="px-6 py-3.5 text-sm text-sage-dark">{venue.city || '—'}</td>
-                        <td className="px-6 py-3.5">
-                          <div className="text-sm text-charcoal">{venue.primary_contact_name || '—'}</div>
-                          <div className="text-xs text-sage-dark">{venue.primary_contact_email || '—'}</div>
-                        </td>
-                        <td className="px-6 py-3.5">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            venue.is_active ? 'bg-deep-green/10 text-deep-green' : 'bg-rose/10 text-rose-dark'
-                          }`}>
-                            {venue.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3.5 text-right">
-                          <div className="flex items-center justify-end gap-3">
-                            {userRole === 'developer' && (
-                              <Link
-                                href={`/venue/dashboard?viewAs=${venue.owner_id}`}
-                                className="text-sage hover:text-deep-green transition"
-                                title="View as venue"
-                              >
-                                <Eye size={16} />
-                              </Link>
-                            )}
-                            <button
-                              onClick={() => { setSelectedVenueId(venue.id); setEditModalOpen(true) }}
-                              className="text-sm text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
-                              style={{ background: 'none', border: 'none', padding: 0 }}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr style={{ background: '#f7f7f7', borderBottom: '1px solid #eee' }}>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Venue</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Location</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Contact</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Status</th>
+                    <th className="px-5 py-2 text-right uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredVenues.slice(0, 10).map((venue, idx) => (
+                    <tr
+                      key={venue.id}
+                      onClick={() => { setSelectedVenueId(venue.id); setDetailsModalOpen(true) }}
+                      className="transition-colors"
+                      style={{ borderBottom: '1px solid #f0f0f0', background: idx % 2 === 1 ? '#fcfcfc' : '#fff', cursor: 'pointer' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#f5f5f5' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#fcfcfc' : '#fff' }}
+                    >
+                      <td className="px-5 py-2">
+                        <span style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '0.875rem' }}>{venue.name}</span>
+                      </td>
+                      <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: '#666' }}>{venue.city || '—'}</td>
+                      <td className="px-5 py-2">
+                        <div style={{ fontSize: '0.8125rem', color: '#333' }}>{venue.primary_contact_name || '—'}</div>
+                        <div style={{ fontSize: '0.6875rem', color: '#c0c0c0', marginTop: '1px' }}>{venue.primary_contact_email || '—'}</div>
+                      </td>
+                      <td className="px-5 py-2">
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: '999px',
+                          fontSize: '0.6875rem', fontWeight: 500,
+                          background: venue.is_active ? 'rgba(61,90,76,0.08)' : 'rgba(200,100,100,0.08)',
+                          color: venue.is_active ? '#3D5A4C' : '#b05050',
+                        }}>
+                          {venue.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-2 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-3">
+                          {userRole === 'developer' && (
+                            <Link
+                              href={`/venue/dashboard?viewAs=${venue.owner_id}`}
+                              className="text-sage hover:text-deep-green transition"
+                              title="View as venue"
                             >
-                              Edit
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="px-6 py-3 border-t border-sage-light/50 text-center">
-                <Link href="/admin/venues" className="text-sm text-deep-green hover:text-deep-green-dark font-medium inline-flex items-center gap-1">
-                  View all venues <ChevronRight size={14} />
-                </Link>
-              </div>
-            </>
+                              <Eye size={15} />
+                            </Link>
+                          )}
+                          <button
+                            onClick={() => { setSelectedVenueId(venue.id); setEditModalOpen(true) }}
+                            className="text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
+                            style={{ background: 'none', border: 'none', padding: 0, fontSize: '0.8125rem' }}
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
         {/* Events Table */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="px-6 py-5 border-b border-sage-light/50">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h2 className="font-serif text-xl text-charcoal flex items-center gap-2">
-                <Calendar size={20} className="text-deep-green" />
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b" style={{ borderColor: '#eee' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <h2 className="font-serif text-lg flex items-center gap-2" style={{ color: '#111' }}>
+                <Calendar size={18} className="text-deep-green" />
                 Events
-                <span className="text-sm font-sans text-sage-dark font-normal ml-1">({filteredEvents.length})</span>
+                <span className="font-sans font-normal ml-1" style={{ fontSize: '0.8125rem', color: '#aaa' }}>({filteredEvents.length})</span>
               </h2>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <div className="relative">
-                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#bbb' }} />
                   <input
                     type="text"
                     value={eventSearch}
                     onChange={(e) => setEventSearch(e.target.value)}
                     placeholder="Search events..."
-                    className="pl-9 pr-4 py-2 text-sm border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent w-48"
+                    className="pl-8 pr-3 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-deep-green focus:border-transparent w-44"
+                    style={{ borderColor: '#e0e0e0' }}
                   />
                 </div>
                 <select
                   value={eventTimeframe}
                   onChange={(e) => setEventTimeframe(e.target.value as any)}
-                  className="px-3 py-2 text-sm border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="px-2.5 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  style={{ borderColor: '#e0e0e0' }}
                 >
                   <option value="all">All Time</option>
                   <option value="upcoming">Upcoming</option>
                   <option value="past">Past</option>
                 </select>
+                <Link href="/admin/events" style={{ fontSize: '0.75rem', color: '#999', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.2rem', marginLeft: '0.5rem' }}>
+                  View all <ChevronRight size={12} />
+                </Link>
               </div>
             </div>
           </div>
           {filteredEvents.length === 0 ? (
             <div className="p-8 text-center">
-              <p className="text-sage-dark text-sm">{eventSearch ? 'No events match your search' : 'No events yet'}</p>
+              <p style={{ color: '#999' }} className="text-sm">{eventSearch ? 'No events match your search' : 'No events yet'}</p>
             </div>
           ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-sage-light/10 border-b border-sage-light/50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Event</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Venue</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Messages</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Status</th>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr style={{ background: '#f7f7f7', borderBottom: '1px solid #eee' }}>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Event</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Date</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Venue</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Messages</th>
+                    <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>Status</th>
+                    {userRole === 'developer' && (
+                      <th className="px-5 py-2 text-right uppercase tracking-wider" style={{ color: '#aaa', fontSize: '0.6875rem', fontWeight: 500 }}>View</th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredEvents.slice(0, 10).map((event, idx) => (
+                    <tr
+                      key={event.id}
+                      className="transition-colors"
+                      style={{ borderBottom: '1px solid #f0f0f0', background: idx % 2 === 1 ? '#fcfcfc' : '#fff' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#f5f5f5' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#fcfcfc' : '#fff' }}
+                    >
+                      <td className="px-5 py-2">
+                        <div style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '0.875rem' }}>{getEventDisplayName(event)}</div>
+                        <div style={{ fontSize: '0.6875rem', color: '#c0c0c0', marginTop: '1px' }}>{event.customer_email}</div>
+                      </td>
+                      <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: '#444' }}>
+                        {new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </td>
+                      <td className="px-5 py-2">
+                        <div style={{ fontSize: '0.8125rem', color: '#333' }}>{event.venue?.name}</div>
+                        <div style={{ fontSize: '0.6875rem', color: '#c0c0c0', marginTop: '1px' }}>{event.venue?.city}</div>
+                      </td>
+                      <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: event.messages_count === 0 ? '#ccc' : event.messages_count >= 10 ? '#3D5A4C' : '#333', fontWeight: event.messages_count >= 10 ? 600 : 400 }}>
+                        {event.messages_count}
+                      </td>
+                      <td className="px-5 py-2">
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: '999px',
+                          fontSize: '0.6875rem', fontWeight: 500,
+                          background: event.status === 'active' ? 'rgba(61,90,76,0.08)' : event.status === 'completed' ? 'rgba(140,160,140,0.1)' : 'rgba(200,100,100,0.08)',
+                          color: event.status === 'active' ? '#3D5A4C' : event.status === 'completed' ? '#7a8a7a' : '#b05050',
+                        }}>
+                          {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                        </span>
+                      </td>
                       {userRole === 'developer' && (
-                        <th className="px-6 py-3 text-right text-xs font-medium text-sage-dark uppercase tracking-wider">View</th>
+                        <td className="px-5 py-2 text-right">
+                          <Link
+                            href={`/customer/dashboard?viewAs=${event.customer_user_id}`}
+                            className="text-sage hover:text-deep-green transition"
+                            title="View as customer"
+                          >
+                            <Eye size={15} />
+                          </Link>
+                        </td>
                       )}
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-sage-light/40">
-                    {filteredEvents.slice(0, 10).map(event => (
-                      <tr key={event.id} className="hover:bg-sage-light/10 transition">
-                        <td className="px-6 py-3.5">
-                          <div className="font-medium text-charcoal text-sm">{getEventDisplayName(event)}</div>
-                          <div className="text-xs text-sage-dark">{event.customer_email}</div>
-                        </td>
-                        <td className="px-6 py-3.5 text-sm text-charcoal">
-                          {new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </td>
-                        <td className="px-6 py-3.5">
-                          <div className="text-sm text-charcoal">{event.venue?.name}</div>
-                          <div className="text-xs text-sage-dark">{event.venue?.city}</div>
-                        </td>
-                        <td className="px-6 py-3.5 text-sm text-charcoal">{event.messages_count}</td>
-                        <td className="px-6 py-3.5">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            event.status === 'active' ? 'bg-deep-green/10 text-deep-green'
-                              : event.status === 'completed' ? 'bg-sage/10 text-sage-dark'
-                              : 'bg-rose/10 text-rose-dark'
-                          }`}>
-                            {event.status}
-                          </span>
-                        </td>
-                        {userRole === 'developer' && (
-                          <td className="px-6 py-3.5 text-right">
-                            <Link
-                              href={`/customer/dashboard?viewAs=${event.customer_user_id}`}
-                              className="text-sage hover:text-deep-green transition"
-                              title="View as customer"
-                            >
-                              <Eye size={16} />
-                            </Link>
-                          </td>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="px-6 py-3 border-t border-sage-light/50 text-center">
-                <Link href="/admin/events" className="text-sm text-deep-green hover:text-deep-green-dark font-medium inline-flex items-center gap-1">
-                  View all {events.length} events <ChevronRight size={14} />
-                </Link>
-              </div>
-            </>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
@@ -478,24 +523,60 @@ function StatCard({ title, value, subtitle, icon: Icon, color }: {
   color: string
 }) {
   const iconBg: Record<string, string> = {
-    'deep-green': 'bg-deep-green/10 text-deep-green',
-    'sage': 'bg-sage/10 text-sage-dark',
-    'rose': 'bg-rose/10 text-rose-dark',
-    'gold': 'bg-gold/10 text-gold-dark',
+    'deep-green': 'bg-deep-green/8',
+    'sage': 'bg-sage/8',
+    'rose': 'bg-rose/8',
+    'gold': 'bg-gold/8',
+  }
+  const iconColor: Record<string, React.CSSProperties> = {
+    'deep-green': { color: '#3D5A4C', opacity: 0.55 },
+    'sage': { color: '#7a8a7a', opacity: 0.55 },
+    'rose': { color: '#b05050', opacity: 0.5 },
+    'gold': { color: '#a08030', opacity: 0.5 },
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="bg-white rounded-lg shadow-sm p-5">
       <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm text-sage-dark mb-1">{title}</p>
-          <p className="text-3xl font-bold text-charcoal mb-1">{value.toLocaleString()}</p>
-          <p className="text-xs text-sage-dark">{subtitle}</p>
+        <div>
+          <p className="text-xs uppercase tracking-wider mb-2" style={{ color: '#999', fontWeight: 500 }}>{title}</p>
+          <p className="font-bold mb-0.5" style={{ fontSize: '2.25rem', lineHeight: 1, color: '#111' }}>{value.toLocaleString()}</p>
+          <p className="text-xs" style={{ color: '#999' }}>{subtitle}</p>
         </div>
-        <div className={`p-2.5 rounded-lg ${iconBg[color] || ''}`}>
-          <Icon size={22} />
+        <div className={`p-2 rounded-lg ${iconBg[color] || ''}`}>
+          <Icon size={20} style={iconColor[color] || {}} />
         </div>
       </div>
+    </div>
+  )
+}
+
+// Status Indicator for RAG system
+function StatusIndicator({ label, count, color, isBoolean = false }: {
+  label: string
+  count: number
+  color: 'red' | 'amber' | 'yellow' | 'green'
+  isBoolean?: boolean
+}) {
+  const dotColors: Record<string, string> = {
+    red: count > 0 ? '#c44' : '#dbb',
+    amber: count > 0 ? '#c87830' : '#d4c4a8',
+    yellow: count > 0 ? '#b8a030' : '#d4cca8',
+    green: isBoolean && count > 0 ? '#4a8a5a' : isBoolean ? '#bbb' : count > 0 ? '#4a8a5a' : '#bcc8bc',
+  }
+  const textColors: Record<string, string> = {
+    red: count > 0 ? '#a33' : '#cbb',
+    amber: count > 0 ? '#9a6020' : '#bbb',
+    yellow: count > 0 ? '#8a7020' : '#bbb',
+    green: isBoolean && count > 0 ? '#3D5A4C' : '#bbb',
+  }
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: dotColors[color], display: 'inline-block', flexShrink: 0 }} />
+      <span style={{ fontSize: '0.75rem', color: textColors[color], fontWeight: 500 }}>
+        {isBoolean ? (count > 0 ? label : 'Issues') : <><span style={{ fontWeight: 600 }}>{count}</span> {label}</>}
+      </span>
     </div>
   )
 }
