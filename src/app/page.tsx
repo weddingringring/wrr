@@ -119,6 +119,7 @@ export default function HomePage() {
       // Redirect based on role
       switch (profile.role) {
         case 'admin':
+        case 'developer':
           window.location.href = '/admin/dashboard'
           break
         case 'venue':
