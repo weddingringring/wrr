@@ -15,7 +15,7 @@ export default function AdminHeader({ currentPage = 'dashboard' }: AdminHeaderPr
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    router.push('/admin/login')
+    router.push('/')
   }
 
   const navItems = [
