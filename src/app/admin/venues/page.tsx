@@ -73,26 +73,26 @@ export default function AdminVenuesPage() {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F6F5F3' }}>
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-deep-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-sage-dark">Loading venues...</p>
+          <p style={{ color: "#999" }}>Loading venues...</p>
         </div>
       </div>
     )
   }
   
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen" style={{ background: '#F6F5F3' }}>
       <AdminHeader currentPage="venues" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Title + Action */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="font-serif text-3xl text-charcoal">Venues</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="font-serif text-3xl" style={{ color: "#111" }}>Venues</h1>
           <button
             onClick={() => setVenueModalOpen(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+            className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition" style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
             style={{ border: 'none', cursor: 'pointer' }}
           >
             <Plus size={16} />
@@ -101,33 +101,36 @@ export default function AdminVenuesPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-5 mb-6" style={{ border: "1px solid #E8E6E2" }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-charcoal mb-2">Search</label>
+              <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Search</label>
               <div className="relative">
-                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
+                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#bbb" }} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, city, or contact..."
-                  className="w-full pl-9 pr-4 py-2 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full pl-9 pr-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-charcoal mb-2">Status</label>
+              <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Status</label>
               <div className="flex gap-2">
                 {(['all', 'active', 'inactive'] as const).map(status => (
                   <button
                     key={status}
                     onClick={() => setFilterStatus(status)}
-                    className={`flex-1 px-4 py-2 rounded-lg transition ${
-                      filterStatus === status
-                        ? 'bg-deep-green text-white'
-                        : 'bg-sage-light/30 text-charcoal hover:bg-sage-light'
-                    }`}
+                    className="flex-1 px-4 py-2 rounded-lg transition text-sm"
+                    style={{
+                      border: filterStatus === status ? 'none' : '1px solid #E8E6E2',
+                      background: filterStatus === status ? '#3D5A4C' : '#fff',
+                      color: filterStatus === status ? '#fff' : '#555',
+                      fontWeight: filterStatus === status ? 600 : 400,
+                      cursor: 'pointer',
+                    }}
                   >
                     {status === 'all' ? `All (${venues.length})`
                       : status === 'active' ? `Active (${venues.filter(v => v.is_active).length})`
@@ -141,21 +144,21 @@ export default function AdminVenuesPage() {
         
         {/* Results Count */}
         <div className="mb-4">
-          <p className="text-sm text-sage-dark">Showing {filteredVenues.length} of {venues.length} venues</p>
+          <p style={{ fontSize: "0.8125rem", color: "#999" }}>Showing {filteredVenues.length} of {venues.length} venues</p>
         </div>
         
         {/* Venues Table */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden" style={{ border: "1px solid #E8E6E2" }}>
           {filteredVenues.length === 0 ? (
             <div className="p-12 text-center">
-              <p className="text-xl text-sage-dark mb-2">No venues found</p>
-              <p className="text-sm text-sage-dark mb-6">
+              <p style={{ fontSize: "1rem", color: "#999", marginBottom: "0.5rem" }}>No venues found</p>
+              <p style={{ fontSize: "0.8125rem", color: "#bbb", marginBottom: "1.5rem" }}>
                 {searchQuery ? 'Try adjusting your search' : 'Get started by adding your first venue'}
               </p>
               {!searchQuery && (
                 <button
                   onClick={() => setVenueModalOpen(true)}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+                  className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition" style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
                   style={{ border: 'none', cursor: 'pointer' }}
                 >
                   <Plus size={16} />
@@ -166,51 +169,59 @@ export default function AdminVenuesPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-sage-light/20 border-b border-sage-light">
+                <thead style={{ background: '#F6F5F3', borderBottom: '1px solid #E8E6E2' }}>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Venue</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Location</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Contact</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Subscription</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-sage-dark uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Venue</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Location</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Contact</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Subscription</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Status</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-sage-light">
-                  {filteredVenues.map((venue) => (
-                    <tr key={venue.id} className="hover:bg-sage-light/10 transition">
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => { setSelectedVenueId(venue.id); setDetailsModalOpen(true) }}
-                          className="font-medium text-charcoal hover:text-deep-green transition cursor-pointer text-left"
-                          style={{ background: 'none', border: 'none', padding: 0 }}
-                        >
-                          {venue.name}
-                        </button>
-                        <div className="text-sm text-sage-dark">
+                <tbody>
+                  {filteredVenues.map((venue, idx) => (
+                    <tr key={venue.id}
+                      onClick={() => { setSelectedVenueId(venue.id); setDetailsModalOpen(true) }}
+                      className="transition-colors"
+                      style={{ borderBottom: '1px solid #E8E6E2', background: idx % 2 === 1 ? '#FAFAF9' : '#fff', cursor: 'pointer' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(61,90,76,0.03)' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
+                    >
+                      <td className="px-6 py-3">
+                        <div style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '0.9375rem' }}>{venue.name}</div>
+                        <div className="text-xs" style={{ color: '#bbb' }}>
                           {venue.subscription_type === 'rental' && 'Rental Model'}
                           {venue.subscription_type === 'owned' && 'Owned Equipment'}
                           {venue.subscription_type === 'trial' && 'Trial'}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-charcoal">{venue.city || '—'}</td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-charcoal">{venue.primary_contact_name || '—'}</div>
-                        <div className="text-sm text-sage-dark">{venue.primary_contact_email || '—'}</div>
+                      <td className="px-6 py-3" style={{ fontSize: '0.8125rem', color: '#555' }}>{venue.city || '—'}</td>
+                      <td className="px-6 py-3">
+                        <div style={{ fontSize: '0.8125rem', color: '#333' }}>{venue.primary_contact_name || '—'}</div>
+                        <div style={{ fontSize: '0.6875rem', color: '#bbb' }}>{venue.primary_contact_email || '—'}</div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          venue.subscription_status === 'active' ? 'bg-green-100 text-green-800'
-                            : venue.subscription_status === 'inactive' ? 'bg-gray-100 text-gray-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>{venue.subscription_status}</span>
+                      <td className="px-6 py-3">
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: '999px',
+                          fontSize: '0.6875rem', fontWeight: 500,
+                          background: venue.subscription_status === 'active' ? 'rgba(61,90,76,0.08)' : venue.subscription_status === 'inactive' ? '#f5f5f5' : 'rgba(180,140,60,0.08)',
+                          color: venue.subscription_status === 'active' ? '#3D5A4C' : venue.subscription_status === 'inactive' ? '#999' : '#8a7020',
+                        }}>
+                          {(venue.subscription_status || 'Unknown').charAt(0).toUpperCase() + (venue.subscription_status || 'unknown').slice(1)}
+                        </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          venue.is_active ? 'bg-deep-green/10 text-deep-green' : 'bg-rose/10 text-rose-dark'
-                        }`}>{venue.is_active ? 'Active' : 'Inactive'}</span>
+                      <td className="px-6 py-3">
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: '999px',
+                          fontSize: '0.6875rem', fontWeight: 500,
+                          background: venue.is_active ? 'rgba(61,90,76,0.08)' : 'rgba(200,100,100,0.08)',
+                          color: venue.is_active ? '#3D5A4C' : '#b05050',
+                        }}>
+                          {venue.is_active ? 'Active' : 'Inactive'}
+                        </span>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-3">
                           {userRole === 'developer' && (
                             <Link
@@ -218,13 +229,13 @@ export default function AdminVenuesPage() {
                               className="text-sage hover:text-deep-green transition"
                               title="View as venue"
                             >
-                              <Eye size={16} />
+                              <Eye size={15} />
                             </Link>
                           )}
                           <button
                             onClick={() => { setSelectedVenueId(venue.id); setEditModalOpen(true) }}
-                            className="text-sm text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
-                            style={{ background: 'none', border: 'none', padding: 0 }}
+                            className="text-deep-green hover:text-deep-green-dark font-medium cursor-pointer"
+                            style={{ background: 'none', border: 'none', padding: 0, fontSize: '0.8125rem', fontWeight: 600 }}
                           >
                             Edit
                           </button>
