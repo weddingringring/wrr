@@ -49,47 +49,47 @@ export default function AdminErrorLogsPage() {
   
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-100 text-red-800 border-red-200'
-      case 'error': return 'bg-rose-100 text-rose-800 border-rose-200'
-      case 'warning': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'info': return 'bg-blue-100 text-blue-800 border-blue-200'
-      default: return 'bg-sage-light text-sage-dark border-sage'
+      case 'critical': return { bg: 'rgba(180,60,60,0.08)', color: '#a33', border: '#c44' }
+      case 'error': return { bg: 'rgba(180,80,80,0.08)', color: '#b05050', border: '#d88' }
+      case 'warning': return { bg: 'rgba(180,140,60,0.08)', color: '#8a7020', border: '#c4a030' }
+      case 'info': return { bg: 'rgba(80,120,180,0.06)', color: '#4a7090', border: '#7aa0c0' }
+      default: return { bg: '#f5f5f5', color: '#888', border: '#ccc' }
     }
   }
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F6F5F3' }}>
         <div className="w-16 h-16 border-4 border-deep-green border-t-transparent rounded-full animate-spin"></div>
       </div>
     )
   }
   
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen" style={{ background: '#F6F5F3' }}>
       <AdminHeader currentPage="errors" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="font-serif text-3xl text-charcoal">Error Logs</h1>
+        <div className="mb-6">
+          <h1 className="font-serif text-3xl" style={{ color: "#111" }}>Error Logs</h1>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-5 mb-6" style={{ border: "1px solid #E8E6E2" }}>
           <div className="flex flex-wrap gap-4">
             <div>
-              <label className="block text-sm font-medium text-charcoal mb-2">Status</label>
+              <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Status</label>
               <select value={filter} onChange={(e) => setFilter(e.target.value as any)}
-                className="px-4 py-2 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green">
+                className="px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green">
                 <option value="all">All Errors</option>
                 <option value="unresolved">Unresolved Only</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-charcoal mb-2">Severity</label>
+              <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Severity</label>
               <select value={severityFilter} onChange={(e) => setSeverityFilter(e.target.value)}
-                className="px-4 py-2 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green">
+                className="px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green">
                 <option value="all">All Severities</option>
                 <option value="critical">Critical</option>
                 <option value="error">Error</option>
@@ -99,9 +99,9 @@ export default function AdminErrorLogsPage() {
             </div>
             <div className="ml-auto flex items-end">
               <button onClick={loadLogs}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-deep-green text-white rounded-lg hover:bg-deep-green-dark transition"
-                style={{ border: 'none', cursor: 'pointer' }}>
-                <RefreshCw size={15} />
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition"
+                style={{ border: '1px solid #E8E6E2', cursor: 'pointer', background: '#fff', color: '#555', fontSize: '0.875rem', fontWeight: 500 }}>
+                <RefreshCw size={14} style={{ opacity: 0.6 }} />
                 Refresh
               </button>
             </div>
@@ -109,56 +109,62 @@ export default function AdminErrorLogsPage() {
         </div>
         
         {logs.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-            <p className="text-sage-dark">No error logs found</p>
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center" style={{ border: '1px solid #E8E6E2' }}>
+            <p style={{ color: '#999' }}>No error logs found</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {logs.map((log) => (
+          <div className="space-y-3">
+            {logs.map((log) => {
+              const sevColor = getSeverityColor(log.severity)
+              return (
               <div key={log.id}
-                className={`bg-white rounded-xl shadow-sm p-6 border-l-4 ${
-                  log.severity === 'critical' ? 'border-red-500' :
-                  log.severity === 'error' ? 'border-rose-500' :
-                  log.severity === 'warning' ? 'border-yellow-500' : 'border-blue-500'
-                }`}>
-                <div className="flex items-start justify-between mb-4">
+                className="bg-white rounded-lg shadow-sm p-5"
+                style={{ border: '1px solid #E8E6E2', borderLeft: `4px solid ${sevColor.border}` }}>
+                <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getSeverityColor(log.severity)}`}>
+                      <span style={{
+                        display: 'inline-flex', padding: '2px 10px', borderRadius: '999px',
+                        fontSize: '0.6875rem', fontWeight: 600, background: sevColor.bg, color: sevColor.color,
+                      }}>
                         {log.severity.toUpperCase()}
                       </span>
-                      <span className="text-sm text-sage-dark">{new Date(log.created_at).toLocaleString()}</span>
+                      <span style={{ fontSize: '0.8125rem', color: '#999' }}>{new Date(log.created_at).toLocaleString()}</span>
                       {log.resolved && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
-                          <CheckCircle size={12} /> RESOLVED
+                        <span className="inline-flex items-center gap-1" style={{
+                          padding: '2px 10px', borderRadius: '999px',
+                          fontSize: '0.6875rem', fontWeight: 500, background: 'rgba(61,90,76,0.08)', color: '#3D5A4C',
+                        }}>
+                          <CheckCircle size={11} /> Resolved
                         </span>
                       )}
                     </div>
-                    <p className="font-medium text-charcoal mb-1">{log.source}</p>
-                    <p className="text-sm text-charcoal">{log.error_message}</p>
+                    <p style={{ fontWeight: 600, color: '#111', fontSize: '0.9375rem', marginBottom: '0.25rem' }}>{log.source}</p>
+                    <p style={{ fontSize: '0.8125rem', color: '#555' }}>{log.error_message}</p>
                   </div>
                   {!log.resolved && (
                     <button onClick={() => markResolved(log.id)}
-                      className="ml-4 px-4 py-2 text-sm bg-sage-light text-charcoal rounded-lg hover:bg-sage transition"
-                      style={{ border: 'none', cursor: 'pointer' }}>
+                      className="ml-4 px-3 py-1.5 text-sm rounded-lg transition"
+                      style={{ border: '1px solid #E8E6E2', cursor: 'pointer', background: '#fff', color: '#555', fontWeight: 500, fontSize: '0.8125rem' }}>
                       Mark Resolved
                     </button>
                   )}
                 </div>
                 {log.context && Object.keys(log.context).length > 0 && (
-                  <div className="mt-4 p-4 bg-sage-light/30 rounded-lg">
-                    <p className="text-xs font-medium text-sage-dark mb-2">Context:</p>
-                    <pre className="text-xs text-charcoal overflow-x-auto">{JSON.stringify(log.context, null, 2)}</pre>
+                  <div className="mt-3 p-3 rounded-lg" style={{ background: '#FAFAF9', border: '1px solid #E8E6E2' }}>
+                    <p style={{ fontSize: '0.6875rem', fontWeight: 500, color: '#888', marginBottom: '0.375rem' }}>Context:</p>
+                    <pre style={{ fontSize: '0.6875rem', color: '#555' }} className="overflow-x-auto">{JSON.stringify(log.context, null, 2)}</pre>
                   </div>
                 )}
                 {log.error_stack && (
-                  <details className="mt-4">
-                    <summary className="text-xs font-medium text-sage-dark cursor-pointer hover:text-charcoal">Stack Trace</summary>
-                    <pre className="mt-2 p-4 bg-sage-light/30 rounded-lg text-xs text-charcoal overflow-x-auto">{log.error_stack}</pre>
+                  <details className="mt-3">
+                    <summary style={{ fontSize: '0.6875rem', fontWeight: 500, color: '#888', cursor: 'pointer' }}>Stack Trace</summary>
+                    <pre className="mt-2 p-3 rounded-lg overflow-x-auto" style={{ background: '#FAFAF9', border: '1px solid #E8E6E2', fontSize: '0.6875rem', color: '#555' }}>{log.error_stack}</pre>
                   </details>
                 )}
               </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
