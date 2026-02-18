@@ -88,26 +88,27 @@ export default function AdminEventsPage() {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F6F5F3' }}>
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-deep-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-sage-dark">Loading events...</p>
+          <p style={{ color: "#999" }}>Loading events...</p>
         </div>
       </div>
     )
   }
   
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen" style={{ background: '#F6F5F3' }}>
       <AdminHeader currentPage="events" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Title */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="font-serif text-3xl text-charcoal">Events</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="font-serif text-3xl" style={{ color: "#111" }}>Events</h1>
           <Link
             href="/admin/events/create"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+            className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+            style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem' }}
           >
             <Plus size={16} />
             Create Event
@@ -115,27 +116,27 @@ export default function AdminEventsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-5 mb-6" style={{ border: "1px solid #E8E6E2" }}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-charcoal mb-2">Search</label>
+              <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Search</label>
               <div className="relative">
-                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-sage" />
+                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#bbb" }} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Names, venue, email, phone..."
-                  className="w-full pl-9 pr-4 py-2 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                  className="w-full pl-9 pr-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-charcoal mb-2">Status</label>
+              <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Status</label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as any)}
-                className="w-full px-4 py-2 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
               >
                 <option value="all">All Statuses</option>
                 <option value="active">Active</option>
@@ -144,11 +145,11 @@ export default function AdminEventsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-charcoal mb-2">Timeframe</label>
+              <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Timeframe</label>
               <select
                 value={filterTimeframe}
                 onChange={(e) => setFilterTimeframe(e.target.value as any)}
-                className="w-full px-4 py-2 border border-sage-light rounded-lg focus:ring-2 focus:ring-deep-green focus:border-transparent"
+                className="w-full px-4 py-2 rounded-lg" style={{ border: "1px solid #E8E6E2" }} focus:ring-2 focus:ring-deep-green focus:border-transparent"
               >
                 <option value="all">All Time</option>
                 <option value="upcoming">Upcoming</option>
@@ -159,15 +160,15 @@ export default function AdminEventsPage() {
         </div>
         
         <div className="mb-4">
-          <p className="text-sm text-sage-dark">Showing {filteredEvents.length} of {events.length} events</p>
+          <p style={{ fontSize: "0.8125rem", color: "#999" }}>Showing {filteredEvents.length} of {events.length} events</p>
         </div>
         
         {/* Events Table */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden" style={{ border: "1px solid #E8E6E2" }}>
           {filteredEvents.length === 0 ? (
             <div className="p-12 text-center">
-              <p className="text-xl text-sage-dark mb-2">No events found</p>
-              <p className="text-sm text-sage-dark mb-6">
+              <p style={{ fontSize: "1rem", color: "#999", marginBottom: "0.5rem" }}>No events found</p>
+              <p style={{ fontSize: "0.8125rem", color: "#bbb", marginBottom: "1.5rem" }}>
                 {searchQuery ? 'Try adjusting your search' : 'Create your first event to get started'}
               </p>
               {!searchQuery && (
@@ -181,43 +182,53 @@ export default function AdminEventsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-sage-light/20 border-b border-sage-light">
+                <thead style={{ background: '#F6F5F3', borderBottom: '1px solid #E8E6E2' }}>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Event</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Venue</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Phone Number</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Messages</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-sage-dark uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-sage-dark uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Event</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Venue</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Phone Number</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Messages</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Status</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider" style={{ color: '#777' }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-sage-light">
-                  {filteredEvents.map((event) => (
-                    <tr key={event.id} className="hover:bg-sage-light/10 transition">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-charcoal">{getEventDisplayName(event)}</div>
-                        <div className="text-sm text-sage-dark">{event.customer_email}</div>
+                <tbody>
+                  {filteredEvents.map((event, idx) => (
+                    <tr key={event.id}
+                      className="transition-colors"
+                      style={{ borderBottom: '1px solid #E8E6E2', background: idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(61,90,76,0.03)' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
+                    >
+                      <td className="px-6 py-3">
+                        <div style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '1rem' }}>{getEventDisplayName(event)}</div>
+                        <div style={{ fontSize: '0.6875rem', color: '#bbb', marginTop: '1px' }}>{event.customer_email}</div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-charcoal">
+                      <td className="px-6 py-3" style={{ fontSize: '0.8125rem', color: '#444' }}>
                         {new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-charcoal">{event.venue?.name}</div>
-                        <div className="text-sm text-sage-dark">{event.venue?.city}</div>
+                      <td className="px-6 py-3">
+                        <div style={{ fontSize: '0.8125rem', color: '#333' }}>{event.venue?.name}</div>
+                        <div style={{ fontSize: '0.6875rem', color: '#bbb' }}>{event.venue?.city}</div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-mono text-charcoal">{event.twilio_phone_number || '—'}</div>
+                      <td className="px-6 py-3">
+                        <div className="text-sm font-mono" style={{ color: '#555' }}>{event.twilio_phone_number || '—'}</div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-charcoal">{event.messages_count} messages</td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          event.status === 'active' ? 'bg-deep-green/10 text-deep-green'
-                            : event.status === 'completed' ? 'bg-sage/10 text-sage-dark'
-                            : 'bg-rose/10 text-rose-dark'
-                        }`}>{event.status}</span>
+                      <td className="px-6 py-3" style={{ fontSize: '0.8125rem', color: event.messages_count === 0 ? '#ccc' : event.messages_count >= 10 ? '#3D5A4C' : '#333', fontWeight: event.messages_count >= 10 ? 600 : 400 }}>
+                        {event.messages_count}
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-3">
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: '999px',
+                          fontSize: '0.6875rem', fontWeight: 500,
+                          background: event.status === 'active' ? 'rgba(61,90,76,0.08)' : event.status === 'completed' ? 'rgba(140,160,140,0.1)' : 'rgba(200,100,100,0.08)',
+                          color: event.status === 'active' ? '#3D5A4C' : event.status === 'completed' ? '#7a8a7a' : '#b05050',
+                        }}>
+                          {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 text-right">
                         <div className="flex items-center justify-end gap-3">
                           {userRole === 'developer' && (
                             <Link
@@ -225,11 +236,12 @@ export default function AdminEventsPage() {
                               className="text-sage hover:text-deep-green transition"
                               title="View as customer"
                             >
-                              <Eye size={16} />
+                              <Eye size={15} />
                             </Link>
                           )}
                           <Link href={`/admin/events/${event.id}`}
-                            className="text-sm text-deep-green hover:text-deep-green-dark font-medium">
+                            style={{ fontSize: '0.8125rem', fontWeight: 600 }}
+                            className="text-deep-green hover:text-deep-green-dark font-medium">
                             View Details
                           </Link>
                         </div>
