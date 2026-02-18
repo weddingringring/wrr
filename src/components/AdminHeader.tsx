@@ -28,7 +28,7 @@ export default function AdminHeader({ currentPage = 'dashboard' }: AdminHeaderPr
 
   return (
     <header style={{
-      background: '#F5E8E8',
+      background: '#F0EAEA',
       padding: '1rem 0',
       position: 'sticky',
       top: 0,
