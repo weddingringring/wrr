@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
+import AdminHeader from '@/components/AdminHeader'
 
 export default function AdminCreateVenuePage() {
   const router = useRouter()
@@ -157,19 +158,16 @@ export default function AdminCreateVenuePage() {
   
   return (
     <div className="min-h-screen bg-cream">
-      {/* Header */}
-      <header className="bg-white border-b border-sage-light shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div>
-            <Link href="/admin/venues" className="text-sm text-sage-dark hover:text-charcoal mb-2 inline-block">
-              ← Back to Venues
-            </Link>
-            <h1 className="font-serif text-3xl text-charcoal">Create New Venue</h1>
-          </div>
-        </div>
-      </header>
+      <AdminHeader currentPage="venues" />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page Title */}
+        <div className="mb-8">
+          <Link href="/admin/venues" className="text-sm text-sage-dark hover:text-charcoal mb-2 inline-block">
+            &larr; Back to Venues
+          </Link>
+          <h1 className="font-serif text-3xl text-charcoal">Create New Venue</h1>
+        </div>
         {error && (
           <div className="mb-6 p-4 bg-rose-light border border-rose rounded-lg">
             <p className="text-rose-dark font-medium">{error}</p>
