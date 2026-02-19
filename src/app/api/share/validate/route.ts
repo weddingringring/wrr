@@ -1,45 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { checkRateLimit, extractIP, logAccess, isCodeExpired } from '@/lib/share-security'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-// Rate limit: 5/min, 20/hour per IP (shared with album endpoint concept)
-const rateLimitMap = new Map<string, { minute: number[]; hour: number[] }>()
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now()
-  let entry = rateLimitMap.get(ip)
-  if (!entry) {
-    entry = { minute: [], hour: [] }
-    rateLimitMap.set(ip, entry)
-  }
-  entry.minute = entry.minute.filter(t => t > now - 60_000)
-  entry.hour = entry.hour.filter(t => t > now - 3_600_000)
-  if (entry.minute.length >= 5 || entry.hour.length >= 20) return true
-  entry.minute.push(now)
-  entry.hour.push(now)
-  return false
-}
-
-// Clean stale entries periodically
-setInterval(() => {
-  const cutoff = Date.now() - 3_600_000
-  Array.from(rateLimitMap.entries()).forEach(([ip, entry]) => {
-    entry.hour = entry.hour.filter(t => t > cutoff)
-    if (entry.hour.length === 0) rateLimitMap.delete(ip)
-  })
-}, 600_000)
-
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      || request.headers.get('x-real-ip')
-      || 'unknown'
+    const ip = extractIP(request)
 
-    if (isRateLimited(ip)) {
+    const allowed = await checkRateLimit(ip, 'validate', 5, 20)
+    if (!allowed) {
       return NextResponse.json(
         { error: 'Too many attempts. Please wait a moment.' },
         { status: 429 }
@@ -67,10 +40,28 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error || !event) {
+      await logAccess(null, ip, 'validate', false)
       return NextResponse.json({ valid: false, error: 'Album not found' }, { status: 404 })
     }
 
-    // Valid — frontend can redirect to /guest/CODE
+    // Check expiry (separate query — defensive if column doesn't exist yet)
+    try {
+      const { data: expiryData } = await supabaseAdmin
+        .from('events')
+        .select('share_code_expires_at')
+        .eq('id', event.id)
+        .single()
+      if (expiryData?.share_code_expires_at && isCodeExpired(expiryData.share_code_expires_at)) {
+        await logAccess(event.id, ip, 'validate', false)
+        return NextResponse.json({ valid: false, error: 'This access key has expired.' }, { status: 410 })
+      }
+    } catch {
+      // Column may not exist yet — skip expiry check
+    }
+
+    // Valid — log success and return
+    await logAccess(event.id, ip, 'validate', true)
+
     return NextResponse.json({
       valid: true,
       code: normalised,
