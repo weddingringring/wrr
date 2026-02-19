@@ -103,7 +103,8 @@ export async function POST(request: Request) {
         first_name: ownerFirstName,
         last_name: ownerLastName,
         phone: ownerPhone,
-        role: 'venue'
+        role: 'venue',
+        password_reset_required: true
       }, { onConflict: 'id' })
 
     if (profileError) {
