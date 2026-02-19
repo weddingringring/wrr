@@ -62,9 +62,8 @@ export async function POST(request: NextRequest) {
       // Delete messages
       const { count } = await supabaseAdmin
         .from('messages')
-        .delete()
+        .delete({ count: 'exact' })
         .eq('event_id', event.id)
-        .select('id', { count: 'exact', head: true })
       deletedInfo.messagesDeleted += (count || 0)
 
       // Release Twilio number
