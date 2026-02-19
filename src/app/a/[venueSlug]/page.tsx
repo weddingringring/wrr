@@ -225,7 +225,7 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
                 fontSize: '0.8rem', color: '#8a7e6c', textAlign: 'center',
                 lineHeight: 1.6, marginBottom: '2rem',
               }}>
-                Enter the private access key you were given.
+                Enter the private access key they have shared with you.
               </p>
 
               {/* Key input */}
