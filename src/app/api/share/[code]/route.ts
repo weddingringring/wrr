@@ -157,9 +157,9 @@ export async function GET(
       .eq('is_shared', true)
       .order('created_at', { ascending: true })
 
-    if (sharedError && (sharedError.message?.includes('is_shared') || sharedError.code === '42703')) {
-      // Column doesn't exist yet — fall back to all non-deleted messages
-      console.warn('is_shared column not found, returning all messages')
+    if (sharedError) {
+      // is_shared column likely doesn't exist yet — fall back to all non-deleted messages
+      console.warn('Shared messages query failed, falling back to all messages:', sharedError.message || sharedError.code)
       const { data: allMessages, error: allError } = await supabaseAdmin
         .from('messages')
         .select(`
