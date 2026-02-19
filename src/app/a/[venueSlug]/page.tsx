@@ -11,6 +11,13 @@ interface VenueInfo {
   slug: string
 }
 
+interface ValidatedEvent {
+  code: string
+  partner1FirstName: string | null
+  partner2FirstName: string | null
+  eventType: string | null
+}
+
 export default function VenueAccessPage({ params }: { params: { venueSlug: string } }) {
   const router = useRouter()
   const [venue, setVenue] = useState<VenueInfo | null>(null)
@@ -20,6 +27,7 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
   const [validating, setValidating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [helpExpanded, setHelpExpanded] = useState(false)
+  const [success, setSuccess] = useState<ValidatedEvent | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -68,7 +76,16 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
       const data = await res.json()
 
       if (data.valid) {
-        router.push(`/guest/${data.code}`)
+        // Show personalised welcome, then redirect
+        setSuccess({
+          code: data.code,
+          partner1FirstName: data.partner1FirstName,
+          partner2FirstName: data.partner2FirstName,
+          eventType: data.eventType,
+        })
+        setTimeout(() => {
+          router.push(`/guest/${data.code}`)
+        }, 2200)
       } else {
         setError("That key doesn\u2019t look quite right \u2014 please check and try again.")
       }
@@ -83,6 +100,32 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
     if (e.key === 'Enter') handleSubmit()
   }
 
+  // Build personalised headline from event data
+  const buildWelcomeHeadline = (ev: ValidatedEvent) => {
+    const hasNames = ev.partner1FirstName || ev.partner2FirstName
+    const names = hasNames
+      ? [ev.partner1FirstName, ev.partner2FirstName].filter(Boolean).join(' & ')
+      : null
+
+    // Map event_type to friendly label
+    const eventLabel = (() => {
+      const t = (ev.eventType || '').toLowerCase()
+      if (t.includes('wedding')) return 'wedding'
+      if (t.includes('birthday')) return 'birthday'
+      if (t.includes('anniversary')) return 'anniversary'
+      if (t.includes('engagement')) return 'engagement'
+      if (t.includes('corporate') || t.includes('work')) return 'event'
+      if (t.includes('party')) return 'party'
+      return 'celebration'
+    })()
+
+    if (names) {
+      return `${names} have invited you to listen to their ${eventLabel} audio guestbook`
+    }
+    return `You\u2019re invited to listen to this ${eventLabel} audio guestbook`
+  }
+
+  // --- Loading ---
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFEFEF' }}>
@@ -92,6 +135,7 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
     )
   }
 
+  // --- Not found ---
   if (notFound) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFEFEF', padding: '2rem' }}>
@@ -112,6 +156,14 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet" />
+
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .welcome-fade-in { animation: fadeInUp 0.6s ease forwards; }
+      `}</style>
 
       <div style={{
         minHeight: '100vh', background: '#FFEFEF',
@@ -140,100 +192,121 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
 
         {/* Main access card */}
         <ParchmentCard maxWidth="440px" padding="2.75rem 2.25rem">
-          {/* Headline */}
-          <h1 style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            fontSize: '1.35rem', fontWeight: 500, color: '#2c2418',
-            textAlign: 'center', lineHeight: 1.4, marginBottom: '0.75rem',
-          }}>
-            You&rsquo;re invited to view this wedding guestbook
-          </h1>
-
-          {/* Subtext */}
-          <p style={{
-            fontSize: '0.8rem', color: '#8a7e6c', textAlign: 'center',
-            lineHeight: 1.6, marginBottom: '2rem',
-          }}>
-            The couple has shared a private access key with you.
-          </p>
-
-          {/* Key input */}
-          <input
-            ref={inputRef}
-            type="text"
-            value={key}
-            onChange={(e) => handleKeyInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="XXXX XXXX"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            style={{
-              width: '100%', boxSizing: 'border-box',
-              padding: '0.9rem 1rem',
-              background: '#F0ECE4',
-              border: error ? '1px solid rgba(180,120,100,0.35)' : '1px solid rgba(180,165,140,0.15)',
-              borderRadius: '0.5rem',
-              fontFamily: "'Courier New', Courier, monospace",
-              fontSize: '1.25rem', fontWeight: 700,
-              letterSpacing: '0.2em', textAlign: 'center',
-              color: '#2c2418',
-              outline: 'none',
-              textTransform: 'uppercase' as const,
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={(e) => { if (!error) e.currentTarget.style.borderColor = 'rgba(180,165,140,0.35)' }}
-            onBlur={(e) => { if (!error) e.currentTarget.style.borderColor = 'rgba(180,165,140,0.15)' }}
-          />
-
-          {/* Error */}
-          {error && (
-            <p style={{ fontSize: '0.75rem', color: '#a07060', textAlign: 'center', marginTop: '0.6rem', lineHeight: 1.5 }}>
-              {error}
-            </p>
-          )}
-
-          {/* Submit */}
-          <button
-            onClick={handleSubmit}
-            disabled={validating || key.replace(/\s/g, '').length < 8}
-            style={{
-              width: '100%', marginTop: '1.25rem',
-              padding: '0.7rem 1rem', borderRadius: '0.5rem',
-              background: '#587e6a', color: '#f5f2ec', border: 'none',
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: '0.95rem', fontWeight: 500, letterSpacing: '0.01em',
-              cursor: validating ? 'wait' : key.replace(/\s/g, '').length < 8 ? 'default' : 'pointer',
-              opacity: validating || key.replace(/\s/g, '').length < 8 ? 0.5 : 1,
-              transition: 'opacity 0.2s',
-            }}
-          >
-            {validating ? 'Checking\u2026' : 'View guestbook'}
-          </button>
-
-          {/* Help link */}
-          <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
-            <button
-              onClick={() => setHelpExpanded(!helpExpanded)}
-              style={{
-                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                fontSize: '0.7rem', color: '#a69d8e', fontWeight: 500,
-                textDecoration: 'none',
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
-            >
-              What is a private key?
-            </button>
-            {helpExpanded && (
-              <p style={{
-                fontSize: '0.7rem', color: '#8a7e6c', lineHeight: 1.6,
-                marginTop: '0.5rem', textAlign: 'center',
+          {success ? (
+            /* ── Success: personalised welcome ── */
+            <div className="welcome-fade-in" style={{ textAlign: 'center', padding: '1rem 0' }}>
+              <h1 style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: '1.3rem', fontWeight: 500, color: '#2c2418',
+                lineHeight: 1.45, marginBottom: '1.25rem',
               }}>
-                A private key allows invited guests to view selected messages from the special day.
+                {buildWelcomeHeadline(success)}
+              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                <div style={{ width: '1.25rem', height: '1.25rem', border: '2px solid rgba(0,0,0,0.08)', borderTopColor: '#587e6a', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <span style={{ fontSize: '0.8rem', color: '#8a7e6c' }}>Opening guestbook&hellip;</span>
+              </div>
+              <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+            </div>
+          ) : (
+            /* ── Key entry form ── */
+            <>
+              {/* Headline */}
+              <h1 style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: '1.35rem', fontWeight: 500, color: '#2c2418',
+                textAlign: 'center', lineHeight: 1.4, marginBottom: '0.75rem',
+              }}>
+                You&rsquo;re invited to listen to an audio guestbook
+              </h1>
+
+              {/* Subtext */}
+              <p style={{
+                fontSize: '0.8rem', color: '#8a7e6c', textAlign: 'center',
+                lineHeight: 1.6, marginBottom: '2rem',
+              }}>
+                Enter the private access key you were given.
               </p>
-            )}
-          </div>
+
+              {/* Key input */}
+              <input
+                ref={inputRef}
+                type="text"
+                value={key}
+                onChange={(e) => handleKeyInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="XXXX XXXX"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                style={{
+                  width: '100%', boxSizing: 'border-box',
+                  padding: '0.9rem 1rem',
+                  background: '#F0ECE4',
+                  border: error ? '1px solid rgba(180,120,100,0.35)' : '1px solid rgba(180,165,140,0.15)',
+                  borderRadius: '0.5rem',
+                  fontFamily: "'Courier New', Courier, monospace",
+                  fontSize: '1.25rem', fontWeight: 700,
+                  letterSpacing: '0.2em', textAlign: 'center',
+                  color: '#2c2418',
+                  outline: 'none',
+                  textTransform: 'uppercase' as const,
+                  transition: 'border-color 0.2s',
+                }}
+                onFocus={(e) => { if (!error) e.currentTarget.style.borderColor = 'rgba(180,165,140,0.35)' }}
+                onBlur={(e) => { if (!error) e.currentTarget.style.borderColor = 'rgba(180,165,140,0.15)' }}
+              />
+
+              {/* Error */}
+              {error && (
+                <p style={{ fontSize: '0.75rem', color: '#a07060', textAlign: 'center', marginTop: '0.6rem', lineHeight: 1.5 }}>
+                  {error}
+                </p>
+              )}
+
+              {/* Submit */}
+              <button
+                onClick={handleSubmit}
+                disabled={validating || key.replace(/\s/g, '').length < 8}
+                style={{
+                  width: '100%', marginTop: '1.25rem',
+                  padding: '0.7rem 1rem', borderRadius: '0.5rem',
+                  background: '#587e6a', color: '#f5f2ec', border: 'none',
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: '0.95rem', fontWeight: 500, letterSpacing: '0.01em',
+                  cursor: validating ? 'wait' : key.replace(/\s/g, '').length < 8 ? 'default' : 'pointer',
+                  opacity: validating || key.replace(/\s/g, '').length < 8 ? 0.5 : 1,
+                  transition: 'opacity 0.2s',
+                }}
+              >
+                {validating ? 'Checking\u2026' : 'View guestbook'}
+              </button>
+
+              {/* Help link */}
+              <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+                <button
+                  onClick={() => setHelpExpanded(!helpExpanded)}
+                  style={{
+                    background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                    fontSize: '0.7rem', color: '#a69d8e', fontWeight: 500,
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
+                >
+                  What is a private key?
+                </button>
+                {helpExpanded && (
+                  <p style={{
+                    fontSize: '0.7rem', color: '#8a7e6c', lineHeight: 1.6,
+                    marginTop: '0.5rem', textAlign: 'center',
+                  }}>
+                    A private key allows invited guests to view selected messages from the special day.
+                  </p>
+                )}
+              </div>
+            </>
+          )}
         </ParchmentCard>
 
         {/* Footer branding */}
@@ -247,9 +320,9 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
             Powered by
           </span>
           <img
-            src="/logo.svg"
+            src="/logo.png"
             alt="WeddingRingRing"
-            style={{ height: '1.5rem', opacity: 0.3 }}
+            style={{ height: '2rem', opacity: 0.35 }}
           />
         </footer>
       </div>
