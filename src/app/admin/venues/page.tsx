@@ -7,7 +7,8 @@ import AdminHeader from '@/components/AdminHeader'
 import VenueCreateModal from '@/components/VenueCreateModal'
 import VenueDetailsModal from '@/components/VenueDetailsModal'
 import VenueEditModal from '@/components/VenueEditModal'
-import { Plus, Search, Eye } from 'lucide-react'
+import { Plus, Search, Eye, Trash2 } from 'lucide-react'
+import DeleteConfirmModal from '@/components/DeleteConfirmModal'
 
 interface Venue {
   id: string
@@ -37,6 +38,8 @@ export default function AdminVenuesPage() {
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [selectedVenueId, setSelectedVenueId] = useState<string | null>(null)
   const [userRole, setUserRole] = useState<string>('admin')
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null)
   
   useEffect(() => { loadVenues(); checkRole() }, [])
   useEffect(() => { filterVenues() }, [searchQuery, filterStatus, venues])
@@ -243,6 +246,17 @@ export default function AdminVenuesPage() {
                           >
                             Edit
                           </button>
+                          {userRole === 'developer' && (
+                            <button
+                              onClick={() => { setDeleteTarget({ id: venue.id, name: venue.name }); setDeleteModalOpen(true) }}
+                              title="Permanently delete"
+                              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#ccc', display: 'flex' }}
+                              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#a33' }}
+                              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#ccc' }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -272,6 +286,17 @@ export default function AdminVenuesPage() {
           onClose={() => { setEditModalOpen(false); setSelectedVenueId(null) }}
           venueId={selectedVenueId}
           onSuccess={() => { loadVenues() }}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteConfirmModal
+          isOpen={deleteModalOpen}
+          onClose={() => { setDeleteModalOpen(false); setDeleteTarget(null) }}
+          onSuccess={() => { setDeleteModalOpen(false); setDeleteTarget(null); loadVenues() }}
+          type="venue"
+          targetId={deleteTarget.id}
+          targetName={deleteTarget.name}
         />
       )}
     </div>
