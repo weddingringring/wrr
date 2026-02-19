@@ -15,7 +15,7 @@ import {
   Image as ImageIcon, Upload, Check, Undo2,
   Archive, Settings, LogOut, MessageCircle, Mic, Copy,
   LayoutGrid, Layers, SlidersHorizontal,
-  Eye, EyeOff, Lock, RefreshCw
+  Eye, EyeOff, Lock
 } from 'lucide-react'
 
 interface Message {
@@ -1032,11 +1032,11 @@ function CustomerDashboardContent() {
               onClick={() => setSharePopoverOpen(!sharePopoverOpen)}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition"
               style={{
-                border: '1px solid rgba(0,0,0,0.1)', background: 'transparent',
-                color: '#888', fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
+                border: '1px solid rgba(180,165,140,0.25)', background: 'transparent',
+                color: '#9a8e7a', fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; e.currentTarget.style.color = '#555' }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = '#888' }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(180,165,140,0.45)'; e.currentTarget.style.color = '#6b6150' }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(180,165,140,0.25)'; e.currentTarget.style.color = '#9a8e7a' }}
             >
               <Lock size={13} /> Share Album
             </button>
@@ -1046,91 +1046,108 @@ function CustomerDashboardContent() {
                 ref={sharePopoverRef}
                 style={{
                   position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem',
-                  width: '360px', maxWidth: 'calc(100vw - 2rem)',
-                  background: '#fff', borderRadius: '0.75rem',
-                  boxShadow: '0 8px 30px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)',
-                  border: '1px solid rgba(0,0,0,0.06)', padding: '1.5rem', zIndex: 50,
+                  width: '350px', maxWidth: 'calc(100vw - 2rem)',
+                  background: 'linear-gradient(145deg, #FFFEF7 0%, #FBF8F0 40%, #F8F4E8 100%)',
+                  borderRadius: '1rem',
+                  boxShadow: '0 4px 20px rgba(120,100,70,0.08), 0 12px 40px rgba(120,100,70,0.06)',
+                  border: '1px solid rgba(180,165,140,0.2)',
+                  padding: '1.75rem', zIndex: 50,
                 }}
               >
                 {!shareCode ? (
+                  /* ── State 1: No key yet ── */
                   <>
-                    <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.1rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>Share your album</p>
-                    <p style={{ fontSize: '0.8125rem', color: '#888', lineHeight: 1.5, marginBottom: '1.25rem' }}>
-                      Create a private access key to share with guests who couldn&rsquo;t attend in person.
+                    <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.15rem', color: '#2c2418', marginBottom: '0.75rem' }}>
+                      Share this album
+                    </p>
+                    <p style={{ fontSize: '0.8125rem', color: '#8a7e6c', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                      Invite friends and family to listen to messages from your day.
                     </p>
                     <button
                       onClick={generateShareCode}
                       disabled={shareLoading}
                       style={{
-                        width: '100%', padding: '0.625rem 1rem', borderRadius: '0.5rem',
-                        background: '#2a2a2a', color: '#fff', border: 'none',
-                        fontSize: '0.875rem', fontWeight: 500,
+                        width: '100%', padding: '0.7rem 1rem', borderRadius: '0.5rem',
+                        background: '#3D5A4C', color: '#f5f2ec', border: 'none',
+                        fontSize: '0.875rem', fontWeight: 500, letterSpacing: '0.01em',
                         cursor: shareLoading ? 'wait' : 'pointer',
-                        opacity: shareLoading ? 0.7 : 1,
+                        opacity: shareLoading ? 0.7 : 1, transition: 'opacity 0.15s',
                       }}
                     >
-                      {shareLoading ? 'Generating\u2026' : 'Generate Private Access Key'}
+                      {shareLoading ? 'Creating\u2026' : 'Create Access Key'}
                     </button>
                   </>
                 ) : (
+                  /* ── State 2: Key exists ── */
                   <>
-                    <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.1rem', color: '#1a1a1a', marginBottom: '1rem' }}>Private Access Key</p>
+                    <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.15rem', color: '#2c2418', marginBottom: '1.25rem' }}>
+                      Private Access
+                    </p>
 
+                    {/* Key label + field */}
+                    <p style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#9a8e7a', marginBottom: '0.4rem' }}>
+                      Access Key
+                    </p>
                     <div style={{
-                      background: '#f8f7f6', borderRadius: '0.5rem', padding: '0.875rem 1rem',
-                      textAlign: 'center', marginBottom: '0.875rem', border: '1px solid rgba(0,0,0,0.04)',
+                      background: '#F0ECE4', borderRadius: '0.5rem',
+                      padding: '1rem 1rem',
+                      textAlign: 'center', marginBottom: '1.25rem',
+                      border: '1px solid rgba(180,165,140,0.2)',
+                      boxShadow: 'inset 0 1px 3px rgba(120,100,70,0.06)',
                     }}>
-                      <span style={{ fontFamily: 'monospace', fontSize: '1.5rem', fontWeight: 600, letterSpacing: '0.15em', color: '#1a1a1a' }}>
+                      <span style={{ fontFamily: "'Courier New', Courier, monospace", fontSize: '1.5rem', fontWeight: 700, letterSpacing: '0.18em', color: '#2c2418' }}>
                         {shareCodeFormatted || `${shareCode.slice(0, 4)} ${shareCode.slice(4)}`}
                       </span>
                     </div>
 
-                    <div className="flex gap-2" style={{ marginBottom: '1rem' }}>
+                    {/* Actions row: Copy (primary) + Refresh (text link) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
                       <button
                         onClick={copyShareCode}
                         style={{
-                          flex: 1, padding: '0.5rem 0.75rem', borderRadius: '0.5rem',
-                          background: '#2a2a2a', color: '#fff', border: 'none',
+                          padding: '0.5rem 1.25rem', borderRadius: '0.4rem',
+                          background: '#3D5A4C', color: '#f5f2ec', border: 'none',
                           fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem',
+                          display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                          transition: 'opacity 0.15s',
                         }}
                       >
                         {shareCopied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy Key</>}
                       </button>
-                      <button
-                        onClick={() => setShareConfirmRefresh(true)}
-                        disabled={shareLoading}
-                        style={{
-                          flex: 1, padding: '0.5rem 0.75rem', borderRadius: '0.5rem',
-                          background: 'transparent', color: '#888',
-                          border: '1px solid rgba(0,0,0,0.1)',
-                          fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem',
-                        }}
-                      >
-                        <RefreshCw size={12} /> New Key
-                      </button>
+                      {!shareConfirmRefresh && (
+                        <button
+                          onClick={() => setShareConfirmRefresh(true)}
+                          disabled={shareLoading}
+                          style={{
+                            background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                            fontSize: '0.75rem', color: '#9a8e7a', fontWeight: 500,
+                            textDecoration: 'none', transition: 'color 0.15s',
+                          }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
+                        >
+                          Refresh key
+                        </button>
+                      )}
                     </div>
 
+                    {/* Refresh confirmation (inline) */}
                     {shareConfirmRefresh && (
-                      <div style={{
-                        background: '#faf8f6', borderRadius: '0.5rem', padding: '0.75rem',
-                        marginBottom: '0.875rem', border: '1px solid rgba(0,0,0,0.06)',
-                      }}>
-                        <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '0.5rem' }}>
+                      <div style={{ marginBottom: '1.25rem' }}>
+                        <p style={{ fontSize: '0.75rem', color: '#8a7e6c', marginBottom: '0.4rem', lineHeight: 1.5 }}>
                           Refreshing will disable the previous key.
                         </p>
-                        <div className="flex gap-2">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                           <button
                             onClick={generateShareCode}
                             disabled={shareLoading}
-                            style={{ padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: 'none', background: 'transparent', color: '#c45', fontSize: '0.75rem', fontWeight: 600, cursor: shareLoading ? 'wait' : 'pointer' }}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: shareLoading ? 'wait' : 'pointer', fontSize: '0.75rem', color: '#a0583c', fontWeight: 600 }}
                           >
-                            {shareLoading ? 'Refreshing\u2026' : 'Refresh Key'}
+                            {shareLoading ? 'Refreshing\u2026' : 'Refresh'}
                           </button>
                           <button
                             onClick={() => setShareConfirmRefresh(false)}
-                            style={{ padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: 'none', background: 'transparent', color: '#888', fontSize: '0.75rem', fontWeight: 500, cursor: 'pointer' }}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '0.75rem', color: '#9a8e7a', fontWeight: 500 }}
                           >
                             Cancel
                           </button>
@@ -1138,21 +1155,27 @@ function CustomerDashboardContent() {
                       </div>
                     )}
 
+                    {/* Just-generated feedback */}
                     {shareJustGenerated && (
-                      <p style={{ fontSize: '0.75rem', color: '#3D5A4C', marginBottom: '0.5rem', textAlign: 'center' }}>New key generated.</p>
+                      <p style={{ fontSize: '0.75rem', color: '#3D5A4C', marginBottom: '0.75rem' }}>New key created.</p>
                     )}
 
-                    <p style={{ fontSize: '0.75rem', color: '#999', lineHeight: 1.5, marginBottom: '0.75rem' }}>
-                      Anyone with this key can view and listen to all shared messages in this album.
+                    {/* Helper text */}
+                    <p style={{ fontSize: '0.75rem', color: '#9a8e7a', lineHeight: 1.6, marginBottom: '1rem' }}>
+                      Anyone with this key can privately view and listen to the shared messages in this album.
                     </p>
 
-                    <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.75rem', color: '#888' }}>
-                        Sharing: {sharedMessageCount} of {activeMessageCount} message{activeMessageCount !== 1 ? 's' : ''}
+                    {/* Visibility summary */}
+                    <div style={{ borderTop: '1px solid rgba(180,165,140,0.18)', paddingTop: '0.875rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#8a7e6c' }}>
+                        {sharedMessageCount === activeMessageCount
+                          ? `Sharing all ${activeMessageCount} message${activeMessageCount !== 1 ? 's' : ''}`
+                          : `Sharing ${sharedMessageCount} of ${activeMessageCount} message${activeMessageCount !== 1 ? 's' : ''}`
+                        }
                       </span>
                       <button
                         onClick={() => { setSharePopoverOpen(false); scrollToMessages() }}
-                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '0.75rem', color: '#888', textDecoration: 'none', fontWeight: 500 }}
+                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '0.75rem', color: '#9a8e7a', textDecoration: 'none', fontWeight: 500 }}
                         onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
                         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
                       >
