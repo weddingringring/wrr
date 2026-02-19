@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import MessageCardStack from './MessageCardStack'
+import MessageSharePopover from './MessageSharePopover'
+import StoryVideoModal from './StoryVideoModal'
 import ImpersonationBanner from '@/components/ImpersonationBanner'
 import PasswordResetModal from '@/components/PasswordResetModal'
 import JSZip from 'jszip'
@@ -100,6 +102,9 @@ function CustomerDashboardContent() {
   const [shareJustGenerated, setShareJustGenerated] = useState(false)
   const [shareExpiresAt, setShareExpiresAt] = useState<string | null>(null)
   const [shareVisibilityFeedback, setShareVisibilityFeedback] = useState<Record<string, string>>({})
+  const [msgSharePopoverId, setMsgSharePopoverId] = useState<string | null>(null)
+  const [storyModalMessage, setStoryModalMessage] = useState<{ id: string; callerName: string | null } | null>(null)
+  const msgShareAnchorRefs = useRef<Record<string, HTMLButtonElement | null>>({})
   const sharePopoverRef = useRef<HTMLDivElement>(null)
   const shareButtonRef = useRef<HTMLButtonElement>(null)
   const messageListRef = useRef<HTMLDivElement>(null)
@@ -2162,7 +2167,11 @@ function CustomerDashboardContent() {
             }}
             onToggleTag={handleToggleTag}
             onDownload={handleDownload}
-            onShare={handleShare}
+            onShareMessage={(messageId, callerName) => setMsgSharePopoverId(msgSharePopoverId === messageId ? null : messageId)}
+            msgSharePopoverId={msgSharePopoverId}
+            onCloseSharePopover={() => setMsgSharePopoverId(null)}
+            onOpenStoryModal={(messageId, callerName) => setStoryModalMessage({ id: messageId, callerName })}
+            viewAsId={viewAsId}
             onPhotoUpload={(messageId) => {
               photoMessageRef.current = messageId
               photoInputRef.current?.click()
@@ -2319,7 +2328,7 @@ function CustomerDashboardContent() {
                                   <button onClick={() => { photoMessageRef.current = message.id; photoInputRef.current?.click(); setActiveMenu(null) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
                                     <ImageIcon size={14} /> {message.guest_photo_url ? 'Change photo' : 'Add photo'}
                                   </button>
-                                  <button onClick={() => { handleShare(message.enhanced_recording_url || message.recording_url, name); setActiveMenu(null) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
+                                  <button onClick={() => { setMsgSharePopoverId(message.id); setActiveMenu(null) }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition flex items-center gap-2" style={{ color: '#555' }}>
                                     <Share2 size={14} /> Share
                                   </button>
                                   <div style={{ borderTop: '1px solid #eee', margin: '4px 0' }}></div>
@@ -2394,9 +2403,26 @@ function CustomerDashboardContent() {
                               <button onClick={() => handleDownload(message.enhanced_recording_url || message.recording_url, name)} className="p-1.5 rounded-lg hover:bg-black/5 transition" title="Download">
                                 <Download size={14} style={{ color: '#999' }} />
                               </button>
-                              <button onClick={() => handleShare(message.enhanced_recording_url || message.recording_url, name)} className="p-1.5 rounded-lg hover:bg-black/5 transition" title="Share">
-                                <Share2 size={14} style={{ color: '#999' }} />
-                              </button>
+                              <div style={{ position: 'relative' }}>
+                                <button
+                                  ref={(el) => { if (el) msgShareAnchorRefs.current[message.id] = el }}
+                                  onClick={() => setMsgSharePopoverId(msgSharePopoverId === message.id ? null : message.id)}
+                                  className="p-1.5 rounded-lg hover:bg-black/5 transition"
+                                  title="Share"
+                                >
+                                  <Share2 size={14} style={{ color: '#999' }} />
+                                </button>
+                                {msgSharePopoverId === message.id && (
+                                  <MessageSharePopover
+                                    messageId={message.id}
+                                    callerName={name}
+                                    anchorRef={{ current: msgShareAnchorRefs.current[message.id] || null } as React.RefObject<HTMLElement>}
+                                    onClose={() => setMsgSharePopoverId(null)}
+                                    onOpenStoryModal={() => setStoryModalMessage({ id: message.id, callerName: name })}
+                                    viewAsId={viewAsId}
+                                  />
+                                )}
+                              </div>
                               <button
                                 onClick={() => handleToggleShared(message.id, message.is_shared !== false)}
                                 className="share-visibility-icon p-1.5 rounded-lg hover:bg-black/5 transition"
@@ -2472,6 +2498,14 @@ function CustomerDashboardContent() {
 
       {/* Forced password reset on first login */}
       <PasswordResetModal />
+
+      {/* Story video placeholder modal */}
+      {storyModalMessage && (
+        <StoryVideoModal
+          callerName={storyModalMessage.callerName}
+          onClose={() => setStoryModalMessage(null)}
+        />
+      )}
     </div>
   )
 }
