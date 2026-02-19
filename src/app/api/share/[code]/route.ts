@@ -37,10 +37,10 @@ function isRateLimited(ip: string): boolean {
 // Clean stale entries every 10 minutes
 setInterval(() => {
   const oneHourAgo = Date.now() - 3_600_000
-  for (const [ip, entry] of rateLimitMap.entries()) {
+  Array.from(rateLimitMap.entries()).forEach(([ip, entry]) => {
     entry.hour = entry.hour.filter(t => t > oneHourAgo)
     if (entry.hour.length === 0) rateLimitMap.delete(ip)
-  }
+  })
 }, 600_000)
 
 // ── Helper: generate signed URL for a storage path ──
