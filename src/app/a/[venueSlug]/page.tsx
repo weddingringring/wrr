@@ -9,6 +9,11 @@ interface VenueInfo {
   name: string
   logoUrl: string | null
   slug: string
+  event: {
+    partner1FirstName: string | null
+    partner2FirstName: string | null
+    eventType: string | null
+  } | null
 }
 
 interface ValidatedEvent {
@@ -100,16 +105,12 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
     if (e.key === 'Enter') handleSubmit()
   }
 
-  // Build personalised headline from event data
-  const buildWelcomeHeadline = (ev: ValidatedEvent) => {
-    const hasNames = ev.partner1FirstName || ev.partner2FirstName
-    const names = hasNames
-      ? [ev.partner1FirstName, ev.partner2FirstName].filter(Boolean).join(' & ')
-      : null
+  // Build personalised headline from names + event type
+  const buildHeadline = (p1: string | null, p2: string | null, evType: string | null) => {
+    const names = [p1, p2].filter(Boolean).join(' & ') || null
 
-    // Map event_type to friendly label
     const eventLabel = (() => {
-      const t = (ev.eventType || '').toLowerCase()
+      const t = (evType || '').toLowerCase()
       if (t.includes('wedding')) return 'wedding'
       if (t.includes('birthday')) return 'birthday'
       if (t.includes('anniversary')) return 'anniversary'
@@ -124,6 +125,11 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
     }
     return `You\u2019re invited to listen to this ${eventLabel} audio guestbook`
   }
+
+  // Initial headline from venue event data (before key entry)
+  const initialHeadline = venue?.event
+    ? buildHeadline(venue.event.partner1FirstName, venue.event.partner2FirstName, venue.event.eventType)
+    : 'You\u2019re invited to listen to an audio guestbook'
 
   // --- Loading ---
   if (loading) {
@@ -200,7 +206,7 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
                 fontSize: '1.3rem', fontWeight: 500, color: '#2c2418',
                 lineHeight: 1.45, marginBottom: '1.25rem',
               }}>
-                {buildWelcomeHeadline(success)}
+                {buildHeadline(success.partner1FirstName, success.partner2FirstName, success.eventType)}
               </h1>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                 <div style={{ width: '1.25rem', height: '1.25rem', border: '2px solid rgba(0,0,0,0.08)', borderTopColor: '#587e6a', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
@@ -217,7 +223,7 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
                 fontSize: '1.35rem', fontWeight: 500, color: '#2c2418',
                 textAlign: 'center', lineHeight: 1.4, marginBottom: '0.75rem',
               }}>
-                You&rsquo;re invited to listen to an audio guestbook
+                {initialHeadline}
               </h1>
 
               {/* Subtext */}
