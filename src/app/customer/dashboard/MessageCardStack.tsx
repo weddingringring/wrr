@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from 'react'
 import {
   Heart, Play, Pause, SkipBack, SkipForward, Clock,
   Download, Share2, Trash2, Undo2, Tag, MoreHorizontal, User,
-  Check, X, Image as ImageIcon
+  Check, X, Image as ImageIcon, Eye, EyeOff
 } from 'lucide-react'
 
 interface Message {
@@ -22,6 +22,7 @@ interface Message {
   tags: string[] | null
   guest_photo_url: string | null
   is_deleted: boolean
+  is_shared: boolean
 }
 
 const AVAILABLE_TAGS = [
@@ -40,6 +41,8 @@ interface MessageCardStackProps {
   onDownload: (recordingUrl: string, name: string | null) => void
   onShare: (recordingUrl: string, name: string | null) => void
   onPhotoUpload: (messageId: string) => void
+  onToggleShared: (messageId: string, currentlyShared: boolean) => void
+  shareVisibilityFeedback: Record<string, string>
   currentlyPlaying: string | null
   playbackProgress: Record<string, number>
   filter: string
@@ -57,6 +60,8 @@ export default function MessageCardStack({
   onDownload,
   onShare,
   onPhotoUpload,
+  onToggleShared,
+  shareVisibilityFeedback,
   currentlyPlaying,
   playbackProgress,
   filter,
@@ -273,6 +278,9 @@ export default function MessageCardStack({
       <link href="https://fonts.googleapis.com/css2?family=Oooh+Baby&display=swap" rel="stylesheet" />
 
       <style>{`
+        @keyframes fadeFeedback { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes sharePulse { 0% { transform: scale(1); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
+        .share-pulse { animation: sharePulse 0.4s ease-in-out 2; }
         .parchment-card {
           background: linear-gradient(145deg, #FFFEF7 0%, #FBF8F0 25%, #F8F4E8 50%, #FBF7ED 75%, #FFFDF5 100%);
           box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.07), inset 0 0 60px rgba(255,252,240,0.5);
@@ -529,10 +537,27 @@ export default function MessageCardStack({
                         <button onClick={(e) => { e.stopPropagation(); onShare(msg.recording_url, msg.caller_name) }} onPointerDown={(e) => e.stopPropagation()} style={{ padding: '8px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer' }} title="Share">
                           <Share2 size={16} style={{ color: '#999' }} />
                         </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onToggleShared(msg.id, msg.is_shared !== false) }}
+                          onPointerDown={(e) => e.stopPropagation()}
+                          className="share-visibility-icon"
+                          style={{ padding: '8px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer' }}
+                          title={msg.is_shared !== false ? 'Visible in shared album' : 'Hidden from shared album'}
+                        >
+                          {msg.is_shared !== false
+                            ? <Eye size={16} style={{ color: '#999' }} />
+                            : <EyeOff size={16} style={{ color: '#bbb' }} />
+                          }
+                        </button>
                       </div>
                     </>
                   )}
                 </div>
+                {shareVisibilityFeedback[msg.id] && (
+                  <div style={{ marginTop: '4px', textAlign: 'right', fontSize: '11px', color: '#999', animation: 'fadeFeedback 1.5s ease forwards' }}>
+                    {shareVisibilityFeedback[msg.id]}
+                  </div>
+                )}
 
                 {/* Tag editor */}
                 {showTags && (
