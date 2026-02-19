@@ -1080,34 +1080,40 @@ function CustomerDashboardContent() {
                 ) : (
                   /* ── State 2: Key exists ── */
                   <>
-                    <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.15rem', color: '#2c2418', marginBottom: '1.5rem' }}>
-                      Private Access
-                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.5rem' }}>
+                      <Lock size={14} style={{ color: '#4a6b5a', opacity: 0.7 }} />
+                      <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.15rem', color: '#2c2418', margin: 0 }}>
+                        Private sharing
+                      </p>
+                    </div>
 
-                    {/* Key block — printed card feel */}
+                    {/* Key block — printed keepsake card */}
                     <div style={{
-                      background: '#EDE8DF', borderRadius: '0.625rem',
-                      padding: '1.15rem 1rem',
-                      textAlign: 'center', marginBottom: '1.5rem',
-                      boxShadow: '0 1px 4px rgba(120,100,70,0.07), 0 2px 8px rgba(120,100,70,0.04)',
+                      background: '#F0ECE4',
+                      borderRadius: '0.5rem',
+                      padding: '1.2rem 1rem',
+                      textAlign: 'center',
+                      marginBottom: '1.5rem',
+                      boxShadow: '0 0.5px 2px rgba(120,100,70,0.06)',
+                      backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'0.015\'/%3E%3C/svg%3E")',
                     }}>
-                      <span style={{ fontFamily: "'Courier New', Courier, monospace", fontSize: '1.55rem', fontWeight: 700, letterSpacing: '0.22em', color: '#2c2418' }}>
+                      <span style={{ fontFamily: "'Courier New', Courier, monospace", fontSize: '1.5rem', fontWeight: 700, letterSpacing: '0.2em', color: '#2c2418' }}>
                         {shareCodeFormatted || `${shareCode.slice(0, 4)} ${shareCode.slice(4)}`}
                       </span>
                     </div>
 
-                    {/* Actions row: Copy (primary) + Replace key (text link) */}
+                    {/* Actions row */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', marginBottom: '1.5rem' }}>
                       <button
                         onClick={copyShareCode}
                         style={{
-                          padding: '0.45rem 1.2rem', borderRadius: '0.45rem',
-                          background: '#4a6b5a', color: '#f5f2ec', border: 'none',
-                          fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
-                          display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                          padding: '0.4rem 1.1rem', borderRadius: '0.375rem',
+                          background: '#587e6a', color: '#f5f2ec', border: 'none',
+                          fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer',
+                          display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
                         }}
                       >
-                        {shareCopied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy Key</>}
+                        {shareCopied ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy Key</>}
                       </button>
                       {!shareConfirmRefresh && (
                         <button
@@ -1115,7 +1121,7 @@ function CustomerDashboardContent() {
                           disabled={shareLoading}
                           style={{
                             background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                            fontSize: '0.75rem', color: '#9a8e7a', fontWeight: 500,
+                            fontSize: '0.75rem', color: '#a69d8e', fontWeight: 500,
                             textDecoration: 'none',
                           }}
                           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
@@ -1126,7 +1132,7 @@ function CustomerDashboardContent() {
                       )}
                     </div>
 
-                    {/* Replace confirmation (inline) */}
+                    {/* Replace confirmation */}
                     {shareConfirmRefresh && (
                       <div style={{ marginBottom: '1.5rem' }}>
                         <p style={{ fontSize: '0.75rem', color: '#8a7e6c', marginBottom: '0.4rem', lineHeight: 1.5 }}>
@@ -1142,7 +1148,7 @@ function CustomerDashboardContent() {
                           </button>
                           <button
                             onClick={() => setShareConfirmRefresh(false)}
-                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '0.75rem', color: '#9a8e7a', fontWeight: 500 }}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '0.75rem', color: '#a69d8e', fontWeight: 500 }}
                           >
                             Cancel
                           </button>
@@ -1152,28 +1158,25 @@ function CustomerDashboardContent() {
 
                     {/* Just-created feedback */}
                     {shareJustGenerated && (
-                      <p style={{ fontSize: '0.75rem', color: '#4a6b5a', marginBottom: '0.75rem' }}>New key created.</p>
+                      <p style={{ fontSize: '0.75rem', color: '#587e6a', marginBottom: '0.75rem' }}>New key created.</p>
                     )}
 
                     {/* Description */}
-                    <p style={{ fontSize: '0.75rem', color: '#9a8e7a', lineHeight: 1.6, marginBottom: '0' }}>
-                      Anyone with this key can privately view and listen to the shared messages from your day.
+                    <p style={{ fontSize: '0.7rem', color: '#8a7e6c', lineHeight: 1.7, marginBottom: '0' }}>
+                      Anyone with this key can privately view and listen to the shared messages from your wedding day.
                     </p>
 
                     {/* Editorial divider */}
-                    <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,140,0.22) 20%, rgba(180,165,140,0.22) 80%, transparent 100%)', margin: '1rem 0' }} />
+                    <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,140,0.2) 20%, rgba(180,165,140,0.2) 80%, transparent 100%)', margin: '1rem 0' }} />
 
                     {/* Visibility summary */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.75rem', color: '#8a7e6c' }}>
-                        {sharedMessageCount === activeMessageCount
-                          ? `Sharing all ${activeMessageCount} message${activeMessageCount !== 1 ? 's' : ''}`
-                          : `Sharing ${sharedMessageCount} of ${activeMessageCount} message${activeMessageCount !== 1 ? 's' : ''}`
-                        }
+                        Sharing {sharedMessageCount} of {activeMessageCount} message{activeMessageCount !== 1 ? 's' : ''}
                       </span>
                       <button
                         onClick={() => { setSharePopoverOpen(false); scrollToMessages() }}
-                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '0.75rem', color: '#9a8e7a', textDecoration: 'none', fontWeight: 500 }}
+                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '0.75rem', color: '#a69d8e', textDecoration: 'none', fontWeight: 500 }}
                         onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
                         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
                       >
