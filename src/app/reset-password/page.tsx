@@ -67,7 +67,7 @@ function ResetPasswordForm() {
       } else if (profile?.role === 'venue') {
         router.push('/venue')
       } else if (profile?.role === 'customer') {
-        router.push('/dashboard')
+        router.push('/customer/dashboard')
       } else {
         router.push('/')
       }
