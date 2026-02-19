@@ -584,6 +584,7 @@ function VenueDashboardContent() {
         onSuccess={() => {
           loadEvents() // Reload events after creating
         }}
+        venueName={venue?.name}
       />
       
       {/* Event Details Modal */}
