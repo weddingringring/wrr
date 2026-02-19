@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await supabaseAdmin
       .from('venues')
-      .select('name, logo_url')
+      .select('name, logo_url, slug')
       .eq('id', venueId)
       .single()
 
@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       name: data.name || '',
-      logo_url: data.logo_url || null
+      logo_url: data.logo_url || null,
+      slug: data.slug || null
     })
   } catch (error) {
     console.error('Error fetching venue info:', error)
