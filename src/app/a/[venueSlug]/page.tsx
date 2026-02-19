@@ -164,6 +164,7 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet" />
+      <meta name="robots" content="noindex, nofollow, noarchive" />
 
       <style>{`
         @keyframes fadeInUp {
