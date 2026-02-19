@@ -43,10 +43,10 @@ function checkMemoryRateLimit(key: string, maxPerMinute: number, maxPerHour: num
 // Clean memory limiter periodically
 setInterval(() => {
   const cutoff = Date.now() - 3_600_000
-  for (const [key, entry] of memoryLimiter.entries()) {
+  Array.from(memoryLimiter.entries()).forEach(([key, entry]) => {
     entry.hour = entry.hour.filter(t => t > cutoff)
     if (entry.hour.length === 0) memoryLimiter.delete(key)
-  }
+  })
 }, 600_000)
 
 export async function checkRateLimit(
