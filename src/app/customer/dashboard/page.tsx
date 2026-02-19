@@ -1163,7 +1163,7 @@ function CustomerDashboardContent() {
 
                     {/* Description */}
                     <p style={{ fontSize: '0.7rem', color: '#8a7e6c', lineHeight: 1.7, marginBottom: '0' }}>
-                      Anyone with this key can privately view and listen to the shared messages from your wedding day.
+                      Anyone with this key can privately view and listen to the shared messages from your special day.
                     </p>
 
                     {/* Editorial divider */}
