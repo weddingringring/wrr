@@ -9,6 +9,8 @@ interface EventCreateModalProps {
   onClose: () => void
   onSuccess?: () => void
   venueName?: string
+  /** Admin mode: pass a list of active venues to show a dropdown */
+  venues?: { id: string; name: string }[]
 }
 
 const STEPS = [
@@ -58,12 +60,16 @@ const sectionHeadingStyle: React.CSSProperties = {
   letterSpacing: '-0.01em',
 }
 
-export default function EventCreateModal({ isOpen, onClose, onSuccess, venueName }: EventCreateModalProps) {
+export default function EventCreateModal({ isOpen, onClose, onSuccess, venueName, venues }: EventCreateModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [createdEventId, setCreatedEventId] = useState<string | null>(null)
   const [step, setStep] = useState(1)
+  const [selectedVenueId, setSelectedVenueId] = useState('')
+
+  // Admin mode: venues list provided
+  const isAdminMode = !!venues && venues.length > 0
 
   const [formData, setFormData] = useState({
     eventType: 'wedding',
@@ -104,6 +110,7 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, venueName
     setSuccess(false)
     setCreatedEventId(null)
     setError(null)
+    setSelectedVenueId('')
   }
 
   const handleClose = () => {
@@ -127,7 +134,10 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, venueName
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          ...(isAdminMode && selectedVenueId ? { venueId: selectedVenueId } : {})
+        })
       })
 
       const result = await response.json()
@@ -295,6 +305,24 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, venueName
               {/* ═══ STEP 1: Event Details ═══ */}
               {step === 1 && (
                 <div style={{ display: 'grid', gap: '0.875rem' }}>
+
+                  {/* Admin mode: venue selector */}
+                  {isAdminMode && (
+                    <div>
+                      <label style={requiredLabelStyle}>Venue</label>
+                      <select
+                        value={selectedVenueId}
+                        onChange={(e) => setSelectedVenueId(e.target.value)}
+                        style={{ ...inputStyle, cursor: 'pointer' }}
+                      >
+                        <option value="">Select a venue…</option>
+                        {venues!.map(v => (
+                          <option key={v.id} value={v.id}>{v.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
                     <div>
                       <label style={requiredLabelStyle}>Event Type</label>
@@ -489,7 +517,7 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, venueName
                       </div>
                       <div>
                         <p style={{ fontSize: '0.6875rem', color: '#999', marginBottom: '0.125rem' }}>Venue</p>
-                        <p style={{ fontSize: '0.875rem', color: '#111', fontWeight: 500 }}>{venueName || formData.venueLocation || '\u2014'}</p>
+                        <p style={{ fontSize: '0.875rem', color: '#111', fontWeight: 500 }}>{venueName || (isAdminMode && selectedVenueId ? venues!.find(v => v.id === selectedVenueId)?.name : null) || formData.venueLocation || '\u2014'}</p>
                       </div>
                     </div>
                   </div>
@@ -551,7 +579,21 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, venueName
                   {step < 3 ? (
                     <button
                       type="button"
-                      onClick={() => setStep(step + 1)}
+                      onClick={() => {
+                        // Validate before advancing
+                        if (step === 1) {
+                          if (isAdminMode && !selectedVenueId) {
+                            setError('Please select a venue.')
+                            return
+                          }
+                          if (!formData.eventDate) {
+                            setError('Please select an event date.')
+                            return
+                          }
+                        }
+                        setError(null)
+                        setStep(step + 1)
+                      }}
                       style={{
                         padding: '0.625rem 1.5rem', borderRadius: '0.375rem',
                         fontSize: '0.875rem', fontWeight: 600,
