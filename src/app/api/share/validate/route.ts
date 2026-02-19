@@ -59,10 +59,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ valid: false, error: 'Invalid code format' }, { status: 400 })
     }
 
-    // Check if code exists — only return minimal info
+    // Check if code exists — return event details for personalised welcome
     const { data: event, error } = await supabaseAdmin
       .from('events')
-      .select('id')
+      .select('id, partner_1_first_name, partner_2_first_name, event_type')
       .eq('share_code', normalised)
       .single()
 
@@ -70,8 +70,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ valid: false, error: 'Album not found' }, { status: 404 })
     }
 
-    // Valid — frontend can redirect to /share/CODE
-    return NextResponse.json({ valid: true, code: normalised })
+    // Valid — frontend can redirect to /guest/CODE
+    return NextResponse.json({
+      valid: true,
+      code: normalised,
+      partner1FirstName: event.partner_1_first_name || null,
+      partner2FirstName: event.partner_2_first_name || null,
+      eventType: event.event_type || null,
+    })
 
   } catch (error) {
     console.error('Share validate error:', error)
