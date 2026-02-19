@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import AdminHeader from '@/components/AdminHeader'
-import { Plus, Search, Eye } from 'lucide-react'
+import AdminEventDetailsModal from '@/components/AdminEventDetailsModal'
+import EventCreateModal from '@/components/EventCreateModal'
+import { Plus, Search, Eye, Trash2 } from 'lucide-react'
+import DeleteConfirmModal from '@/components/DeleteConfirmModal'
 
 interface Event {
   id: string
@@ -33,8 +36,14 @@ export default function AdminEventsPage() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed' | 'cancelled'>('all')
   const [filterTimeframe, setFilterTimeframe] = useState<'all' | 'upcoming' | 'past'>('all')
   const [userRole, setUserRole] = useState<string>('admin')
+  const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false)
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
+  const [eventCreateModalOpen, setEventCreateModalOpen] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null)
+  const [activeVenues, setActiveVenues] = useState<{ id: string; name: string }[]>([])
   
-  useEffect(() => { loadEvents(); checkRole() }, [])
+  useEffect(() => { loadEvents(); checkRole(); loadVenues() }, [])
   useEffect(() => { filterEvents() }, [searchQuery, filterStatus, filterTimeframe, events])
   
   const checkRole = async () => {
@@ -42,6 +51,13 @@ export default function AdminEventsPage() {
     if (!user) return
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
     if (profile?.role) setUserRole(profile.role)
+  }
+
+  const loadVenues = async () => {
+    try {
+      const { data } = await supabase.from('venues').select('id, name').eq('is_active', true).order('name')
+      setActiveVenues(data || [])
+    } catch (err) { console.error('Error loading venues:', err) }
   }
   
   const loadEvents = async () => {
@@ -108,14 +124,14 @@ export default function AdminEventsPage() {
         {/* Page Title */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="font-serif text-3xl" style={{ color: "#111" }}>Events</h1>
-          <Link
-            href="/admin/events/create"
+          <button
+            onClick={() => setEventCreateModalOpen(true)}
             className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
-            style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem' }}
+            style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem', border: 'none', cursor: 'pointer' }}
           >
             <Plus size={16} />
             Create Event
-          </Link>
+          </button>
         </div>
 
         {/* Filters */}
@@ -175,11 +191,14 @@ export default function AdminEventsPage() {
                 {searchQuery ? 'Try adjusting your search' : 'Create your first event to get started'}
               </p>
               {!searchQuery && (
-                <Link href="/admin/events/create"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition">
+                <button
+                  onClick={() => setEventCreateModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
+                  style={{ border: 'none', cursor: 'pointer' }}
+                >
                   <Plus size={16} />
                   Create Event
-                </Link>
+                </button>
               )}
             </div>
           ) : (
@@ -200,7 +219,8 @@ export default function AdminEventsPage() {
                   {filteredEvents.map((event, idx) => (
                     <tr key={event.id}
                       className="transition-colors"
-                      style={{ borderBottom: '1px solid #E8E6E2', background: idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
+                      style={{ borderBottom: '1px solid #E8E6E2', background: idx % 2 === 1 ? '#FAFAF9' : '#fff', cursor: 'pointer' }}
+                      onClick={() => { setSelectedEventId(event.id); setEventDetailsModalOpen(true) }}
                       onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(61,90,76,0.03)' }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
                     >
@@ -231,7 +251,7 @@ export default function AdminEventsPage() {
                           {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
                         </span>
                       </td>
-                      <td className="px-6 py-3 text-right">
+                      <td className="px-6 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-3">
                           {userRole === 'developer' && (
                             <Link
@@ -242,11 +262,17 @@ export default function AdminEventsPage() {
                               <Eye size={15} />
                             </Link>
                           )}
-                          <Link href={`/admin/events/${event.id}`}
-                            style={{ fontSize: '0.8125rem', fontWeight: 600 }}
-                            className="text-deep-green hover:text-deep-green-dark font-medium">
-                            View Details
-                          </Link>
+                          {userRole === 'developer' && (
+                            <button
+                              onClick={() => { setDeleteTarget({ id: event.id, name: getEventDisplayName(event) }); setDeleteModalOpen(true) }}
+                              title="Permanently delete"
+                              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#ccc', display: 'flex' }}
+                              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#a33' }}
+                              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#ccc' }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -257,6 +283,32 @@ export default function AdminEventsPage() {
           )}
         </div>
       </div>
+
+      <AdminEventDetailsModal
+        isOpen={eventDetailsModalOpen}
+        onClose={() => { setEventDetailsModalOpen(false); setSelectedEventId(null) }}
+        eventId={selectedEventId}
+        userRole={userRole}
+        onSuccess={() => { loadEvents() }}
+      />
+
+      <EventCreateModal
+        isOpen={eventCreateModalOpen}
+        onClose={() => setEventCreateModalOpen(false)}
+        onSuccess={() => { loadEvents() }}
+        venues={activeVenues}
+      />
+
+      {deleteTarget && (
+        <DeleteConfirmModal
+          isOpen={deleteModalOpen}
+          onClose={() => { setDeleteModalOpen(false); setDeleteTarget(null) }}
+          onSuccess={() => { setDeleteModalOpen(false); setDeleteTarget(null); loadEvents() }}
+          type="event"
+          targetId={deleteTarget.id}
+          targetName={deleteTarget.name}
+        />
+      )}
     </div>
   )
 }
