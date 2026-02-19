@@ -148,7 +148,6 @@ export async function GET(
         guest_photo_url,
         tags,
         is_favorite,
-        is_favorited,
         recorded_at,
         created_at
       `)
@@ -171,7 +170,6 @@ export async function GET(
           guest_photo_url,
           tags,
           is_favorite,
-          is_favorited,
           recorded_at,
           created_at
         `)
@@ -205,7 +203,7 @@ export async function GET(
         audioUrl,
         photoUrl,
         tags: msg.tags,
-        isFavorited: msg.is_favorite || msg.is_favorited,
+        isFavorited: msg.is_favorite,
         recordedAt: msg.recorded_at || msg.created_at
       }
     })
