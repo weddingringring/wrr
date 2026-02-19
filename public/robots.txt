@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /a/
+Disallow: /guest/
+Disallow: /api/
+Disallow: /customer/
+Disallow: /admin/
+Disallow: /venue/
+Disallow: /reset-password
+
+# Public pages
+Allow: /
+Allow: /login
