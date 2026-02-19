@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
-import GreetingCard from './GreetingCard'
 import MessageCardStack from './MessageCardStack'
 import ImpersonationBanner from '@/components/ImpersonationBanner'
 import PasswordResetModal from '@/components/PasswordResetModal'
@@ -888,22 +887,34 @@ function CustomerDashboardContent() {
               </h1>
             )
           })()}
+          {/* Inline greeting status — subtle footnote, only after messages exist or event has passed */}
+          {event && (() => {
+            const hasMessages = activeMessageCount > 0
+            const eventPassed = event.event_date ? new Date(event.event_date + 'T23:59:59') < new Date() : false
+            if (!hasMessages && !eventPassed) return null
+            const hasCustom = !!event.greeting_audio_url
+            const hasAi = !!event.ai_greeting_audio_url
+            if (!hasCustom && !hasAi) return null
+            return (
+              <Link
+                href="/customer/settings"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+                  fontSize: '0.8rem', color: '#9a9a9a', textDecoration: 'none',
+                  marginTop: '0.4rem', lineHeight: 1,
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
+              >
+                <Mic size={12} style={{ color: '#9a9a9a', flexShrink: 0 }} />
+                {hasCustom ? 'Custom greeting active' : 'AI greeting active'}
+              </Link>
+            )
+          })()}
           <p className="text-sage-dark mt-2">
             {activeMessageCount} message{activeMessageCount !== 1 ? 's' : ''} from your special day
           </p>
         </div>
-
-        {/* Greeting Card - shown as green bar only when messages exist */}
-        {event && activeMessageCount > 0 && (
-          <div className="mb-6">
-            <GreetingCard
-              eventId={event.id}
-              greetingAudioUrl={event.greeting_audio_url}
-              greetingText={event.greeting_text}
-              onUpdate={loadMessages}
-            />
-          </div>
-        )}
 
         {/* Filter Bar - hidden when no messages */}
         {activeMessageCount > 0 && <div className="mb-6">
