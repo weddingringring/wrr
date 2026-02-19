@@ -14,6 +14,7 @@ interface Phone {
   color: string
   model: string
   status: string
+  venue_id: string | null
   venue: { name: string } | null
   created_at: string
 }
@@ -21,12 +22,13 @@ interface Phone {
 export default function AdminPhonesPage() {
   const [phones, setPhones] = useState<Phone[]>([])
   const [loading, setLoading] = useState(true)
-  const [showAddModal, setShowAddModal] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editingPhone, setEditingPhone] = useState<Phone | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
-  
+
   useEffect(() => { loadPhones() }, [])
-  
+
   const loadPhones = async () => {
     try {
       const { data, error } = await supabase
@@ -38,6 +40,10 @@ export default function AdminPhonesPage() {
     } catch (error) { console.error('Error loading phones:', error) }
     finally { setLoading(false) }
   }
+
+  const openAdd = () => { setEditingPhone(null); setModalOpen(true) }
+  const openEdit = (phone: Phone) => { setEditingPhone(phone); setModalOpen(true) }
+  const closeModal = () => { setModalOpen(false); setEditingPhone(null) }
 
   const filteredPhones = phones.filter(p => {
     if (statusFilter !== 'all' && p.status !== statusFilter) return false
@@ -52,7 +58,7 @@ export default function AdminPhonesPage() {
     }
     return true
   })
-  
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#F6F5F3' }}>
@@ -63,11 +69,11 @@ export default function AdminPhonesPage() {
       </div>
     )
   }
-  
+
   return (
     <div className="min-h-screen" style={{ background: '#F6F5F3' }}>
       <AdminHeader currentPage="phones" />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Title + Action */}
         <div className="flex justify-between items-center mb-6">
@@ -76,7 +82,7 @@ export default function AdminPhonesPage() {
             <p style={{ fontSize: "0.8125rem", color: "#888", marginTop: "0.25rem" }}>Manage physical phone devices</p>
           </div>
           <button
-            onClick={() => setShowAddModal(true)}
+            onClick={openAdd}
             className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
             style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem', border: 'none', cursor: 'pointer' }}
           >
@@ -136,7 +142,7 @@ export default function AdminPhonesPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Phones Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden" style={{ border: "1px solid #E8E6E2" }}>
           {filteredPhones.length === 0 ? (
@@ -144,7 +150,7 @@ export default function AdminPhonesPage() {
               <p style={{ fontSize: "1rem", color: "#999", marginBottom: "0.5rem" }}>No phones in inventory</p>
               <p style={{ fontSize: "0.8125rem", color: "#bbb", marginBottom: "1.5rem" }}>Add your first phone to start tracking inventory</p>
               <button
-                onClick={() => setShowAddModal(true)}
+                onClick={openAdd}
                 className="inline-flex items-center gap-2 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition"
                 style={{ padding: '0.75rem 1.5rem', fontSize: '0.9375rem', border: 'none', cursor: 'pointer' }}
               >
@@ -184,7 +190,7 @@ export default function AdminPhonesPage() {
                         <div className="font-mono" style={{ fontSize: '0.8125rem', color: '#333' }}>{phone.sim_number}</div>
                         <div style={{ fontSize: '0.8125rem', color: '#888' }}>{phone.sim_provider}</div>
                       </td>
-                      <td className="px-6 py-3" style={{ fontSize: '0.8125rem', color: '#555' }}>{phone.venue?.name || '—'}</td>
+                      <td className="px-6 py-3" style={{ fontSize: '0.8125rem', color: '#555' }}>{phone.venue?.name || '\u2014'}</td>
                       <td className="px-6 py-3">
                         <span style={{
                           display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: '999px',
@@ -196,7 +202,9 @@ export default function AdminPhonesPage() {
                         </span>
                       </td>
                       <td className="px-6 py-3 text-right">
-                        <button className="text-deep-green hover:text-deep-green-dark cursor-pointer"
+                        <button
+                          onClick={() => openEdit(phone)}
+                          className="text-deep-green hover:text-deep-green-dark cursor-pointer"
                           style={{ background: 'none', border: 'none', padding: 0, fontSize: '0.8125rem', fontWeight: 600 }}>
                           Edit
                         </button>
@@ -209,48 +217,82 @@ export default function AdminPhonesPage() {
           )}
         </div>
       </div>
-      
-      {showAddModal && (
-        <AddPhoneModal
-          onClose={() => setShowAddModal(false)}
-          onSuccess={() => { setShowAddModal(false); loadPhones() }}
+
+      {modalOpen && (
+        <PhoneModal
+          phone={editingPhone}
+          onClose={closeModal}
+          onSuccess={() => { closeModal(); loadPhones() }}
         />
       )}
     </div>
   )
 }
 
-function AddPhoneModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () => void }) {
+/* === Unified Add/Edit Phone Modal === */
+function PhoneModal({ phone, onClose, onSuccess }: { phone: Phone | null, onClose: () => void, onSuccess: () => void }) {
+  const isEdit = !!phone
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [venues, setVenues] = useState<{ id: string; name: string }[]>([])
   const [formData, setFormData] = useState({
-    serialNumber: '', imei: '', simNumber: '', simProvider: 'EE',
-    color: 'Pink', model: 'Opis 60s Mobile', status: 'available'
+    serialNumber: phone?.serial_number || '',
+    imei: phone?.imei || '',
+    simNumber: phone?.sim_number || '',
+    simProvider: phone?.sim_provider || 'EE',
+    color: phone?.color || 'Pink',
+    model: phone?.model || 'Opis 60s Mobile',
+    status: phone?.status || 'available',
+    venueId: phone?.venue_id || ''
   })
-  
+
+  useEffect(() => {
+    supabase.from('venues').select('id, name').eq('is_active', true).order('name')
+      .then(({ data }) => setVenues(data || []))
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
     try {
-      const { error } = await supabase
-        .from('phones')
-        .insert({
-          serial_number: formData.serialNumber, imei: formData.imei,
-          sim_number: formData.simNumber, sim_provider: formData.simProvider,
-          color: formData.color, model: formData.model, status: formData.status
-        })
-      if (error) throw error
+      const payload = {
+        serial_number: formData.serialNumber,
+        imei: formData.imei,
+        sim_number: formData.simNumber,
+        sim_provider: formData.simProvider,
+        color: formData.color,
+        model: formData.model,
+        status: formData.status,
+        venue_id: formData.venueId || null
+      }
+
+      if (isEdit) {
+        const { error: updateErr } = await supabase.from('phones').update(payload).eq('id', phone!.id)
+        if (updateErr) throw updateErr
+      } else {
+        const { error: insertErr } = await supabase.from('phones').insert(payload)
+        if (insertErr) throw insertErr
+      }
       onSuccess()
-    } catch (error) { console.error('Error adding phone:', error); alert('Failed to add phone') }
-    finally { setLoading(false) }
+    } catch (err: any) {
+      console.error('Phone save error:', err)
+      setError(err.message || 'Failed to save phone')
+    } finally {
+      setLoading(false)
+    }
   }
-  
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6" style={{ borderBottom: '1px solid #E8E6E2' }}>
-          <h2 className="font-serif text-2xl" style={{ color: '#111' }}>Add New Phone</h2>
+          <h2 className="font-serif text-2xl" style={{ color: '#111' }}>{isEdit ? 'Edit Phone' : 'Add New Phone'}</h2>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {error && (
+            <div style={{ padding: '0.625rem 0.875rem', background: 'rgba(180,60,60,0.06)', border: '1px solid rgba(180,60,60,0.15)', borderRadius: '0.375rem', color: '#a33', fontSize: '0.8125rem' }}>{error}</div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Serial Number *</label>
@@ -291,6 +333,27 @@ function AddPhoneModal({ onClose, onSuccess }: { onClose: () => void, onSuccess:
                 onChange={(e) => setFormData({...formData, model: e.target.value})}
                 className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }} placeholder="Opis 60s Mobile" />
             </div>
+            <div>
+              <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Status</label>
+              <select value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }}>
+                <option value="available">Available</option>
+                <option value="in_use">In Use</option>
+                <option value="maintenance">Maintenance</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: "0.8125rem", fontWeight: 500, color: "#555", marginBottom: "0.375rem", display: "block" }}>Assigned Venue</label>
+              <select value={formData.venueId}
+                onChange={(e) => setFormData({...formData, venueId: e.target.value})}
+                className="w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: "1px solid #E8E6E2" }}>
+                <option value="">Unassigned</option>
+                {venues.map(v => (
+                  <option key={v.id} value={v.id}>{v.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="flex gap-4 pt-4">
             <button type="button" onClick={onClose}
@@ -301,7 +364,7 @@ function AddPhoneModal({ onClose, onSuccess }: { onClose: () => void, onSuccess:
             <button type="submit" disabled={loading}
               className="flex-1 py-3 bg-deep-green text-white rounded-lg font-medium hover:bg-deep-green-dark transition disabled:opacity-50"
               style={{ border: 'none', cursor: 'pointer' }}>
-              {loading ? 'Adding...' : 'Add Phone'}
+              {loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Add Phone'}
             </button>
           </div>
         </form>
