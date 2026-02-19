@@ -44,7 +44,7 @@ export default function GuestAlbumPage({ params }: { params: { code: string } })
       try {
         const res = await fetch(`/api/share/${params.code}`)
         if (!res.ok) {
-          setError(res.status === 404 ? 'album' : 'error')
+          setError(res.status === 404 ? 'album' : res.status === 410 ? 'expired' : 'error')
           return
         }
         const data = await res.json()
@@ -136,11 +136,13 @@ export default function GuestAlbumPage({ params }: { params: { code: string } })
           border: '1px solid rgba(180,165,140,0.15)',
         }}>
           <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.15rem', color: '#2c2418', marginBottom: '0.75rem' }}>
-            {error === 'album' ? 'Album not found' : 'Something went wrong'}
+            {error === 'album' ? 'Album not found' : error === 'expired' ? 'Access key expired' : 'Something went wrong'}
           </p>
           <p style={{ fontSize: '0.8rem', color: '#8a7e6c', lineHeight: 1.6 }}>
             {error === 'album'
               ? 'This link may have expired or the key may have been changed.'
+              : error === 'expired'
+              ? 'This access key is no longer valid. Please ask the couple for a new one.'
               : 'Please try again in a moment.'}
           </p>
         </div>
