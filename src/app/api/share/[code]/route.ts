@@ -133,7 +133,11 @@ export async function GET(
     }
 
     // Fetch shared, non-deleted messages
-    const { data: messages, error: msgError } = await supabaseAdmin
+    // Try with is_shared filter first; fall back to all messages if column doesn't exist yet
+    let messages: any[] | null = null
+    let msgError: any = null
+
+    const { data: sharedMessages, error: sharedError } = await supabaseAdmin
       .from('messages')
       .select(`
         id,
@@ -152,6 +156,34 @@ export async function GET(
       .eq('is_deleted', false)
       .eq('is_shared', true)
       .order('created_at', { ascending: true })
+
+    if (sharedError && (sharedError.message?.includes('is_shared') || sharedError.code === '42703')) {
+      // Column doesn't exist yet — fall back to all non-deleted messages
+      console.warn('is_shared column not found, returning all messages')
+      const { data: allMessages, error: allError } = await supabaseAdmin
+        .from('messages')
+        .select(`
+          id,
+          caller_name,
+          duration,
+          recording_url,
+          enhanced_recording_url,
+          guest_photo_url,
+          tags,
+          is_favorite,
+          is_favorited,
+          recorded_at,
+          created_at
+        `)
+        .eq('event_id', event.id)
+        .eq('is_deleted', false)
+        .order('created_at', { ascending: true })
+      messages = allMessages
+      msgError = allError
+    } else {
+      messages = sharedMessages
+      msgError = sharedError
+    }
 
     if (msgError) {
       console.error('Error loading shared messages:', msgError)
