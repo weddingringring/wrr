@@ -24,6 +24,19 @@ async function getAuthUser(request: NextRequest) {
   return user
 }
 
+// Helper: resolve the target user ID (supports developer impersonation via viewAs)
+async function resolveTargetUserId(user: any, viewAs: string | null): Promise<string> {
+  if (!viewAs) return user.id
+  // Verify the authenticated user is a developer
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+  if (profile?.role === 'developer') return viewAs
+  return user.id
+}
+
 // GET: retrieve current share code for the authenticated user's event
 export async function GET(request: NextRequest) {
   try {
@@ -32,10 +45,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const viewAs = request.nextUrl.searchParams.get('viewAs')
+    const targetUserId = await resolveTargetUserId(user, viewAs)
+
     const { data: event, error } = await supabaseAdmin
       .from('events')
       .select('share_code, share_code_created_at')
-      .eq('customer_user_id', user.id)
+      .eq('customer_user_id', targetUserId)
       .single()
 
     if (error || !event) {
@@ -67,13 +83,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { action } = body // 'generate' | 'revoke'
+    const { action, viewAs } = body // action: 'generate' | 'revoke'
+
+    const targetUserId = await resolveTargetUserId(user, viewAs || null)
 
     // Find the user's event
     const { data: event, error: eventError } = await supabaseAdmin
       .from('events')
       .select('id, share_code')
-      .eq('customer_user_id', user.id)
+      .eq('customer_user_id', targetUserId)
       .single()
 
     if (eventError || !event) {
