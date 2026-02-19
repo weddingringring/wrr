@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getExpiryDate } from '@/lib/share-security'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -62,11 +63,25 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ shareCode: null, sharing: false })
     }
 
+    // Try to get expiry info (defensive if column doesn't exist yet)
+    let expiresAt: string | null = null
+    try {
+      const { data: expiryData } = await supabaseAdmin
+        .from('events')
+        .select('share_code_expires_at')
+        .eq('customer_user_id', targetUserId)
+        .single()
+      expiresAt = expiryData?.share_code_expires_at || null
+    } catch {
+      // Column may not exist yet
+    }
+
     return NextResponse.json({
       shareCode: event.share_code,
       shareCodeFormatted: `${event.share_code.slice(0, 4)} ${event.share_code.slice(4)}`,
       sharing: true,
-      createdAt: event.share_code_created_at
+      createdAt: event.share_code_created_at,
+      expiresAt,
     })
   } catch (error) {
     console.error('Share GET error:', error)
@@ -105,6 +120,11 @@ export async function POST(request: NextRequest) {
         .update({ share_code: null, share_code_created_at: null })
         .eq('id', event.id)
 
+      // Also try clearing expires_at if column exists
+      try {
+        await supabaseAdmin.from('events').update({ share_code_expires_at: null }).eq('id', event.id)
+      } catch { /* column may not exist yet */ }
+
       if (updateError) {
         console.error('Error revoking share code:', updateError)
         return NextResponse.json({ error: 'Failed to revoke share code' }, { status: 500 })
@@ -120,21 +140,43 @@ export async function POST(request: NextRequest) {
     while (attempts < MAX_ATTEMPTS) {
       const code = generateCode()
 
-      const { data: updated, error: updateError } = await supabaseAdmin
+      // Try with expiry first, fall back without if column doesn't exist
+      let updated: any = null
+      let updateError: any = null
+
+      const updatePayload: any = {
+        share_code: code,
+        share_code_created_at: new Date().toISOString(),
+      }
+
+      // First try with expiry column
+      const result1 = await supabaseAdmin
         .from('events')
-        .update({
-          share_code: code,
-          share_code_created_at: new Date().toISOString()
-        })
+        .update({ ...updatePayload, share_code_expires_at: getExpiryDate(30) })
         .eq('id', event.id)
-        .select('share_code')
+        .select('share_code, share_code_expires_at')
         .single()
+
+      if (result1.error && (result1.error.message?.includes('share_code_expires_at') || result1.error.code === '42703')) {
+        // Column doesn't exist — retry without it
+        const result2 = await supabaseAdmin
+          .from('events')
+          .update(updatePayload)
+          .eq('id', event.id)
+          .select('share_code')
+          .single()
+        updated = result2.data
+        updateError = result2.error
+      } else {
+        updated = result1.data
+        updateError = result1.error
+      }
 
       if (!updateError && updated) {
         return NextResponse.json({
           shareCode: updated.share_code,
-          // Formatted for display: "A7KF 9M2X"
-          shareCodeFormatted: `${updated.share_code.slice(0, 4)} ${updated.share_code.slice(4)}`
+          shareCodeFormatted: `${updated.share_code.slice(0, 4)} ${updated.share_code.slice(4)}`,
+          expiresAt: updated.share_code_expires_at || null,
         })
       }
 
