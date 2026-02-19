@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { Copy, Check, X } from 'lucide-react'
 
 interface MessageSharePopoverProps {
@@ -98,17 +99,52 @@ export default function MessageSharePopover({
     ? shareUrl.replace(/^https?:\/\//, '').split('?')[0]
     : ''
 
-  return (
+  // Compute fixed position from anchor element
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null)
+
+  const updatePosition = useCallback(() => {
+    if (!anchorRef.current) return
+    const rect = anchorRef.current.getBoundingClientRect()
+    const popWidth = 320
+    const margin = 8
+
+    // Position below the anchor, aligned to right edge
+    let left = rect.right - popWidth
+    // Keep on screen
+    if (left < margin) left = margin
+    if (left + popWidth > window.innerWidth - margin) left = window.innerWidth - popWidth - margin
+
+    let top = rect.bottom + 8
+    // If not enough room below, put above
+    if (top + 300 > window.innerHeight) {
+      top = rect.top - 8 // will be adjusted after render
+    }
+
+    setPos({ top, left })
+  }, [anchorRef])
+
+  useEffect(() => {
+    updatePosition()
+    window.addEventListener('scroll', updatePosition, true)
+    window.addEventListener('resize', updatePosition)
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true)
+      window.removeEventListener('resize', updatePosition)
+    }
+  }, [updatePosition])
+
+  if (!pos) return null
+
+  const popover = (
     <div
       ref={popoverRef}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
       style={{
-        position: 'absolute',
-        right: 0,
-        top: '100%',
-        marginTop: '8px',
-        zIndex: 50,
+        position: 'fixed',
+        top: pos.top,
+        left: pos.left,
+        zIndex: 9999,
         width: '320px',
         borderRadius: '14px',
         padding: '1.25rem',
@@ -255,4 +291,6 @@ export default function MessageSharePopover({
       </p>
     </div>
   )
+
+  return createPortal(popover, document.body)
 }
