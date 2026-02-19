@@ -90,38 +90,74 @@ export async function purchaseTwilioNumber(
       }
     }
 
-    // Search for available numbers
-    const availableNumbers = await twilioClient
+    // Search for available numbers in the venue's country
+    let availableNumbers = await twilioClient
       .availablePhoneNumbers(countryCode)
       .local
       .list({ limit: 5 })
 
+    // ── FALLBACK: If no numbers available (or country needs regulatory setup),
+    //    fall back to GB numbers. Most mobile plans include UK calls.
+    //    See docs/TWILIO_COUNTRY_SUPPORT.md for how to enable per-country numbers.
+    let actualCountryCode = countryCode
+    if ((!availableNumbers || availableNumbers.length === 0) && countryCode !== 'GB') {
+      console.warn(`No numbers available in ${countryCode} — falling back to GB`)
+      availableNumbers = await twilioClient
+        .availablePhoneNumbers('GB')
+        .local
+        .list({ limit: 5 })
+      actualCountryCode = 'GB'
+    }
+
     if (!availableNumbers || availableNumbers.length === 0) {
-      throw new Error(`No available numbers in ${countryCode}`)
+      throw new Error(`No available numbers in ${countryCode} or GB fallback`)
     }
 
-    // Prepare purchase parameters
-    const purchaseParams: any = {
-      phoneNumber: availableNumbers[0].phoneNumber,
-      voiceUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/voice`,
-      voiceMethod: 'POST',
-      statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/status`,
-      statusCallbackMethod: 'POST',
-      friendlyName: `WRR Event ${eventId}`
+    // ── Attempt purchase, with GB fallback on regulatory/address failures ──
+    let purchased: any
+    const attemptPurchase = async (numbers: any[], cc: string) => {
+      const params: any = {
+        phoneNumber: numbers[0].phoneNumber,
+        voiceUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/voice`,
+        voiceMethod: 'POST',
+        statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/twilio/status`,
+        statusCallbackMethod: 'POST',
+        friendlyName: `WRR Event ${eventId}`
+      }
+
+      // Add regulatory bundle if configured
+      // Country-specific first (e.g. TWILIO_REGULATORY_BUNDLE_SID_IE), then generic
+      const bundleSid = process.env[`TWILIO_REGULATORY_BUNDLE_SID_${cc}`]
+        || process.env.TWILIO_REGULATORY_BUNDLE_SID
+      if (bundleSid) params.bundleSid = bundleSid
+
+      // Add address if configured
+      const addressSid = process.env[`TWILIO_ADDRESS_SID_${cc}`]
+        || process.env.TWILIO_ADDRESS_SID
+      if (addressSid) params.addressSid = addressSid
+
+      return twilioClient.incomingPhoneNumbers.create(params)
     }
 
-    // Add regulatory bundle if configured (required for UK and many countries)
-    if (process.env.TWILIO_REGULATORY_BUNDLE_SID) {
-      purchaseParams.bundleSid = process.env.TWILIO_REGULATORY_BUNDLE_SID
+    try {
+      purchased = await attemptPurchase(availableNumbers, actualCountryCode)
+    } catch (purchaseError: any) {
+      // If purchase failed for a non-GB country, retry with GB numbers
+      if (actualCountryCode !== 'GB') {
+        console.warn(`Purchase failed for ${actualCountryCode}: ${purchaseError.message} — retrying with GB`)
+        const gbNumbers = await twilioClient
+          .availablePhoneNumbers('GB')
+          .local
+          .list({ limit: 5 })
+        if (!gbNumbers || gbNumbers.length === 0) {
+          throw new Error(`Purchase failed for ${countryCode} and no GB numbers available`)
+        }
+        actualCountryCode = 'GB'
+        purchased = await attemptPurchase(gbNumbers, 'GB')
+      } else {
+        throw purchaseError
+      }
     }
-
-    // Add address if configured (required for UK local numbers)
-    if (process.env.TWILIO_ADDRESS_SID) {
-      purchaseParams.addressSid = process.env.TWILIO_ADDRESS_SID
-    }
-
-    // Purchase number
-    const purchased = await twilioClient.incomingPhoneNumbers.create(purchaseParams)
 
     console.log(`✓ Purchased ${purchased.phoneNumber} for event ${eventId}`)
 
@@ -203,7 +239,9 @@ export async function purchaseTwilioNumber(
     await logInfo('phone-purchase', 'Number purchased successfully', {
       eventId: eventId,
       phoneNumber: purchased.phoneNumber,
-      countryCode: countryCode
+      requestedCountry: countryCode,
+      actualCountry: actualCountryCode,
+      usedFallback: actualCountryCode !== countryCode
     })
 
     return {
