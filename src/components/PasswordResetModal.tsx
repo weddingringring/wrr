@@ -31,11 +31,22 @@ export default function PasswordResetModal({ onComplete }: PasswordResetModalPro
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { setChecking(false); return }
 
+      // Skip password reset when developer is impersonating (viewAs in URL)
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search)
+        if (params.get('viewAs')) { setChecking(false); return }
+      }
+
+      // Also skip if the logged-in user is a developer/admin (they don't need resets)
       const { data: profile } = await supabase
         .from('profiles')
-        .select('password_reset_required')
+        .select('password_reset_required, role')
         .eq('id', user.id)
         .single()
+
+      if (profile?.role === 'developer' || profile?.role === 'admin') {
+        setChecking(false); return
+      }
 
       if (profile?.password_reset_required) {
         setVisible(true)
