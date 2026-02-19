@@ -9,11 +9,6 @@ interface VenueInfo {
   name: string
   logoUrl: string | null
   slug: string
-  event: {
-    partner1FirstName: string | null
-    partner2FirstName: string | null
-    eventType: string | null
-  } | null
 }
 
 interface ValidatedEvent {
@@ -91,6 +86,8 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
         setTimeout(() => {
           router.push(`/guest/${data.code}`)
         }, 2200)
+      } else if (res.status === 410) {
+        setError("This access key has expired. Please ask the couple for a new one.")
       } else {
         setError("That key doesn\u2019t look quite right \u2014 please check and try again.")
       }
@@ -126,10 +123,8 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
     return `You\u2019re invited to listen to this ${eventLabel} audio guestbook`
   }
 
-  // Initial headline from venue event data (before key entry)
-  const initialHeadline = venue?.event
-    ? buildHeadline(venue.event.partner1FirstName, venue.event.partner2FirstName, venue.event.eventType)
-    : 'You\u2019re invited to listen to an audio guestbook'
+  // Initial headline is generic (names only revealed after key validation)
+  const initialHeadline = 'You\u2019re invited to listen to an audio guestbook'
 
   // --- Loading ---
   if (loading) {
