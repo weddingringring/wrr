@@ -14,6 +14,7 @@ interface Venue {
   owner_id: string
   name: string
   city: string
+  country_code: string
   primary_contact_name: string
   primary_contact_email: string
   subscription_type: string
@@ -21,6 +22,9 @@ interface Venue {
   is_active: boolean
   created_at: string
 }
+
+const countryFlag = (code?: string) =>
+  code ? code.toUpperCase().split('').map(c => String.fromCodePoint(127397 + c.charCodeAt(0))).join('') : ''
 
 export default function AdminVenuesPage() {
   const [venues, setVenues] = useState<Venue[]>([])
@@ -196,7 +200,7 @@ export default function AdminVenuesPage() {
                           {venue.subscription_type === 'trial' && 'Trial'}
                         </div>
                       </td>
-                      <td className="px-6 py-3" style={{ fontSize: '0.8125rem', color: '#555' }}>{venue.city || '—'}</td>
+                      <td className="px-6 py-3" style={{ fontSize: '0.8125rem', color: '#555' }}>{countryFlag(venue.country_code)} {venue.city || '—'}</td>
                       <td className="px-6 py-3">
                         <div style={{ fontSize: '0.8125rem', color: '#333' }}>{venue.primary_contact_name || '—'}</div>
                         <div style={{ fontSize: '0.6875rem', color: '#bbb' }}>{venue.primary_contact_email || '—'}</div>
