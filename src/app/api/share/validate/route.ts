@@ -27,10 +27,10 @@ function isRateLimited(ip: string): boolean {
 // Clean stale entries periodically
 setInterval(() => {
   const cutoff = Date.now() - 3_600_000
-  for (const [ip, entry] of rateLimitMap.entries()) {
+  Array.from(rateLimitMap.entries()).forEach(([ip, entry]) => {
     entry.hour = entry.hour.filter(t => t > cutoff)
     if (entry.hour.length === 0) rateLimitMap.delete(ip)
-  }
+  })
 }, 600_000)
 
 export async function POST(request: NextRequest) {
