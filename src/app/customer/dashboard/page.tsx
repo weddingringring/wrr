@@ -98,6 +98,7 @@ function CustomerDashboardContent() {
   const [shareLinkCopied, setShareLinkCopied] = useState(false)
   const [shareConfirmRefresh, setShareConfirmRefresh] = useState(false)
   const [shareJustGenerated, setShareJustGenerated] = useState(false)
+  const [shareExpiresAt, setShareExpiresAt] = useState<string | null>(null)
   const [shareVisibilityFeedback, setShareVisibilityFeedback] = useState<Record<string, string>>({})
   const sharePopoverRef = useRef<HTMLDivElement>(null)
   const shareButtonRef = useRef<HTMLButtonElement>(null)
@@ -767,6 +768,7 @@ function CustomerDashboardContent() {
 
   // ── Sharing functions ──
   const loadShareCode = async () => {
+    setShareLoading(true)
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return
@@ -778,7 +780,9 @@ function CustomerDashboardContent() {
       const data = await res.json()
       setShareCode(data.shareCode || null)
       setShareCodeFormatted(data.shareCodeFormatted || null)
+      setShareExpiresAt(data.expiresAt || null)
     } catch (err) { console.error('Error loading share code:', err) }
+    finally { setShareLoading(false) }
   }
 
   const generateShareCode = async () => {
@@ -796,6 +800,7 @@ function CustomerDashboardContent() {
       const data = await res.json()
       setShareCode(data.shareCode)
       setShareCodeFormatted(data.shareCodeFormatted)
+      setShareExpiresAt(data.expiresAt || null)
       setShareConfirmRefresh(false)
       setShareJustGenerated(true)
       setTimeout(() => setShareJustGenerated(false), 3000)
@@ -1064,7 +1069,14 @@ function CustomerDashboardContent() {
                 }}
               >
                 {!shareCode ? (
-                  /* ── State 1: No key yet ── */
+                  /* ── State 1: No key yet (or loading) ── */
+                  shareLoading ? (
+                    <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+                      <div style={{ width: '1.5rem', height: '1.5rem', border: '2px solid rgba(0,0,0,0.08)', borderTopColor: '#4a6b5a', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 0.75rem' }} />
+                      <p style={{ fontSize: '0.8rem', color: '#8a7e6c' }}>Checking&hellip;</p>
+                      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+                    </div>
+                  ) : (
                   <>
                     <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.15rem', color: '#2c2418', marginBottom: '0.75rem' }}>
                       Share this album
@@ -1079,13 +1091,14 @@ function CustomerDashboardContent() {
                         width: '100%', padding: '0.7rem 1rem', borderRadius: '0.5rem',
                         background: '#3D5A4C', color: '#f5f2ec', border: 'none',
                         fontSize: '0.875rem', fontWeight: 500, letterSpacing: '0.01em',
-                        cursor: shareLoading ? 'wait' : 'pointer',
-                        opacity: shareLoading ? 0.7 : 1, transition: 'opacity 0.15s',
+                        cursor: 'pointer',
+                        transition: 'opacity 0.15s',
                       }}
                     >
-                      {shareLoading ? 'Creating\u2026' : 'Create Access Key'}
+                      Create Access Key
                     </button>
                   </>
+                  )
                 ) : (
                   /* ── State 2: Key exists ── */
                   <>
@@ -1174,6 +1187,16 @@ function CustomerDashboardContent() {
                     <p style={{ fontSize: '0.7rem', color: '#8a7e6c', lineHeight: 1.7, marginBottom: '0' }}>
                       Anyone with this key can privately view and listen to the shared messages from your special day.
                     </p>
+
+                    {/* Expiry info */}
+                    {shareExpiresAt && (
+                      <p style={{ fontSize: '0.65rem', color: '#a69d8e', marginTop: '0.5rem', marginBottom: '0' }}>
+                        {new Date(shareExpiresAt) < new Date()
+                          ? 'This key has expired. Replace it to share again.'
+                          : `Expires ${new Date(shareExpiresAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                        }
+                      </p>
+                    )}
 
                     {/* Access link section */}
                     {venue?.slug && (
