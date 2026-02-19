@@ -27,6 +27,7 @@ interface Venue {
   owner_id: string
   name: string
   city: string
+  country_code: string
   primary_contact_name: string
   primary_contact_email: string
   subscription_type: string
@@ -47,9 +48,12 @@ interface Event {
   customer_user_id: string
   twilio_phone_number: string | null
   status: string
-  venue: { name: string; city: string }
+  venue: { name: string; city: string; country_code?: string }
   messages_count: number
 }
+
+const countryFlag = (code?: string) =>
+  code ? code.toUpperCase().split('').map(c => String.fromCodePoint(127397 + c.charCodeAt(0))).join('') : ''
 
 export default function AdminDashboardPage() {
   const router = useRouter()
@@ -140,7 +144,7 @@ export default function AdminDashboardPage() {
     try {
       const { data, error } = await supabase
         .from('events')
-        .select(`*, venue:venues(name, city), messages:messages(count)`)
+        .select(`*, venue:venues(name, city, country_code), messages:messages(count)`)
         .order('event_date', { ascending: false })
       if (error) throw error
       setEvents((data || []).map((e: any) => ({ ...e, messages_count: e.messages[0]?.count || 0 })))
@@ -337,7 +341,9 @@ export default function AdminDashboardPage() {
                       <td className="px-5 py-2">
                         <span style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '0.9375rem' }}>{venue.name}</span>
                       </td>
-                      <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: '#666' }}>{venue.city || '—'}</td>
+                      <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: '#666' }}>
+                        {countryFlag(venue.country_code)} {venue.city || '—'}
+                      </td>
                       <td className="px-5 py-2">
                         <div style={{ fontSize: '0.8125rem', color: '#333' }}>{venue.primary_contact_name || '—'}</div>
                         <div style={{ fontSize: '0.6875rem', color: '#c0c0c0', marginTop: '1px' }}>{venue.primary_contact_email || '—'}</div>
@@ -453,7 +459,7 @@ export default function AdminDashboardPage() {
                         {new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
                       <td className="px-5 py-2">
-                        <div style={{ fontSize: '0.8125rem', color: '#333' }}>{event.venue?.name}</div>
+                        <div style={{ fontSize: '0.8125rem', color: '#333' }}>{countryFlag(event.venue?.country_code)} {event.venue?.name}</div>
                         <div style={{ fontSize: '0.6875rem', color: '#c0c0c0', marginTop: '1px' }}>{event.venue?.city}</div>
                       </td>
                       <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: event.messages_count === 0 ? '#ccc' : event.messages_count >= 10 ? '#3D5A4C' : '#333', fontWeight: event.messages_count >= 10 ? 600 : 400 }}>
