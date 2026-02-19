@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import AdminHeader from '@/components/AdminHeader'
-import { RefreshCw, CheckCircle } from 'lucide-react'
+import { RefreshCw, CheckCircle, Copy, Check } from 'lucide-react'
 
 interface ErrorLog {
   id: string
@@ -21,6 +21,8 @@ export default function AdminErrorLogsPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'unresolved'>('unresolved')
   const [severityFilter, setSeverityFilter] = useState<string>('all')
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [resolvingId, setResolvingId] = useState<string | null>(null)
   
   useEffect(() => { loadLogs() }, [filter, severityFilter])
   
@@ -37,14 +39,41 @@ export default function AdminErrorLogsPage() {
   }
   
   const markResolved = async (id: string) => {
+    setResolvingId(id)
     try {
       const { error } = await supabase
         .from('error_logs')
         .update({ resolved: true, resolved_at: new Date().toISOString() })
         .eq('id', id)
       if (error) throw error
-      loadLogs()
-    } catch (err) { console.error('Error marking resolved:', err) }
+      // Update local state immediately for instant feedback
+      setLogs(prev => prev.map(l => l.id === id ? { ...l, resolved: true } : l))
+      // If filtering unresolved, remove from list after brief delay
+      if (filter === 'unresolved') {
+        setTimeout(() => {
+          setLogs(prev => prev.filter(l => l.id !== id))
+        }, 800)
+      }
+    } catch (err) {
+      console.error('Error marking resolved:', err)
+      alert('Failed to mark as resolved. Check RLS policies on error_logs table.')
+    } finally {
+      setResolvingId(null)
+    }
+  }
+
+  const copyError = async (log: ErrorLog) => {
+    const text = [
+      `[${log.severity.toUpperCase()}] ${log.source}`,
+      `Date: ${new Date(log.created_at).toLocaleString()}`,
+      `Message: ${log.error_message}`,
+      log.context ? `\nContext:\n${JSON.stringify(log.context, null, 2)}` : '',
+      log.error_stack ? `\nStack Trace:\n${log.error_stack}` : ''
+    ].filter(Boolean).join('\n')
+
+    await navigator.clipboard.writeText(text)
+    setCopiedId(log.id)
+    setTimeout(() => setCopiedId(null), 2000)
   }
   
   const getSeverityColor = (severity: string) => {
@@ -70,7 +99,6 @@ export default function AdminErrorLogsPage() {
       <AdminHeader currentPage="errors" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Title */}
         <div className="mb-6">
           <h1 className="font-serif text-3xl" style={{ color: "#111" }}>Error Logs</h1>
         </div>
@@ -119,8 +147,24 @@ export default function AdminErrorLogsPage() {
               return (
               <div key={log.id}
                 className="bg-white rounded-lg shadow-sm p-5"
-                style={{ border: '1px solid #E8E6E2', borderLeft: `4px solid ${sevColor.border}` }}>
-                <div className="flex items-start justify-between mb-3">
+                style={{ border: '1px solid #E8E6E2', borderLeft: `4px solid ${sevColor.border}`, position: 'relative' }}>
+
+                {/* Copy button — top right */}
+                <button
+                  onClick={() => copyError(log)}
+                  title="Copy error details"
+                  style={{
+                    position: 'absolute', top: '0.875rem', right: '0.875rem',
+                    background: 'none', border: '1px solid #E8E6E2', borderRadius: '0.25rem',
+                    cursor: 'pointer', padding: '0.375rem', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', color: copiedId === log.id ? '#3D5A4C' : '#bbb',
+                    transition: 'color 0.15s'
+                  }}
+                >
+                  {copiedId === log.id ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+
+                <div className="flex items-start justify-between mb-3 pr-10">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <span style={{
@@ -144,9 +188,15 @@ export default function AdminErrorLogsPage() {
                   </div>
                   {!log.resolved && (
                     <button onClick={() => markResolved(log.id)}
+                      disabled={resolvingId === log.id}
                       className="ml-4 px-3 py-1.5 text-sm rounded-lg transition"
-                      style={{ border: '1px solid #E8E6E2', cursor: 'pointer', background: '#fff', color: '#555', fontWeight: 500, fontSize: '0.8125rem' }}>
-                      Mark Resolved
+                      style={{
+                        border: '1px solid #E8E6E2', cursor: resolvingId === log.id ? 'wait' : 'pointer',
+                        background: resolvingId === log.id ? 'rgba(61,90,76,0.06)' : '#fff',
+                        color: resolvingId === log.id ? '#3D5A4C' : '#555',
+                        fontWeight: 500, fontSize: '0.8125rem'
+                      }}>
+                      {resolvingId === log.id ? 'Resolving...' : 'Mark Resolved'}
                     </button>
                   )}
                 </div>
