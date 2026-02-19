@@ -45,17 +45,15 @@ export async function POST(request: NextRequest) {
     // 1. Delete analytics_events for this event
     const { count: analyticsCount } = await supabaseAdmin
       .from('analytics_events')
-      .delete()
+      .delete({ count: 'exact' })
       .eq('event_id', eventId)
-      .select('id', { count: 'exact', head: true })
     deletedInfo.analyticsDeleted = analyticsCount || 0
 
     // 2. Delete all messages for this event
     const { count: messageCount } = await supabaseAdmin
       .from('messages')
-      .delete()
+      .delete({ count: 'exact' })
       .eq('event_id', eventId)
-      .select('id', { count: 'exact', head: true })
     deletedInfo.messagesDeleted = messageCount || 0
 
     // 2. Release Twilio number if assigned
