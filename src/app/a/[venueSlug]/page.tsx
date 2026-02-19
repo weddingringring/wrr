@@ -9,6 +9,11 @@ interface VenueInfo {
   name: string
   logoUrl: string | null
   slug: string
+  event: {
+    partner1FirstName: string | null
+    partner2FirstName: string | null
+    eventType: string | null
+  } | null
 }
 
 interface ValidatedEvent {
@@ -123,8 +128,10 @@ export default function VenueAccessPage({ params }: { params: { venueSlug: strin
     return `You\u2019re invited to listen to this ${eventLabel} audio guestbook`
   }
 
-  // Initial headline is generic (names only revealed after key validation)
-  const initialHeadline = 'You\u2019re invited to listen to an audio guestbook'
+  // Initial headline from venue event data (personalised if sharing is active)
+  const initialHeadline = venue?.event
+    ? buildHeadline(venue.event.partner1FirstName, venue.event.partner2FirstName, venue.event.eventType)
+    : 'You\u2019re invited to listen to an audio guestbook'
 
   // --- Loading ---
   if (loading) {
