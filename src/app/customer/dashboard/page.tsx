@@ -1080,36 +1080,31 @@ function CustomerDashboardContent() {
                 ) : (
                   /* ── State 2: Key exists ── */
                   <>
-                    <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.15rem', color: '#2c2418', marginBottom: '1.25rem' }}>
+                    <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.15rem', color: '#2c2418', marginBottom: '1.5rem' }}>
                       Private Access
                     </p>
 
-                    {/* Key label + field */}
-                    <p style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#9a8e7a', marginBottom: '0.4rem' }}>
-                      Access Key
-                    </p>
+                    {/* Key block — printed card feel */}
                     <div style={{
-                      background: '#F0ECE4', borderRadius: '0.5rem',
-                      padding: '1rem 1rem',
-                      textAlign: 'center', marginBottom: '1.25rem',
-                      border: '1px solid rgba(180,165,140,0.2)',
-                      boxShadow: 'inset 0 1px 3px rgba(120,100,70,0.06)',
+                      background: '#EDE8DF', borderRadius: '0.625rem',
+                      padding: '1.15rem 1rem',
+                      textAlign: 'center', marginBottom: '1.5rem',
+                      boxShadow: '0 1px 4px rgba(120,100,70,0.07), 0 2px 8px rgba(120,100,70,0.04)',
                     }}>
-                      <span style={{ fontFamily: "'Courier New', Courier, monospace", fontSize: '1.5rem', fontWeight: 700, letterSpacing: '0.18em', color: '#2c2418' }}>
+                      <span style={{ fontFamily: "'Courier New', Courier, monospace", fontSize: '1.55rem', fontWeight: 700, letterSpacing: '0.22em', color: '#2c2418' }}>
                         {shareCodeFormatted || `${shareCode.slice(0, 4)} ${shareCode.slice(4)}`}
                       </span>
                     </div>
 
-                    {/* Actions row: Copy (primary) + Refresh (text link) */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                    {/* Actions row: Copy (primary) + Replace key (text link) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', marginBottom: '1.5rem' }}>
                       <button
                         onClick={copyShareCode}
                         style={{
-                          padding: '0.5rem 1.25rem', borderRadius: '0.4rem',
-                          background: '#3D5A4C', color: '#f5f2ec', border: 'none',
+                          padding: '0.45rem 1.2rem', borderRadius: '0.45rem',
+                          background: '#4a6b5a', color: '#f5f2ec', border: 'none',
                           fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
                           display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
-                          transition: 'opacity 0.15s',
                         }}
                       >
                         {shareCopied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy Key</>}
@@ -1121,21 +1116,21 @@ function CustomerDashboardContent() {
                           style={{
                             background: 'none', border: 'none', padding: 0, cursor: 'pointer',
                             fontSize: '0.75rem', color: '#9a8e7a', fontWeight: 500,
-                            textDecoration: 'none', transition: 'color 0.15s',
+                            textDecoration: 'none',
                           }}
                           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
                           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
                         >
-                          Refresh key
+                          Replace key
                         </button>
                       )}
                     </div>
 
-                    {/* Refresh confirmation (inline) */}
+                    {/* Replace confirmation (inline) */}
                     {shareConfirmRefresh && (
-                      <div style={{ marginBottom: '1.25rem' }}>
+                      <div style={{ marginBottom: '1.5rem' }}>
                         <p style={{ fontSize: '0.75rem', color: '#8a7e6c', marginBottom: '0.4rem', lineHeight: 1.5 }}>
-                          Refreshing will disable the previous key.
+                          Replacing this key will disable the previous one.
                         </p>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                           <button
@@ -1143,7 +1138,7 @@ function CustomerDashboardContent() {
                             disabled={shareLoading}
                             style={{ background: 'none', border: 'none', padding: 0, cursor: shareLoading ? 'wait' : 'pointer', fontSize: '0.75rem', color: '#a0583c', fontWeight: 600 }}
                           >
-                            {shareLoading ? 'Refreshing\u2026' : 'Refresh'}
+                            {shareLoading ? 'Replacing\u2026' : 'Replace'}
                           </button>
                           <button
                             onClick={() => setShareConfirmRefresh(false)}
@@ -1155,18 +1150,21 @@ function CustomerDashboardContent() {
                       </div>
                     )}
 
-                    {/* Just-generated feedback */}
+                    {/* Just-created feedback */}
                     {shareJustGenerated && (
-                      <p style={{ fontSize: '0.75rem', color: '#3D5A4C', marginBottom: '0.75rem' }}>New key created.</p>
+                      <p style={{ fontSize: '0.75rem', color: '#4a6b5a', marginBottom: '0.75rem' }}>New key created.</p>
                     )}
 
-                    {/* Helper text */}
-                    <p style={{ fontSize: '0.75rem', color: '#9a8e7a', lineHeight: 1.6, marginBottom: '1rem' }}>
-                      Anyone with this key can privately view and listen to the shared messages in this album.
+                    {/* Description */}
+                    <p style={{ fontSize: '0.75rem', color: '#9a8e7a', lineHeight: 1.6, marginBottom: '0' }}>
+                      Anyone with this key can privately view and listen to the shared messages from your day.
                     </p>
 
+                    {/* Editorial divider */}
+                    <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,140,0.22) 20%, rgba(180,165,140,0.22) 80%, transparent 100%)', margin: '1rem 0' }} />
+
                     {/* Visibility summary */}
-                    <div style={{ borderTop: '1px solid rgba(180,165,140,0.18)', paddingTop: '0.875rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.75rem', color: '#8a7e6c' }}>
                         {sharedMessageCount === activeMessageCount
                           ? `Sharing all ${activeMessageCount} message${activeMessageCount !== 1 ? 's' : ''}`
