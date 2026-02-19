@@ -8,6 +8,18 @@ export async function middleware(request: NextRequest) {
     },
   })
 
+  // Prevent search engines from indexing private routes
+  const path = request.nextUrl.pathname
+  if (
+    path.startsWith('/a/') ||
+    path.startsWith('/guest/') ||
+    path.startsWith('/customer/') ||
+    path.startsWith('/admin/') ||
+    path.startsWith('/venue/')
+  ) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive')
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
