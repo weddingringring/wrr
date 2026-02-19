@@ -108,7 +108,8 @@ export async function GET(
         partner_1_first_name,
         partner_2_first_name,
         greeting_audio_url,
-        ai_greeting_audio_url
+        ai_greeting_audio_url,
+        venue_id
       `)
       .eq('share_code', shareCode)
       .single()
@@ -116,6 +117,19 @@ export async function GET(
     if (eventError || !event) {
       // Deliberately vague — don't reveal whether the code was close or not
       return NextResponse.json({ error: 'Album not found' }, { status: 404 })
+    }
+
+    // Fetch venue info for branding
+    let venueInfo: { name: string; logoUrl: string | null } | null = null
+    if (event.venue_id) {
+      const { data: venue } = await supabaseAdmin
+        .from('venues')
+        .select('name, logo_url')
+        .eq('id', event.venue_id)
+        .single()
+      if (venue) {
+        venueInfo = { name: venue.name, logoUrl: venue.logo_url }
+      }
     }
 
     // Fetch shared, non-deleted messages
@@ -185,6 +199,7 @@ export async function GET(
         greetingUrl,
         hasCustomGreeting: !!event.greeting_audio_url
       },
+      venue: venueInfo,
       messages: resolvedMessages,
       messageCount: resolvedMessages.length,
       // Tell client when signed URLs expire so it can auto-refresh
