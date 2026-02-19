@@ -250,36 +250,7 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
 
         {/* Form */}
         <div style={{ padding: '2rem' }}>
-          {error && (
-            <div style={{
-              padding: '1rem',
-              background: '#f8d7da',
-              border: '1px solid #f5c6cb',
-              borderRadius: '0.375rem',
-              color: '#721c24',
-              marginBottom: '1.5rem',
-              fontSize: '0.875rem'
-            }}>
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div style={{
-              padding: '1rem',
-              background: '#d4edda',
-              border: '1px solid #c3e6cb',
-              borderRadius: '0.375rem',
-              color: '#155724',
-              textAlign: 'center',
-              marginBottom: '1.5rem',
-              fontWeight: 500
-            }}>
-              ✓ Venue created successfully! Closing...
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '2rem' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '2rem', opacity: loading ? 0.45 : 1, transition: 'opacity 0.3s' }}>
             {/* Business Information */}
             <div>
               <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem', color: '#1a1a1a' }}>
@@ -745,6 +716,22 @@ export default function VenueCreateModal({ isOpen, onClose, onSuccess }: VenueCr
                 </div>
               </div>
             </div>
+
+            {/* Status Messages — above buttons */}
+            {error && (
+              <div style={{
+                padding: '0.75rem 1rem', background: 'rgba(180,60,60,0.06)',
+                border: '1px solid rgba(180,60,60,0.15)', borderRadius: '0.375rem',
+                color: '#a33', fontSize: '0.8125rem'
+              }}>{error}</div>
+            )}
+            {success && (
+              <div style={{
+                padding: '0.75rem 1rem', background: 'rgba(61,90,76,0.06)',
+                border: '1px solid rgba(61,90,76,0.15)', borderRadius: '0.375rem',
+                color: '#3D5A4C', fontSize: '0.8125rem', fontWeight: 500, textAlign: 'center'
+              }}>✓ Venue created successfully! Closing…</div>
+            )}
 
             {/* Submit Button */}
             <div style={{ 
