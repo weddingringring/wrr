@@ -7,6 +7,7 @@ import Link from 'next/link'
 import GreetingCard from './GreetingCard'
 import MessageCardStack from './MessageCardStack'
 import ImpersonationBanner from '@/components/ImpersonationBanner'
+import PasswordResetModal from '@/components/PasswordResetModal'
 import JSZip from 'jszip'
 import {
   Play, Pause, Heart, Download, Share2, Search,
@@ -2093,6 +2094,9 @@ function CustomerDashboardContent() {
       {showSortMenu && (
         <div className="fixed inset-0 z-0" onClick={() => setShowSortMenu(false)}></div>
       )}
+
+      {/* Forced password reset on first login */}
+      <PasswordResetModal />
     </div>
   )
 }
