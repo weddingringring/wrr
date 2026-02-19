@@ -7,6 +7,8 @@ import {
   Check, X, Image as ImageIcon, Eye, EyeOff
 } from 'lucide-react'
 
+import MessageSharePopover from './MessageSharePopover'
+
 interface Message {
   id: string
   caller_number: string
@@ -39,7 +41,11 @@ interface MessageCardStackProps {
   onUpdateName: (messageId: string, name: string) => void
   onToggleTag: (messageId: string, tag: string) => void
   onDownload: (recordingUrl: string, name: string | null) => void
-  onShare: (recordingUrl: string, name: string | null) => void
+  onShareMessage: (messageId: string, callerName: string | null) => void
+  msgSharePopoverId: string | null
+  onCloseSharePopover: () => void
+  onOpenStoryModal: (messageId: string, callerName: string | null) => void
+  viewAsId?: string | null
   onPhotoUpload: (messageId: string) => void
   onToggleShared: (messageId: string, currentlyShared: boolean) => void
   shareVisibilityFeedback: Record<string, string>
@@ -58,7 +64,11 @@ export default function MessageCardStack({
   onUpdateName,
   onToggleTag,
   onDownload,
-  onShare,
+  onShareMessage,
+  msgSharePopoverId,
+  onCloseSharePopover,
+  onOpenStoryModal,
+  viewAsId,
   onPhotoUpload,
   onToggleShared,
   shareVisibilityFeedback,
@@ -77,6 +87,7 @@ export default function MessageCardStack({
   const [editNameValue, setEditNameValue] = useState('')
   const [showMenu, setShowMenu] = useState(false)
   const [showTags, setShowTags] = useState(false)
+  const shareAnchorRefs = useRef<Record<string, HTMLButtonElement | null>>({})
   const startPos = useRef({ x: 0, y: 0 })
 
   const len = messages.length
@@ -457,7 +468,7 @@ export default function MessageCardStack({
                             <button onClick={() => { onPhotoUpload(msg.id); setShowMenu(false) }} style={{ width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: '14px', color: '#555', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <ImageIcon size={14} /> {msg.guest_photo_url ? 'Change photo' : 'Add photo'}
                             </button>
-                            <button onClick={() => { onShare(msg.recording_url, msg.caller_name); setShowMenu(false) }} style={{ width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: '14px', color: '#555', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button onClick={() => { onShareMessage(msg.id, msg.caller_name); setShowMenu(false) }} style={{ width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: '14px', color: '#555', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <Share2 size={14} /> Share
                             </button>
                             <div style={{ borderTop: '1px solid #eee', margin: '4px 0' }}></div>
@@ -534,9 +545,27 @@ export default function MessageCardStack({
                         <button onClick={(e) => { e.stopPropagation(); onDownload(msg.recording_url, msg.caller_name) }} onPointerDown={(e) => e.stopPropagation()} style={{ padding: '8px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer' }} title="Download">
                           <Download size={16} style={{ color: '#999' }} />
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); onShare(msg.recording_url, msg.caller_name) }} onPointerDown={(e) => e.stopPropagation()} style={{ padding: '8px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer' }} title="Share">
-                          <Share2 size={16} style={{ color: '#999' }} />
-                        </button>
+                        <div style={{ position: 'relative' }}>
+                          <button
+                            ref={(el) => { if (el) shareAnchorRefs.current[msg.id] = el }}
+                            onClick={(e) => { e.stopPropagation(); onShareMessage(msg.id, msg.caller_name) }}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            style={{ padding: '8px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer' }}
+                            title="Share"
+                          >
+                            <Share2 size={16} style={{ color: '#999' }} />
+                          </button>
+                          {msgSharePopoverId === msg.id && (
+                            <MessageSharePopover
+                              messageId={msg.id}
+                              callerName={msg.caller_name}
+                              anchorRef={{ current: shareAnchorRefs.current[msg.id] || null } as React.RefObject<HTMLElement>}
+                              onClose={onCloseSharePopover}
+                              onOpenStoryModal={() => onOpenStoryModal(msg.id, msg.caller_name)}
+                              viewAsId={viewAsId}
+                            />
+                          )}
+                        </div>
                         <button
                           onClick={(e) => { e.stopPropagation(); onToggleShared(msg.id, msg.is_shared !== false) }}
                           onPointerDown={(e) => e.stopPropagation()}
