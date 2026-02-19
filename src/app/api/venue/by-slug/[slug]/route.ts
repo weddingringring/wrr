@@ -35,13 +35,31 @@ export async function GET(
       return NextResponse.json({ error: 'Venue not found' }, { status: 404 })
     }
 
-    // Only return venue branding — no event details (PII protection)
-    // Couple names are only revealed after successful key validation
+    // Fetch event details only if sharing is active (couple opted in)
+    let eventInfo: { partner1FirstName: string | null; partner2FirstName: string | null; eventType: string | null } | null = null
+    const { data: event } = await supabaseAdmin
+      .from('events')
+      .select('partner_1_first_name, partner_2_first_name, event_type')
+      .eq('venue_id', venue.id)
+      .not('share_code', 'is', null)
+      .order('event_date', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (event) {
+      eventInfo = {
+        partner1FirstName: event.partner_1_first_name || null,
+        partner2FirstName: event.partner_2_first_name || null,
+        eventType: event.event_type || null,
+      }
+    }
+
     return NextResponse.json({
       id: venue.id,
       name: venue.name,
       logoUrl: venue.logo_url,
       slug: venue.slug,
+      event: eventInfo,
     })
   } catch (error) {
     console.error('Venue slug lookup error:', error)
