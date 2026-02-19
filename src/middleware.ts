@@ -12,6 +12,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
   if (
     path.startsWith('/a/') ||
+    path.startsWith('/m/') ||
     path.startsWith('/guest/') ||
     path.startsWith('/customer/') ||
     path.startsWith('/admin/') ||
