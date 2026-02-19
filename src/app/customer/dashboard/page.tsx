@@ -769,7 +769,8 @@ function CustomerDashboardContent() {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return
-      const res = await fetch('/api/share/generate', {
+      const url = viewAsId ? `/api/share/generate?viewAs=${viewAsId}` : '/api/share/generate'
+      const res = await fetch(url, {
         headers: { 'Authorization': `Bearer ${session.access_token}` }
       })
       if (!res.ok) return
@@ -788,7 +789,7 @@ function CustomerDashboardContent() {
       const res = await fetch('/api/share/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-        body: JSON.stringify({ action: 'generate' })
+        body: JSON.stringify({ action: 'generate', viewAs: viewAsId || undefined })
       })
       if (!res.ok) throw new Error('Failed to generate')
       const data = await res.json()
