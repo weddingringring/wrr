@@ -8,6 +8,7 @@ import Image from 'next/image'
 import EventCreateModal from '@/components/EventCreateModal'
 import EventDetailsModal from '@/components/EventDetailsModal'
 import ImpersonationBanner from '@/components/ImpersonationBanner'
+import PasswordResetModal from '@/components/PasswordResetModal'
 import { Calendar, CalendarDays, List, Plus, Search, Mic, Settings, LogOut, ChevronUp, ChevronDown, LayoutGrid } from 'lucide-react'
 
 interface Event {
@@ -596,6 +597,9 @@ function VenueDashboardContent() {
         }}
         event={selectedEvent}
       />
+
+      {/* Forced password reset on first login */}
+      <PasswordResetModal />
     </div>
   )
 }
