@@ -18,9 +18,12 @@ interface Event {
   customer_user_id: string
   twilio_phone_number: string | null
   status: string
-  venue: { name: string; city: string }
+  venue: { name: string; city: string; country_code?: string }
   messages_count: number
 }
+
+const countryFlag = (code?: string) =>
+  code ? code.toUpperCase().split('').map(c => String.fromCodePoint(127397 + c.charCodeAt(0))).join('') : ''
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<Event[]>([])
@@ -45,7 +48,7 @@ export default function AdminEventsPage() {
     try {
       const { data, error } = await supabase
         .from('events')
-        .select(`*, venue:venues(name, city), messages:messages(count)`)
+        .select(`*, venue:venues(name, city, country_code), messages:messages(count)`)
         .order('event_date', { ascending: false })
       if (error) throw error
       const eventsWithCount = (data || []).map((event: any) => ({
@@ -209,7 +212,7 @@ export default function AdminEventsPage() {
                         {new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
                       <td className="px-6 py-3">
-                        <div style={{ fontSize: '0.8125rem', color: '#333' }}>{event.venue?.name}</div>
+                        <div style={{ fontSize: '0.8125rem', color: '#333' }}>{countryFlag(event.venue?.country_code)} {event.venue?.name}</div>
                         <div style={{ fontSize: '0.6875rem', color: '#bbb' }}>{event.venue?.city}</div>
                       </td>
                       <td className="px-6 py-3">
