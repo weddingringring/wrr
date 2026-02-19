@@ -8,7 +8,10 @@ import AdminHeader from '@/components/AdminHeader'
 import VenueCreateModal from '@/components/VenueCreateModal'
 import VenueDetailsModal from '@/components/VenueDetailsModal'
 import VenueEditModal from '@/components/VenueEditModal'
-import { Building2, Calendar, Mic, Phone, Plus, Search, ChevronRight, Eye, AlertTriangle, ShieldCheck } from 'lucide-react'
+import AdminEventDetailsModal from '@/components/AdminEventDetailsModal'
+import EventCreateModal from '@/components/EventCreateModal'
+import DeleteConfirmModal from '@/components/DeleteConfirmModal'
+import { Building2, Calendar, Mic, Phone, Plus, Search, ChevronRight, Eye, AlertTriangle, ShieldCheck, UserPlus, Shield, Trash2 } from 'lucide-react'
 
 interface DashboardStats {
   totalVenues: number
@@ -65,6 +68,17 @@ export default function AdminDashboardPage() {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [selectedVenueId, setSelectedVenueId] = useState<string | null>(null)
+  const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false)
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
+  const [eventCreateModalOpen, setEventCreateModalOpen] = useState(false)
+
+  // Admin users state (dev only)
+  const [adminUsers, setAdminUsers] = useState<any[]>([])
+  const [adminUserModalOpen, setAdminUserModalOpen] = useState(false)
+
+  // Delete modal state (dev only)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'event' | 'venue'; id: string; name: string } | null>(null)
 
   // Venues state
   const [venues, setVenues] = useState<Venue[]>([])
@@ -81,6 +95,7 @@ export default function AdminDashboardPage() {
     loadStats()
     loadVenues()
     loadEvents()
+    loadAdminUsers()
   }, [])
 
   const checkAuth = async () => {
@@ -149,6 +164,18 @@ export default function AdminDashboardPage() {
       if (error) throw error
       setEvents((data || []).map((e: any) => ({ ...e, messages_count: e.messages[0]?.count || 0 })))
     } catch (error) { console.error('Error loading events:', error) }
+  }
+
+  const loadAdminUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email, first_name, last_name, role, is_active, created_at, last_login_at')
+        .in('role', ['admin', 'developer'])
+        .order('created_at', { ascending: true })
+      if (error) throw error
+      setAdminUsers(data || [])
+    } catch (error) { console.error('Error loading admin users:', error) }
   }
 
   // Venue filtering
@@ -263,6 +290,14 @@ export default function AdminDashboardPage() {
             <Plus size={16} />
             Add Venue
           </button>
+          <button
+            onClick={() => setEventCreateModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg font-medium transition"
+            style={{ border: '1px solid #3D5A4C', cursor: 'pointer', padding: '0.625rem 1.25rem', fontSize: '0.875rem', background: '#fff', color: '#3D5A4C' }}
+          >
+            <Calendar size={14} />
+            Create Event
+          </button>
           <Link
             href="/admin/phones"
             className="inline-flex items-center gap-1.5 rounded-lg font-medium transition text-sm"
@@ -376,6 +411,17 @@ export default function AdminDashboardPage() {
                           >
                             Edit
                           </button>
+                          {userRole === 'developer' && (
+                            <button
+                              onClick={() => { setDeleteTarget({ type: 'venue', id: venue.id, name: venue.name }); setDeleteModalOpen(true) }}
+                              title="Permanently delete"
+                              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#ccc', display: 'flex' }}
+                              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#a33' }}
+                              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#ccc' }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -447,7 +493,8 @@ export default function AdminDashboardPage() {
                     <tr
                       key={event.id}
                       className="transition-colors"
-                      style={{ borderBottom: '1px solid #E8E6E2', background: idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
+                      style={{ borderBottom: '1px solid #E8E6E2', background: idx % 2 === 1 ? '#FAFAF9' : '#fff', cursor: 'pointer' }}
+                      onClick={() => { setSelectedEventId(event.id); setEventDetailsModalOpen(true) }}
                       onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(61,90,76,0.03)' }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 1 ? '#FAFAF9' : '#fff' }}
                     >
@@ -476,14 +523,25 @@ export default function AdminDashboardPage() {
                         </span>
                       </td>
                       {userRole === 'developer' && (
-                        <td className="px-5 py-2 text-right">
-                          <Link
-                            href={`/customer/dashboard?viewAs=${event.customer_user_id}`}
-                            className="text-sage hover:text-deep-green transition"
-                            title="View as customer"
-                          >
-                            <Eye size={15} />
-                          </Link>
+                        <td className="px-5 py-2 text-right" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-end gap-3">
+                            <Link
+                              href={`/customer/dashboard?viewAs=${event.customer_user_id}`}
+                              className="text-sage hover:text-deep-green transition"
+                              title="View as customer"
+                            >
+                              <Eye size={15} />
+                            </Link>
+                            <button
+                              onClick={() => { setDeleteTarget({ type: 'event', id: event.id, name: getEventDisplayName(event) }); setDeleteModalOpen(true) }}
+                              title="Permanently delete"
+                              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#ccc', display: 'flex' }}
+                              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#a33' }}
+                              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#ccc' }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </td>
                       )}
                     </tr>
@@ -493,6 +551,75 @@ export default function AdminDashboardPage() {
             </div>
           )}
         </div>
+        {/* Admin Users Table — Developer Only */}
+        {userRole === 'developer' && (
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden mt-8" style={{ border: "1px solid #E8E6E2" }}>
+            <div className="px-5 py-4 border-b" style={{ borderColor: '#E8E6E2' }}>
+              <div className="flex items-center justify-between">
+                <h2 className="font-serif text-lg flex items-center gap-2" style={{ color: '#111', fontWeight: 600 }}>
+                  <Shield size={18} className="text-deep-green" />
+                  Admin Users
+                  <span className="font-sans font-normal ml-1" style={{ fontSize: '0.8125rem', color: '#aaa' }}>({adminUsers.length})</span>
+                </h2>
+                <button
+                  onClick={() => setAdminUserModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-lg font-medium transition text-sm"
+                  style={{ padding: '0.5rem 0.875rem', color: '#3D5A4C', border: '1px solid #3D5A4C', background: '#fff', cursor: 'pointer' }}
+                >
+                  <UserPlus size={14} /> Create User
+                </button>
+              </div>
+            </div>
+            {adminUsers.length === 0 ? (
+              <div className="p-8 text-center">
+                <p style={{ color: '#999' }} className="text-sm">No admin users found</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr style={{ background: '#F6F5F3', borderBottom: '1px solid #E8E6E2' }}>
+                      <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Name</th>
+                      <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Email</th>
+                      <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Role</th>
+                      <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Last Login</th>
+                      <th className="px-5 py-2 text-left uppercase tracking-wider" style={{ color: '#777', fontSize: '0.6875rem', fontWeight: 500 }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adminUsers.map((au, idx) => (
+                      <tr key={au.id} style={{ borderBottom: '1px solid #E8E6E2', background: idx % 2 === 1 ? '#FAFAF9' : '#fff' }}>
+                        <td className="px-5 py-2" style={{ fontWeight: 600, color: '#0d0d0d', fontSize: '0.9375rem' }}>
+                          {au.first_name} {au.last_name}
+                        </td>
+                        <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: '#555' }}>{au.email}</td>
+                        <td className="px-5 py-2">
+                          <span style={{
+                            display: 'inline-flex', padding: '2px 10px', borderRadius: '999px',
+                            fontSize: '0.6875rem', fontWeight: 500,
+                            background: au.role === 'developer' ? 'rgba(80,100,180,0.08)' : 'rgba(61,90,76,0.08)',
+                            color: au.role === 'developer' ? '#4a5a8a' : '#3D5A4C',
+                          }}>{au.role.charAt(0).toUpperCase() + au.role.slice(1)}</span>
+                        </td>
+                        <td className="px-5 py-2" style={{ fontSize: '0.8125rem', color: '#888' }}>
+                          {au.last_login_at ? new Date(au.last_login_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : 'Never'}
+                        </td>
+                        <td className="px-5 py-2">
+                          <span style={{
+                            display: 'inline-flex', padding: '2px 10px', borderRadius: '999px',
+                            fontSize: '0.6875rem', fontWeight: 500,
+                            background: au.is_active ? 'rgba(61,90,76,0.08)' : 'rgba(200,100,100,0.08)',
+                            color: au.is_active ? '#3D5A4C' : '#b05050',
+                          }}>{au.is_active ? 'Active' : 'Inactive'}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -514,6 +641,39 @@ export default function AdminDashboardPage() {
           onClose={() => { setEditModalOpen(false); setSelectedVenueId(null) }}
           venueId={selectedVenueId}
           onSuccess={() => { loadVenues(); loadStats() }}
+        />
+      )}
+
+      <AdminEventDetailsModal
+        isOpen={eventDetailsModalOpen}
+        onClose={() => { setEventDetailsModalOpen(false); setSelectedEventId(null) }}
+        eventId={selectedEventId}
+        userRole={userRole}
+        onSuccess={() => { loadEvents(); loadStats() }}
+      />
+
+      <EventCreateModal
+        isOpen={eventCreateModalOpen}
+        onClose={() => setEventCreateModalOpen(false)}
+        onSuccess={() => { loadEvents(); loadStats() }}
+        venues={venues.filter(v => v.is_active).map(v => ({ id: v.id, name: v.name }))}
+      />
+
+      {adminUserModalOpen && (
+        <CreateAdminUserModal
+          onClose={() => setAdminUserModalOpen(false)}
+          onSuccess={() => { setAdminUserModalOpen(false); loadAdminUsers() }}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteConfirmModal
+          isOpen={deleteModalOpen}
+          onClose={() => { setDeleteModalOpen(false); setDeleteTarget(null) }}
+          onSuccess={() => { setDeleteModalOpen(false); setDeleteTarget(null); loadStats(); loadVenues(); loadEvents() }}
+          type={deleteTarget.type}
+          targetId={deleteTarget.id}
+          targetName={deleteTarget.name}
         />
       )}
     </div>
@@ -583,6 +743,134 @@ function StatusIndicator({ label, count, color, isBoolean = false }: {
       <span style={{ fontSize: '0.75rem', color: textColors[color], fontWeight: 500 }}>
         {isBoolean ? (count > 0 ? label : 'Issues') : <><span style={{ fontWeight: 600 }}>{count}</span> {label}</>}
       </span>
+    </div>
+  )
+}
+
+// Create Admin User Modal
+function CreateAdminUserModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState<{ email: string; tempPassword: string } | null>(null)
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', role: 'admin' })
+  const [copied, setCopied] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('Not authenticated')
+
+      const response = await fetch('/api/admin/create-admin-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+        body: JSON.stringify(formData)
+      })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'Failed to create user')
+      setSuccess({ email: formData.email, tempPassword: result.tempPassword })
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const copyCredentials = () => {
+    if (success) {
+      navigator.clipboard.writeText(`Email: ${success.email}\nTemporary Password: ${success.tempPassword}\n\nLogin at: ${window.location.origin}/admin/login`)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="bg-white rounded-lg shadow-2xl max-w-md w-full" style={{ border: '1px solid #E8E6E2' }}>
+        <div className="p-6" style={{ borderBottom: '1px solid #E8E6E2' }}>
+          <h2 className="font-serif text-xl" style={{ color: '#111' }}>Create Admin User</h2>
+          <p style={{ fontSize: '0.8125rem', color: '#888', marginTop: '0.25rem' }}>User will need to change password on first login</p>
+        </div>
+
+        {success ? (
+          <div className="p-6">
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ width: '3rem', height: '3rem', background: 'rgba(61,90,76,0.08)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}>
+                <UserPlus size={20} style={{ color: '#3D5A4C' }} />
+              </div>
+              <p style={{ fontWeight: 600, color: '#111', marginBottom: '0.25rem' }}>User Created Successfully</p>
+              <p style={{ fontSize: '0.8125rem', color: '#888' }}>Share these credentials securely</p>
+            </div>
+            <div style={{ background: '#FAFAF9', border: '1px solid #E8E6E2', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem' }}>
+              <div style={{ marginBottom: '0.75rem' }}>
+                <p style={{ fontSize: '0.6875rem', color: '#999', textTransform: 'uppercase' as any, letterSpacing: '0.05em' }}>Email</p>
+                <p style={{ fontSize: '0.875rem', color: '#111', fontFamily: 'monospace' }}>{success.email}</p>
+              </div>
+              <div>
+                <p style={{ fontSize: '0.6875rem', color: '#999', textTransform: 'uppercase' as any, letterSpacing: '0.05em' }}>Temporary Password</p>
+                <p style={{ fontSize: '0.875rem', color: '#111', fontFamily: 'monospace' }}>{success.tempPassword}</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={copyCredentials}
+                style={{ flex: 1, padding: '0.625rem', border: '1px solid #E8E6E2', borderRadius: '0.375rem', background: '#fff', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, color: copied ? '#3D5A4C' : '#555' }}>
+                {copied ? '✓ Copied!' : 'Copy Credentials'}
+              </button>
+              <button onClick={onSuccess}
+                style={{ flex: 1, padding: '0.625rem', border: 'none', borderRadius: '0.375rem', background: '#3D5A4C', color: 'white', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600 }}>
+                Done
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            {error && (
+              <div style={{ padding: '0.625rem 0.875rem', background: 'rgba(180,60,60,0.06)', border: '1px solid rgba(180,60,60,0.15)', borderRadius: '0.375rem', color: '#a33', fontSize: '0.8125rem' }}>{error}</div>
+            )}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#555', display: 'block', marginBottom: '0.375rem' }}>First Name</label>
+                <input type="text" required value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: '1px solid #E8E6E2' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#555', display: 'block', marginBottom: '0.375rem' }}>Last Name</label>
+                <input type="text" required value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: '1px solid #E8E6E2' }} />
+              </div>
+            </div>
+            <div>
+              <label style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#555', display: 'block', marginBottom: '0.375rem' }}>Email</label>
+              <input type="email" required value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: '1px solid #E8E6E2' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#555', display: 'block', marginBottom: '0.375rem' }}>Role</label>
+              <select value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-deep-green" style={{ border: '1px solid #E8E6E2' }}>
+                <option value="admin">Admin</option>
+                <option value="developer">Developer</option>
+              </select>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button type="button" onClick={onClose}
+                style={{ flex: 1, padding: '0.625rem', border: '1px solid #E8E6E2', borderRadius: '0.375rem', background: '#fff', cursor: 'pointer', fontSize: '0.875rem', color: '#555' }}>
+                Cancel
+              </button>
+              <button type="submit" disabled={loading}
+                style={{ flex: 1, padding: '0.625rem', border: 'none', borderRadius: '0.375rem', background: '#3D5A4C', color: 'white', cursor: loading ? 'wait' : 'pointer', fontSize: '0.875rem', fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
+                {loading ? 'Creating…' : 'Create User'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   )
 }
