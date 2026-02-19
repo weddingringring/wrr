@@ -14,7 +14,8 @@ import {
   Star, Music, ChevronDown, MoreHorizontal,
   Image as ImageIcon, Upload, Check, Undo2,
   Archive, Settings, LogOut, MessageCircle, Mic, Copy,
-  LayoutGrid, Layers, SlidersHorizontal
+  LayoutGrid, Layers, SlidersHorizontal,
+  Eye, EyeOff, Lock, RefreshCw
 } from 'lucide-react'
 
 interface Message {
@@ -33,6 +34,7 @@ interface Message {
   tags: string[] | null
   guest_photo_url: string | null
   is_deleted: boolean
+  is_shared: boolean
 }
 
 const AVAILABLE_TAGS = [
@@ -86,6 +88,19 @@ function CustomerDashboardContent() {
   const signedUrlCache = useRef<Record<string, { url: string; expires: number }>>({})
   const photoUrlCache = useRef<Record<string, { url: string; expires: number }>>({})
   const [photoSignedUrls, setPhotoSignedUrls] = useState<Record<string, string>>({})
+
+  // ── Sharing state ──
+  const [sharePopoverOpen, setSharePopoverOpen] = useState(false)
+  const [shareCode, setShareCode] = useState<string | null>(null)
+  const [shareCodeFormatted, setShareCodeFormatted] = useState<string | null>(null)
+  const [shareLoading, setShareLoading] = useState(false)
+  const [shareCopied, setShareCopied] = useState(false)
+  const [shareConfirmRefresh, setShareConfirmRefresh] = useState(false)
+  const [shareJustGenerated, setShareJustGenerated] = useState(false)
+  const [shareVisibilityFeedback, setShareVisibilityFeedback] = useState<Record<string, string>>({})
+  const sharePopoverRef = useRef<HTMLDivElement>(null)
+  const shareButtonRef = useRef<HTMLButtonElement>(null)
+  const messageListRef = useRef<HTMLDivElement>(null)
 
   // Get a signed URL for a photo (cached for 50 minutes)
   const getPhotoSignedUrl = async (photoPath: string): Promise<string> => {
@@ -747,6 +762,98 @@ function CustomerDashboardContent() {
   const activeMessageCount = messages.filter(m => !m.is_deleted).length
   const favCount = messages.filter(m => !m.is_deleted && isFavorited(m)).length
   const trashCount = messages.filter(m => m.is_deleted).length
+  const sharedMessageCount = messages.filter(m => !m.is_deleted && m.is_shared !== false).length
+
+  // ── Sharing functions ──
+  const loadShareCode = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      const res = await fetch('/api/share/generate', {
+        headers: { 'Authorization': `Bearer ${session.access_token}` }
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      setShareCode(data.shareCode || null)
+      setShareCodeFormatted(data.shareCodeFormatted || null)
+    } catch (err) { console.error('Error loading share code:', err) }
+  }
+
+  const generateShareCode = async () => {
+    setShareLoading(true)
+    setShareJustGenerated(false)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      const res = await fetch('/api/share/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+        body: JSON.stringify({ action: 'generate' })
+      })
+      if (!res.ok) throw new Error('Failed to generate')
+      const data = await res.json()
+      setShareCode(data.shareCode)
+      setShareCodeFormatted(data.shareCodeFormatted)
+      setShareConfirmRefresh(false)
+      setShareJustGenerated(true)
+      setTimeout(() => setShareJustGenerated(false), 3000)
+    } catch (err) { console.error('Error generating share code:', err) }
+    finally { setShareLoading(false) }
+  }
+
+  const copyShareCode = async () => {
+    if (!shareCodeFormatted) return
+    await navigator.clipboard.writeText(shareCodeFormatted)
+    setShareCopied(true)
+    setTimeout(() => setShareCopied(false), 1500)
+  }
+
+  const handleToggleShared = async (messageId: string, currentlyShared: boolean) => {
+    const newValue = !currentlyShared
+    setMessages(prev => prev.map(m => m.id === messageId ? { ...m, is_shared: newValue } : m))
+    setShareVisibilityFeedback(prev => ({ ...prev, [messageId]: newValue ? 'Visible in shared album' : 'Hidden from shared album' }))
+    setTimeout(() => setShareVisibilityFeedback(prev => { const next = { ...prev }; delete next[messageId]; return next }), 1500)
+    try {
+      await updateMessage(messageId, { is_shared: newValue })
+    } catch (err) {
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, is_shared: currentlyShared } : m))
+    }
+  }
+
+  const scrollToMessages = () => {
+    messageListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setTimeout(() => {
+      document.querySelectorAll('.share-visibility-icon').forEach(el => {
+        el.classList.add('share-pulse')
+        setTimeout(() => el.classList.remove('share-pulse'), 1200)
+      })
+    }, 600)
+  }
+
+  // Close popover on click outside / ESC
+  useEffect(() => {
+    if (!sharePopoverOpen) return
+    const handleClick = (e: MouseEvent) => {
+      if (sharePopoverRef.current && !sharePopoverRef.current.contains(e.target as Node) &&
+          shareButtonRef.current && !shareButtonRef.current.contains(e.target as Node)) {
+        setSharePopoverOpen(false)
+        setShareConfirmRefresh(false)
+      }
+    }
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setSharePopoverOpen(false); setShareConfirmRefresh(false) }
+    }
+    document.addEventListener('mousedown', handleClick)
+    document.addEventListener('keydown', handleKey)
+    return () => { document.removeEventListener('mousedown', handleClick); document.removeEventListener('keydown', handleKey) }
+  }, [sharePopoverOpen])
+
+  // Load share code on first popover open
+  useEffect(() => {
+    if (sharePopoverOpen && shareCode === null && !shareLoading) {
+      loadShareCode()
+    }
+  }, [sharePopoverOpen])
 
   if (loading) {
     return (
@@ -915,6 +1022,148 @@ function CustomerDashboardContent() {
             {activeMessageCount} message{activeMessageCount !== 1 ? 's' : ''} from your special day
           </p>
         </div>
+
+        {/* Share Album — ghost button + popover */}
+        {activeMessageCount > 0 && (
+          <div className="flex justify-end mb-4" style={{ position: 'relative' }}>
+            <button
+              ref={shareButtonRef}
+              onClick={() => setSharePopoverOpen(!sharePopoverOpen)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition"
+              style={{
+                border: '1px solid rgba(0,0,0,0.1)', background: 'transparent',
+                color: '#888', fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; e.currentTarget.style.color = '#555' }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = '#888' }}
+            >
+              <Lock size={13} /> Share Album
+            </button>
+
+            {sharePopoverOpen && (
+              <div
+                ref={sharePopoverRef}
+                style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem',
+                  width: '360px', maxWidth: 'calc(100vw - 2rem)',
+                  background: '#fff', borderRadius: '0.75rem',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)',
+                  border: '1px solid rgba(0,0,0,0.06)', padding: '1.5rem', zIndex: 50,
+                }}
+              >
+                {!shareCode ? (
+                  <>
+                    <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.1rem', color: '#1a1a1a', marginBottom: '0.5rem' }}>Share your album</p>
+                    <p style={{ fontSize: '0.8125rem', color: '#888', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+                      Create a private access key to share with guests who couldn&rsquo;t attend in person.
+                    </p>
+                    <button
+                      onClick={generateShareCode}
+                      disabled={shareLoading}
+                      style={{
+                        width: '100%', padding: '0.625rem 1rem', borderRadius: '0.5rem',
+                        background: '#2a2a2a', color: '#fff', border: 'none',
+                        fontSize: '0.875rem', fontWeight: 500,
+                        cursor: shareLoading ? 'wait' : 'pointer',
+                        opacity: shareLoading ? 0.7 : 1,
+                      }}
+                    >
+                      {shareLoading ? 'Generating\u2026' : 'Generate Private Access Key'}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.1rem', color: '#1a1a1a', marginBottom: '1rem' }}>Private Access Key</p>
+
+                    <div style={{
+                      background: '#f8f7f6', borderRadius: '0.5rem', padding: '0.875rem 1rem',
+                      textAlign: 'center', marginBottom: '0.875rem', border: '1px solid rgba(0,0,0,0.04)',
+                    }}>
+                      <span style={{ fontFamily: 'monospace', fontSize: '1.5rem', fontWeight: 600, letterSpacing: '0.15em', color: '#1a1a1a' }}>
+                        {shareCodeFormatted || `${shareCode.slice(0, 4)} ${shareCode.slice(4)}`}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2" style={{ marginBottom: '1rem' }}>
+                      <button
+                        onClick={copyShareCode}
+                        style={{
+                          flex: 1, padding: '0.5rem 0.75rem', borderRadius: '0.5rem',
+                          background: '#2a2a2a', color: '#fff', border: 'none',
+                          fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem',
+                        }}
+                      >
+                        {shareCopied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy Key</>}
+                      </button>
+                      <button
+                        onClick={() => setShareConfirmRefresh(true)}
+                        disabled={shareLoading}
+                        style={{
+                          flex: 1, padding: '0.5rem 0.75rem', borderRadius: '0.5rem',
+                          background: 'transparent', color: '#888',
+                          border: '1px solid rgba(0,0,0,0.1)',
+                          fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem',
+                        }}
+                      >
+                        <RefreshCw size={12} /> New Key
+                      </button>
+                    </div>
+
+                    {shareConfirmRefresh && (
+                      <div style={{
+                        background: '#faf8f6', borderRadius: '0.5rem', padding: '0.75rem',
+                        marginBottom: '0.875rem', border: '1px solid rgba(0,0,0,0.06)',
+                      }}>
+                        <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '0.5rem' }}>
+                          Refreshing will disable the previous key.
+                        </p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={generateShareCode}
+                            disabled={shareLoading}
+                            style={{ padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: 'none', background: 'transparent', color: '#c45', fontSize: '0.75rem', fontWeight: 600, cursor: shareLoading ? 'wait' : 'pointer' }}
+                          >
+                            {shareLoading ? 'Refreshing\u2026' : 'Refresh Key'}
+                          </button>
+                          <button
+                            onClick={() => setShareConfirmRefresh(false)}
+                            style={{ padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: 'none', background: 'transparent', color: '#888', fontSize: '0.75rem', fontWeight: 500, cursor: 'pointer' }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {shareJustGenerated && (
+                      <p style={{ fontSize: '0.75rem', color: '#3D5A4C', marginBottom: '0.5rem', textAlign: 'center' }}>New key generated.</p>
+                    )}
+
+                    <p style={{ fontSize: '0.75rem', color: '#999', lineHeight: 1.5, marginBottom: '0.75rem' }}>
+                      Anyone with this key can view and listen to all shared messages in this album.
+                    </p>
+
+                    <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#888' }}>
+                        Sharing: {sharedMessageCount} of {activeMessageCount} message{activeMessageCount !== 1 ? 's' : ''}
+                      </span>
+                      <button
+                        onClick={() => { setSharePopoverOpen(false); scrollToMessages() }}
+                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '0.75rem', color: '#888', textDecoration: 'none', fontWeight: 500 }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
+                      >
+                        Manage visibility
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Filter Bar - hidden when no messages */}
         {activeMessageCount > 0 && <div className="mb-6">
@@ -1259,6 +1508,17 @@ function CustomerDashboardContent() {
             </div>
           </div>
         </div>}
+
+        {/* Scroll anchor for "Manage visibility" */}
+        <div ref={messageListRef} />
+
+        {/* Share visibility pulse animation */}
+        <style>{`
+          @keyframes sharePulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+          .share-pulse { animation: sharePulse 0.4s ease-in-out 2; }
+          @keyframes fadeFeedback { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
+          .share-feedback-text { animation: fadeFeedback 1.5s ease forwards; }
+        `}</style>
 
         {/* Messages Display */}
         {filteredMessages.length === 0 ? (
@@ -1820,6 +2080,8 @@ function CustomerDashboardContent() {
               photoMessageRef.current = messageId
               photoInputRef.current?.click()
             }}
+            onToggleShared={handleToggleShared}
+            shareVisibilityFeedback={shareVisibilityFeedback}
             currentlyPlaying={currentlyPlaying}
             playbackProgress={playbackProgress}
             filter={filter}
@@ -2048,10 +2310,25 @@ function CustomerDashboardContent() {
                               <button onClick={() => handleShare(message.enhanced_recording_url || message.recording_url, name)} className="p-1.5 rounded-lg hover:bg-black/5 transition" title="Share">
                                 <Share2 size={14} style={{ color: '#999' }} />
                               </button>
+                              <button
+                                onClick={() => handleToggleShared(message.id, message.is_shared !== false)}
+                                className="share-visibility-icon p-1.5 rounded-lg hover:bg-black/5 transition"
+                                title={message.is_shared !== false ? 'Visible in shared album' : 'Hidden from shared album'}
+                              >
+                                {message.is_shared !== false
+                                  ? <Eye size={14} style={{ color: '#999' }} />
+                                  : <EyeOff size={14} style={{ color: '#bbb' }} />
+                                }
+                              </button>
                             </div>
                           </>
                         )}
                       </div>
+                      {shareVisibilityFeedback[message.id] && (
+                        <div className="share-feedback-text mt-1 text-right" style={{ fontSize: '0.6875rem', color: '#999' }}>
+                          {shareVisibilityFeedback[message.id]}
+                        </div>
+                      )}
 
                       {/* Tag editor */}
                       {tagMenuOpen === message.id && (
