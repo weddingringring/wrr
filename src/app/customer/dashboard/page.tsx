@@ -95,6 +95,7 @@ function CustomerDashboardContent() {
   const [shareCodeFormatted, setShareCodeFormatted] = useState<string | null>(null)
   const [shareLoading, setShareLoading] = useState(false)
   const [shareCopied, setShareCopied] = useState(false)
+  const [shareLinkCopied, setShareLinkCopied] = useState(false)
   const [shareConfirmRefresh, setShareConfirmRefresh] = useState(false)
   const [shareJustGenerated, setShareJustGenerated] = useState(false)
   const [shareVisibilityFeedback, setShareVisibilityFeedback] = useState<Record<string, string>>({})
@@ -809,6 +810,14 @@ function CustomerDashboardContent() {
     setTimeout(() => setShareCopied(false), 1500)
   }
 
+  const copyShareLink = async () => {
+    if (!venue?.slug) return
+    const link = `${window.location.origin}/a/${venue.slug}`
+    await navigator.clipboard.writeText(link)
+    setShareLinkCopied(true)
+    setTimeout(() => setShareLinkCopied(false), 1500)
+  }
+
   const handleToggleShared = async (messageId: string, currentlyShared: boolean) => {
     const newValue = !currentlyShared
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, is_shared: newValue } : m))
@@ -1165,6 +1174,36 @@ function CustomerDashboardContent() {
                     <p style={{ fontSize: '0.7rem', color: '#8a7e6c', lineHeight: 1.7, marginBottom: '0' }}>
                       Anyone with this key can privately view and listen to the shared messages from your special day.
                     </p>
+
+                    {/* Access link section */}
+                    {venue?.slug && (
+                      <>
+                        <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,140,0.2) 20%, rgba(180,165,140,0.2) 80%, transparent 100%)', margin: '1rem 0' }} />
+
+                        <p style={{ fontSize: '0.6rem', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#a69d8e', marginBottom: '0.4rem' }}>
+                          Access link
+                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                          <span style={{ fontFamily: "'Courier New', Courier, monospace", fontSize: '0.7rem', color: '#5a5244', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {typeof window !== 'undefined' ? window.location.host : 'weddingringring.com'}/a/{venue.slug}
+                          </span>
+                          <button
+                            onClick={copyShareLink}
+                            style={{
+                              padding: '0.25rem 0.6rem', borderRadius: '0.3rem',
+                              background: 'transparent', border: '1px solid rgba(180,165,140,0.25)',
+                              fontSize: '0.65rem', fontWeight: 500, color: '#8a7e6c',
+                              cursor: 'pointer', flexShrink: 0,
+                            }}
+                          >
+                            {shareLinkCopied ? 'Copied' : 'Copy link'}
+                          </button>
+                        </div>
+                        <p style={{ fontSize: '0.65rem', color: '#a69d8e', lineHeight: 1.5 }}>
+                          Share this link together with the private key.
+                        </p>
+                      </>
+                    )}
 
                     {/* Editorial divider */}
                     <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent 0%, rgba(180,165,140,0.2) 20%, rgba(180,165,140,0.2) 80%, transparent 100%)', margin: '1rem 0' }} />
