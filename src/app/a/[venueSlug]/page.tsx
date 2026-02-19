@@ -1,0 +1,258 @@
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import ParchmentCard from '@/components/ParchmentCard'
+
+interface VenueInfo {
+  id: string
+  name: string
+  logoUrl: string | null
+  slug: string
+}
+
+export default function VenueAccessPage({ params }: { params: { venueSlug: string } }) {
+  const router = useRouter()
+  const [venue, setVenue] = useState<VenueInfo | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
+  const [key, setKey] = useState('')
+  const [validating, setValidating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [helpExpanded, setHelpExpanded] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const fetchVenue = async () => {
+      try {
+        const res = await fetch(`/api/venue/by-slug/${params.venueSlug}`)
+        if (!res.ok) { setNotFound(true); return }
+        const data = await res.json()
+        setVenue(data)
+      } catch {
+        setNotFound(true)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchVenue()
+  }, [params.venueSlug])
+
+  // Auto-format: uppercase + space after 4 chars
+  const handleKeyInput = (value: string) => {
+    const stripped = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 8)
+    const formatted = stripped.length > 4
+      ? `${stripped.slice(0, 4)} ${stripped.slice(4)}`
+      : stripped
+    setKey(formatted)
+    setError(null)
+  }
+
+  const handleSubmit = async () => {
+    const code = key.replace(/\s/g, '')
+    if (code.length !== 8) {
+      setError("Please enter the full 8-character key.")
+      return
+    }
+
+    setValidating(true)
+    setError(null)
+
+    try {
+      const res = await fetch('/api/share/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      })
+
+      const data = await res.json()
+
+      if (data.valid) {
+        router.push(`/guest/${data.code}`)
+      } else {
+        setError("That key doesn\u2019t look quite right \u2014 please check and try again.")
+      }
+    } catch {
+      setError("Something went wrong. Please try again.")
+    } finally {
+      setValidating(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSubmit()
+  }
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFEFEF' }}>
+        <div style={{ width: '2rem', height: '2rem', border: '2px solid rgba(0,0,0,0.08)', borderTopColor: '#587e6a', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      </div>
+    )
+  }
+
+  if (notFound) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFEFEF', padding: '2rem' }}>
+        <ParchmentCard maxWidth="400px" padding="2.5rem 2rem">
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.15rem', color: '#2c2418', textAlign: 'center', marginBottom: '0.75rem' }}>
+            Page not found
+          </p>
+          <p style={{ fontSize: '0.8rem', color: '#8a7e6c', textAlign: 'center', lineHeight: 1.6 }}>
+            We couldn&rsquo;t find a venue at this address. Please check the link you were given.
+          </p>
+        </ParchmentCard>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet" />
+
+      <div style={{
+        minHeight: '100vh', background: '#FFEFEF',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        padding: '2rem 1.25rem',
+      }}>
+
+        {/* Venue branding */}
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          {venue?.logoUrl ? (
+            <img
+              src={venue.logoUrl}
+              alt={venue.name || 'Venue'}
+              style={{ maxWidth: '220px', maxHeight: '100px', objectFit: 'contain', margin: '0 auto', filter: 'grayscale(100%) opacity(0.85)' }}
+            />
+          ) : venue?.name ? (
+            <p style={{
+              fontSize: '0.7rem', fontWeight: 600,
+              textTransform: 'uppercase' as const, letterSpacing: '0.15em',
+              color: '#9a8e7a',
+            }}>
+              {venue.name}
+            </p>
+          ) : null}
+        </div>
+
+        {/* Main access card */}
+        <ParchmentCard maxWidth="440px" padding="2.75rem 2.25rem">
+          {/* Headline */}
+          <h1 style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: '1.35rem', fontWeight: 500, color: '#2c2418',
+            textAlign: 'center', lineHeight: 1.4, marginBottom: '0.75rem',
+          }}>
+            You&rsquo;re invited to view this wedding guestbook
+          </h1>
+
+          {/* Subtext */}
+          <p style={{
+            fontSize: '0.8rem', color: '#8a7e6c', textAlign: 'center',
+            lineHeight: 1.6, marginBottom: '2rem',
+          }}>
+            The couple has shared a private access key with you.
+          </p>
+
+          {/* Key input */}
+          <input
+            ref={inputRef}
+            type="text"
+            value={key}
+            onChange={(e) => handleKeyInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="XXXX XXXX"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            style={{
+              width: '100%', boxSizing: 'border-box',
+              padding: '0.9rem 1rem',
+              background: '#F0ECE4',
+              border: error ? '1px solid rgba(180,120,100,0.35)' : '1px solid rgba(180,165,140,0.15)',
+              borderRadius: '0.5rem',
+              fontFamily: "'Courier New', Courier, monospace",
+              fontSize: '1.25rem', fontWeight: 700,
+              letterSpacing: '0.2em', textAlign: 'center',
+              color: '#2c2418',
+              outline: 'none',
+              textTransform: 'uppercase' as const,
+              transition: 'border-color 0.2s',
+            }}
+            onFocus={(e) => { if (!error) e.currentTarget.style.borderColor = 'rgba(180,165,140,0.35)' }}
+            onBlur={(e) => { if (!error) e.currentTarget.style.borderColor = 'rgba(180,165,140,0.15)' }}
+          />
+
+          {/* Error */}
+          {error && (
+            <p style={{ fontSize: '0.75rem', color: '#a07060', textAlign: 'center', marginTop: '0.6rem', lineHeight: 1.5 }}>
+              {error}
+            </p>
+          )}
+
+          {/* Submit */}
+          <button
+            onClick={handleSubmit}
+            disabled={validating || key.replace(/\s/g, '').length < 8}
+            style={{
+              width: '100%', marginTop: '1.25rem',
+              padding: '0.7rem 1rem', borderRadius: '0.5rem',
+              background: '#587e6a', color: '#f5f2ec', border: 'none',
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: '0.95rem', fontWeight: 500, letterSpacing: '0.01em',
+              cursor: validating ? 'wait' : key.replace(/\s/g, '').length < 8 ? 'default' : 'pointer',
+              opacity: validating || key.replace(/\s/g, '').length < 8 ? 0.5 : 1,
+              transition: 'opacity 0.2s',
+            }}
+          >
+            {validating ? 'Checking\u2026' : 'View guestbook'}
+          </button>
+
+          {/* Help link */}
+          <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+            <button
+              onClick={() => setHelpExpanded(!helpExpanded)}
+              style={{
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                fontSize: '0.7rem', color: '#a69d8e', fontWeight: 500,
+                textDecoration: 'none',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
+            >
+              What is a private key?
+            </button>
+            {helpExpanded && (
+              <p style={{
+                fontSize: '0.7rem', color: '#8a7e6c', lineHeight: 1.6,
+                marginTop: '0.5rem', textAlign: 'center',
+              }}>
+                A private key allows invited guests to view selected messages from the special day.
+              </p>
+            )}
+          </div>
+        </ParchmentCard>
+
+        {/* Footer branding */}
+        <footer style={{ marginTop: '3rem', textAlign: 'center' }}>
+          <span style={{
+            fontSize: '0.6rem', fontWeight: 500,
+            textTransform: 'uppercase' as const, letterSpacing: '0.12em',
+            color: 'rgba(0,0,0,0.2)',
+            display: 'block', marginBottom: '0.5rem',
+          }}>
+            Powered by
+          </span>
+          <img
+            src="/logo.svg"
+            alt="WeddingRingRing"
+            style={{ height: '1.5rem', opacity: 0.3 }}
+          />
+        </footer>
+      </div>
+    </>
+  )
+}
