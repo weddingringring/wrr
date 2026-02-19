@@ -28,11 +28,26 @@ export async function GET(
       return NextResponse.json({ error: 'Venue not found' }, { status: 404 })
     }
 
+    // Fetch the most recent event with a share code for this venue
+    const { data: event } = await supabaseAdmin
+      .from('events')
+      .select('partner_1_first_name, partner_2_first_name, event_type')
+      .eq('venue_id', venue.id)
+      .not('share_code', 'is', null)
+      .order('event_date', { ascending: false })
+      .limit(1)
+      .single()
+
     return NextResponse.json({
       id: venue.id,
       name: venue.name,
       logoUrl: venue.logo_url,
       slug: venue.slug,
+      event: event ? {
+        partner1FirstName: event.partner_1_first_name || null,
+        partner2FirstName: event.partner_2_first_name || null,
+        eventType: event.event_type || null,
+      } : null,
     })
   } catch (error) {
     console.error('Venue slug lookup error:', error)
