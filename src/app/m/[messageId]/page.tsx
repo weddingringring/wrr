@@ -1,7 +1,10 @@
 import { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { createClient } from '@supabase/supabase-js'
 import { verifyMessageShareToken } from '@/lib/message-share'
 import MessageShareClient from './MessageShareClient'
+
+export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: { messageId: string }
@@ -12,7 +15,11 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const { messageId } = params
   const { e, s } = searchParams
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://weddingringring.com'
+  // Determine base URL from actual request headers
+  const headersList = headers()
+  const host = headersList.get('x-forwarded-host') || headersList.get('host') || ''
+  const proto = headersList.get('x-forwarded-proto') || 'https'
+  const baseUrl = host ? `${proto}://${host}` : (process.env.NEXT_PUBLIC_SITE_URL || 'https://weddingringring.com')
 
   // Default fallback metadata
   const fallback: Metadata = {
