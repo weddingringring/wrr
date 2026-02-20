@@ -1,25 +1,73 @@
 import { ImageResponse } from 'next/og'
 import { NextRequest } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { verifyMessageShareToken } from '@/lib/message-share'
 
 export const runtime = 'edge'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-async function getSignedUrl(storagePath: string, bucket: string): Promise<string | null> {
+// Edge-compatible HMAC verification (no supabase-js or Node crypto needed)
+const SHARE_SECRET = process.env.MESSAGE_SHARE_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || 'wrr-msg-share-fallback'
+
+async function hmacSign(data: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(SHARE_SECRET),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data))
+  const bytes = new Uint8Array(sig)
+  let binary = ''
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i])
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+async function verifyToken(messageId: string, e: string, s: string): Promise<boolean> {
+  const expires = parseInt(e, 10)
+  if (isNaN(expires) || Math.floor(Date.now() / 1000) > expires) return false
+  const expected = await hmacSign(`${messageId}:${expires}`)
+  return s === expected
+}
+
+// Raw fetch to Supabase REST API (edge-compatible, no supabase-js)
+async function supabaseQuery(table: string, query: string): Promise<any> {
+  const res = await fetch(`${supabaseUrl}/rest/v1/${table}?${query}`, {
+    headers: {
+      'apikey': supabaseKey,
+      'Authorization': `Bearer ${supabaseKey}`,
+      'Accept': 'application/vnd.pgrst.object+json',
+    },
+  })
+  if (!res.ok) return null
+  return res.json()
+}
+
+async function getSignedPhotoUrl(storagePath: string): Promise<string | null> {
   if (!storagePath) return null
-  const supabase = createClient(supabaseUrl, supabaseKey)
   let filePath = storagePath
+  const bucket = 'message-photos'
   if (storagePath.includes(`/storage/v1/object/public/${bucket}/`)) {
     filePath = storagePath.split(`/storage/v1/object/public/${bucket}/`)[1]
   }
   if (!filePath) return null
   filePath = decodeURIComponent(filePath)
-  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(filePath, 60)
-  if (error) return null
-  return data.signedUrl
+
+  const res = await fetch(`${supabaseUrl}/storage/v1/object/sign/${bucket}/${filePath}`, {
+    method: 'POST',
+    headers: {
+      'apikey': supabaseKey,
+      'Authorization': `Bearer ${supabaseKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ expiresIn: 120 }),
+  })
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.signedURL ? `${supabaseUrl}/storage/v1${data.signedURL}` : null
 }
 
 export async function GET(request: NextRequest) {
@@ -33,29 +81,25 @@ export async function GET(request: NextRequest) {
   }
 
   // Verify token
-  const verification = await verifyMessageShareToken(messageId, e, s)
-  if (!verification.valid) {
+  const valid = await verifyToken(messageId, e, s)
+  if (!valid) {
     return fallbackImage('Audio Guestbook Message')
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    // Fetch message + event
-    const { data: message } = await supabase
-      .from('messages')
-      .select('caller_name, guest_photo_url, event_id')
-      .eq('id', messageId)
-      .eq('is_deleted', false)
-      .single()
+    // Fetch message
+    const message = await supabaseQuery(
+      'messages',
+      `id=eq.${messageId}&is_deleted=eq.false&select=caller_name,guest_photo_url,event_id`
+    )
 
     if (!message) return fallbackImage('Audio Guestbook Message')
 
-    const { data: event } = await supabase
-      .from('events')
-      .select('partner_1_first_name, partner_2_first_name, event_type, event_date')
-      .eq('id', message.event_id)
-      .single()
+    // Fetch event
+    const event = await supabaseQuery(
+      'events',
+      `id=eq.${message.event_id}&select=partner_1_first_name,partner_2_first_name,event_type,event_date`
+    )
 
     const callerName = message.caller_name || 'A guest'
     const couple = event
@@ -71,7 +115,7 @@ export async function GET(request: NextRequest) {
     // Try to get guest photo
     let photoUrl: string | null = null
     if (message.guest_photo_url) {
-      photoUrl = await getSignedUrl(message.guest_photo_url, 'message-photos')
+      photoUrl = await getSignedPhotoUrl(message.guest_photo_url)
     }
 
     return new ImageResponse(
