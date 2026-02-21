@@ -1,165 +1,107 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import twilio from 'twilio'
-import { logError, logCritical } from '@/lib/error-logging'
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
 
-// Initialize Supabase client (server-side)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
 
-export async function POST(request: NextRequest) {
-  let params: URLSearchParams | null = null
-  
-  try {
-    const body = await request.text()
-    params = new URLSearchParams(body)
-    
-    // Extract Twilio recording data
-    const recordingSid = params.get('RecordingSid')
-    const recordingUrl = params.get('RecordingUrl')
-    const recordingDuration = params.get('RecordingDuration')
-    const callSid = params.get('CallSid')
-    
-    // Recording status callbacks don't include To/From — we need CallSid to look them up
-    console.log(`Recording completed: ${recordingSid} (${recordingDuration}s) for call ${callSid}`)
-    
-    if (!recordingSid || !recordingUrl || !callSid) {
-      console.error('Missing required recording data', { recordingSid, recordingUrl, callSid })
-      return NextResponse.json({ error: 'Missing data' }, { status: 400 })
-    }
-    
-    // Look up the original call from Twilio to get To/From numbers
-    const twilioClient = twilio(
-      process.env.TWILIO_ACCOUNT_SID!,
-      process.env.TWILIO_AUTH_TOKEN!
-    )
-    
-    const call = await twilioClient.calls(callSid).fetch()
-    const calledNumber = call.to   // The event's Twilio number
-    const callerNumber = call.from // The guest's phone number
-    
-    console.log(`Call ${callSid}: ${callerNumber} → ${calledNumber}`)
-    
-    // Find the event for this phone number
-    const { data: event, error: eventError } = await supabase
-      .from('events')
-      .select('id, customer_user_id')
-      .eq('twilio_phone_number', calledNumber)
-      .eq('status', 'active')
-      .single()
-    
-    if (eventError || !event) {
-      console.error('Event not found for number:', calledNumber)
-      return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-    }
-    
-    // Download the recording from Twilio and upload to Supabase Storage
-    const twilioRecordingUrl = `${recordingUrl}.mp3`
-    const accountSid = process.env.TWILIO_ACCOUNT_SID
-    const authToken = process.env.TWILIO_AUTH_TOKEN
-    
-    // Fetch recording from Twilio with auth
-    const response = await fetch(twilioRecordingUrl, {
-      headers: {
-        'Authorization': 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64')
-      }
-    })
-    
-    if (!response.ok) {
-      throw new Error('Failed to download recording from Twilio')
-    }
-    
-    const audioBuffer = await response.arrayBuffer()
-    
-    // Upload to Supabase Storage
-    const fileName = `${event.id}/${recordingSid}.mp3`
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('message-recordings')
-      .upload(fileName, audioBuffer, {
-        contentType: 'audio/mpeg',
-        upsert: false
-      })
-    
-    if (uploadError) {
-      console.error('Error uploading to storage:', uploadError)
-      throw uploadError
-    }
-    
-    // Get public URL
-    const { data: urlData } = supabase.storage
-      .from('message-recordings')
-      .getPublicUrl(fileName)
-    
-    // Create message record in database
-    const insertData: Record<string, any> = {
-      event_id: event.id,
-      twilio_call_sid: callSid,
-      twilio_recording_sid: recordingSid,
-      twilio_recording_url: twilioRecordingUrl,
-      recording_url: urlData.publicUrl,
-      duration: parseInt(recordingDuration || '0'),
-      caller_number: callerNumber,
-      recorded_at: new Date().toISOString()
-    }
-    
-    console.log('Inserting message:', JSON.stringify(insertData))
-    
-    const { data: message, error: messageError } = await supabase
-      .from('messages')
-      .insert(insertData)
-      .select()
-      .single()
-    
-    if (messageError) {
-      console.error('Error creating message:', messageError)
-      // Log the returned row shape so we can see actual column names
-      console.error('Insert payload was:', JSON.stringify(insertData))
-      throw messageError
-    }
-    
-    // Log full row so we can see all actual column names
-    console.log(`Message created:`, JSON.stringify(message))
-    
-    // Trigger async voice enhancement (fire-and-forget)
-    // Don't await — let the response return immediately
-    try {
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL
-      if (appUrl && process.env.ELEVENLABS_API_KEY) {
-        fetch(`${appUrl}/api/messages/${message.id}/enhance`, {
-          method: 'POST',
-        }).catch(err => {
-          console.error(`Voice enhancement trigger failed for message ${message.id}:`, err.message)
-        })
-        console.log(`Voice enhancement triggered for message ${message.id}`)
-      }
-    } catch (enhanceErr) {
-      // Never fail the webhook because of enhancement
-      console.error('Enhancement trigger error:', enhanceErr)
-    }
-    
-    // TODO: Optional - Send notification to customer (email/SMS)
-    // Could trigger a separate notification service here
-    
-    return NextResponse.json({ 
-      success: true, 
-      message_id: message.id 
-    })
-    
-  } catch (error) {
-    console.error('Error in recording webhook:', error)
-    
-    // CRITICAL: Recording webhook failed - message will be lost!
-    await logCritical('webhook:recording', error as Error, {
-      recordingSid: params?.get('RecordingSid') || 'unknown',
-      callSid: params?.get('CallSid') || 'unknown',
-      calledNumber: params?.get('To') || 'unknown',
-      callerNumber: params?.get('From') || 'unknown'
-    })
-    
-    return NextResponse.json({ 
-      error: 'Internal server error' 
-    }, { status: 500 })
+  // Prevent search engines from indexing private routes
+  // NOTE: /m/ share pages are excluded - social media crawlers (WhatsApp, Facebook)
+  // need to read their meta tags for link preview images
+  const path = request.nextUrl.pathname
+  if (
+    path.startsWith('/a/') ||
+    path.startsWith('/guest/') ||
+    path.startsWith('/customer/') ||
+    path.startsWith('/admin/') ||
+    path.startsWith('/venue/')
+  ) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive')
   }
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: any) {
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+        },
+        remove(name: string, options: any) {
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
+    }
+  )
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  // If user is logged in, check if password reset is required
+  if (session?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('password_reset_required, role')
+      .eq('id', session.user.id)
+      .single()
+
+    const isPasswordResetPage = request.nextUrl.pathname === '/reset-password'
+    const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
+                       request.nextUrl.pathname.startsWith('/auth')
+
+    // If password reset is required and user is not on reset page
+    if (profile?.password_reset_required && !isPasswordResetPage && !isAuthPage) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/reset-password'
+      url.searchParams.set('required', 'true')
+      return NextResponse.redirect(url)
+    }
+
+    // If password reset is NOT required and user IS on reset-password page with required param
+    if (!profile?.password_reset_required && isPasswordResetPage && 
+        request.nextUrl.searchParams.get('required') === 'true') {
+      // Redirect to appropriate dashboard
+      const url = request.nextUrl.clone()
+      if (profile?.role === 'admin' || profile?.role === 'developer') {
+        url.pathname = '/admin'
+      } else if (profile?.role === 'venue') {
+        url.pathname = '/venue'
+      } else if (profile?.role === 'customer') {
+        url.pathname = '/customer/dashboard'
+      }
+      url.searchParams.delete('required')
+      return NextResponse.redirect(url)
+    }
+  }
+
+  return response
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     * - api routes (handled separately)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }
