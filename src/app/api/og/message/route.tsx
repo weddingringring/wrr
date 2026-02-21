@@ -118,6 +118,12 @@ export async function GET(request: NextRequest) {
       photoUrl = await getSignedPhotoUrl(message.guest_photo_url)
     }
 
+    // WhatsApp-friendly cache: short TTL so re-shares get fresh images
+    const ogHeaders = {
+      'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=600',
+      'Access-Control-Allow-Origin': '*',
+    }
+
     return new ImageResponse(
       (
         <div
@@ -292,6 +298,7 @@ export async function GET(request: NextRequest) {
       {
         width: 1200,
         height: 630,
+        headers: ogHeaders,
       }
     )
   } catch (error) {
@@ -342,6 +349,9 @@ function fallbackImage(title: string) {
         <div style={{ fontSize: '16px', color: '#a69d8e', fontFamily: 'sans-serif' }}>weddingringring.com</div>
       </div>
     ),
-    { width: 1200, height: 630 }
+    { width: 1200, height: 630, headers: {
+      'Cache-Control': 'public, max-age=300, s-maxage=300',
+      'Access-Control-Allow-Origin': '*',
+    } }
   )
 }
