@@ -1,16 +1,24 @@
 User-agent: *
+
+# Allow share pages and OG images for social media link previews (WhatsApp, Facebook, etc)
+Allow: /m/
+Allow: /api/og/
+Allow: /
+Allow: /login
+
+# Block private routes
 Disallow: /a/
 Disallow: /guest/
 Disallow: /customer/
 Disallow: /admin/
 Disallow: /venue/
 Disallow: /reset-password
-Disallow: /api/
-
-# Allow share pages and OG images for social media link previews (WhatsApp, Facebook, etc)
-Allow: /m/
-Allow: /api/og/
-
-# Public pages
-Allow: /
-Allow: /login
+Disallow: /api/twilio/
+Disallow: /api/share/
+Disallow: /api/admin/
+Disallow: /api/cron/
+Disallow: /api/customer/
+Disallow: /api/events/
+Disallow: /api/messages/
+Disallow: /api/venue/
+Disallow: /api/contact/
