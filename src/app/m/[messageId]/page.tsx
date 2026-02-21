@@ -134,23 +134,17 @@ function formatEventType(type: string | null | undefined): string {
 }
 
 /**
- * Page component renders MessageShareClient plus explicit OG meta tags.
- * Next.js 14.1 metadata API doesn't reliably output og:image:width/height/type,
- * but React 18 hoists <meta> tags from components into <head>.
+ * Page component renders MessageShareClient.
+ * All OG meta tags are handled by generateMetadata() above — 
+ * Next.js 14.1 metadata API correctly outputs og:image, og:image:width,
+ * og:image:height, og:image:type in the right order.
+ * 
+ * DO NOT add explicit <meta property="og:image:..."> tags here!
+ * They render BEFORE the metadata API tags in <head>, creating
+ * "orphaned" structured OG properties (no parent og:image).
+ * Facebook/WhatsApp parsers create a phantom image object with
+ * no URL from them, which breaks link previews entirely.
  */
 export default function MessageSharePage({ params, searchParams }: PageProps) {
-  const baseUrl = getBaseUrl()
-  const ogImageUrl = `${baseUrl}/api/og/message?id=${params.messageId}&e=${searchParams.e || ''}&s=${searchParams.s || ''}`
-  const pageUrl = `${baseUrl}/m/${params.messageId}${searchParams.e ? `?e=${searchParams.e}` : ''}${searchParams.s ? `&s=${searchParams.s}` : ''}`
-
-  return (
-    <>
-      {/* Explicit OG sub-tags that Next.js metadata API fails to render in 14.1 */}
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:type" content="image/png" />
-      <meta property="og:url" content={pageUrl} />
-      <MessageShareClient params={params} />
-    </>
-  )
+  return <MessageShareClient params={params} />
 }
