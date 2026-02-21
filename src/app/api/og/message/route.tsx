@@ -118,13 +118,9 @@ export async function GET(request: NextRequest) {
       photoUrl = await getSignedPhotoUrl(message.guest_photo_url)
     }
 
-    // WhatsApp-friendly cache: short TTL so re-shares get fresh images
-    const ogHeaders = {
-      'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=600',
-      'Access-Control-Allow-Origin': '*',
-    }
-
-    return new ImageResponse(
+    // Build image response first, then override default cache headers
+    // (ImageResponse defaults to immutable/31536000 which can't be overridden via options)
+    const imageResponse = new ImageResponse(
       (
         <div
           style={{
@@ -298,9 +294,14 @@ export async function GET(request: NextRequest) {
       {
         width: 1200,
         height: 630,
-        headers: ogHeaders,
       }
     )
+
+    // Override default immutable cache with short TTL for WhatsApp freshness
+    imageResponse.headers.set('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+    imageResponse.headers.set('Access-Control-Allow-Origin', '*')
+
+    return imageResponse
   } catch (error) {
     console.error('OG image error:', error)
     return fallbackImage('Audio Guestbook Message')
@@ -318,7 +319,7 @@ function formatEventType(type: string | null | undefined): string {
 }
 
 function fallbackImage(title: string) {
-  return new ImageResponse(
+  const response = new ImageResponse(
     (
       <div
         style={{
@@ -349,9 +350,11 @@ function fallbackImage(title: string) {
         <div style={{ fontSize: '16px', color: '#a69d8e', fontFamily: 'sans-serif' }}>weddingringring.com</div>
       </div>
     ),
-    { width: 1200, height: 630, headers: {
-      'Cache-Control': 'public, max-age=300, s-maxage=300',
-      'Access-Control-Allow-Origin': '*',
-    } }
+    { width: 1200, height: 630 }
   )
+
+  response.headers.set('Cache-Control', 'public, max-age=300, s-maxage=300')
+  response.headers.set('Access-Control-Allow-Origin', '*')
+
+  return response
 }
