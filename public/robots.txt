@@ -1,12 +1,15 @@
 User-agent: *
 Disallow: /a/
-Disallow: /m/
 Disallow: /guest/
-Disallow: /api/
 Disallow: /customer/
 Disallow: /admin/
 Disallow: /venue/
 Disallow: /reset-password
+Disallow: /api/
+
+# Allow share pages and OG images for social media link previews (WhatsApp, Facebook, etc)
+Allow: /m/
+Allow: /api/og/
 
 # Public pages
 Allow: /
