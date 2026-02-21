@@ -9,10 +9,11 @@ export async function middleware(request: NextRequest) {
   })
 
   // Prevent search engines from indexing private routes
+  // NOTE: /m/ share pages are excluded - social media crawlers (WhatsApp, Facebook)
+  // need to read their meta tags for link preview images
   const path = request.nextUrl.pathname
   if (
     path.startsWith('/a/') ||
-    path.startsWith('/m/') ||
     path.startsWith('/guest/') ||
     path.startsWith('/customer/') ||
     path.startsWith('/admin/') ||
@@ -101,6 +102,6 @@ export const config = {
      * - public folder
      * - api routes (handled separately)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
